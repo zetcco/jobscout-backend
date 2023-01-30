@@ -18,6 +18,8 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.authorizeHttpRequests().requestMatchers("/auth/**").permitAll();
+        http.authorizeHttpRequests().anyRequest().authenticated();
         return http.build();
     }
 }

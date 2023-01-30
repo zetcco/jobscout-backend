@@ -6,6 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.zetcco.jobscoutdemo.domain.JobCreator;
 import com.zetcco.jobscoutdemo.domain.support.Address;
+import com.zetcco.jobscoutdemo.domain.support.NameTitle;
 
 @SpringBootTest
 public class JobCreatorRepositoryTest {
@@ -30,6 +31,7 @@ public class JobCreatorRepositoryTest {
     @Test
     public void saveJobCreatorProfile() {
         JobCreator jobCreator = jobCreatorRepository.findById(1L).orElseThrow();
+        jobCreator.setTitle(NameTitle.MR);
         jobCreator.setFirstName("Sanjan");
         jobCreator.setLastName("Madushan");
         jobCreatorRepository.save(jobCreator);
