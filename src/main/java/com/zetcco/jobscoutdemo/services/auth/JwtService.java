@@ -1,15 +1,18 @@
 package com.zetcco.jobscoutdemo.services.auth;
 
 import java.security.Key;
+import java.util.Date;
 import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutdemo.controllers.auth.support.AuthenticationResponse;
 import com.zetcco.jobscoutdemo.domain.support.User;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
@@ -40,5 +43,15 @@ public class JwtService {
     public boolean isTokenValid(String jwt_token, User user) {
         final String tokeN_email = getUserEmail(jwt_token);
         return tokeN_email.equals(user.getEmail());
+    }
+
+    public AuthenticationResponse generateToken(User user) {
+        String token =  Jwts.builder()
+                            .setSubject(user.getEmail())
+                            .setIssuedAt(new Date(System.currentTimeMillis()))
+                            .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24))
+                            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                            .compact();
+        return new AuthenticationResponse(token);
     }
 }

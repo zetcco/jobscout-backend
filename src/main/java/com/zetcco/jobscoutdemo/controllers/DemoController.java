@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutdemo.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -7,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class DemoController {
     
     @GetMapping("/protected")
-    public void protectedRoute() {
-        System.out.println("Protected route");
+    public ResponseEntity<String> protectedRoute() {
+        return ResponseEntity.ok("Protected");
     }
 }
