@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.zetcco.jobscoutdemo.controllers.auth.support.AuthenticationResponse;
+import com.zetcco.jobscoutdemo.controllers.auth.support.JobCreatorRegistrationRequest;
+import com.zetcco.jobscoutdemo.controllers.auth.support.JobSeekerRegistrationRequest;
 import com.zetcco.jobscoutdemo.controllers.auth.support.LoginRequest;
 import com.zetcco.jobscoutdemo.controllers.auth.support.OrganizationRegisterRequest;
 import com.zetcco.jobscoutdemo.services.auth.AuthenticationService;
@@ -27,9 +29,16 @@ public class AuthenticationController {
 
     @PostMapping("/register/organization")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody OrganizationRegisterRequest request) {
-        System.out.println(request);
         return ResponseEntity.ok(authenticationService.registerOrganization(request));
     }
 
+    @PostMapping("/register/jobseeker")
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody JobSeekerRegistrationRequest request) {
+        return ResponseEntity.ok(authenticationService.registerJobSeeker(request));
+    }
     
+    @PostMapping("/register/jobcreator")
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody JobCreatorRegistrationRequest request) {
+        return ResponseEntity.ok(authenticationService.registerJobCreator(request));
+    }
 }

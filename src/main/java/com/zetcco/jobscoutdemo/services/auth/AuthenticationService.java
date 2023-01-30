@@ -6,10 +6,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutdemo.controllers.auth.support.AuthenticationResponse;
+import com.zetcco.jobscoutdemo.controllers.auth.support.JobCreatorRegistrationRequest;
+import com.zetcco.jobscoutdemo.controllers.auth.support.JobSeekerRegistrationRequest;
 import com.zetcco.jobscoutdemo.controllers.auth.support.LoginRequest;
 import com.zetcco.jobscoutdemo.controllers.auth.support.OrganizationRegisterRequest;
+import com.zetcco.jobscoutdemo.domain.JobCreator;
+import com.zetcco.jobscoutdemo.domain.JobSeeker;
 import com.zetcco.jobscoutdemo.domain.Organization;
 import com.zetcco.jobscoutdemo.domain.support.User;
+import com.zetcco.jobscoutdemo.repositories.JobCreatorRepository;
+import com.zetcco.jobscoutdemo.repositories.JobSeekerRepository;
 // import com.zetcco.jobscoutdemo.repositories.JobCreatorRepository;
 // import com.zetcco.jobscoutdemo.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutdemo.repositories.OrganizationRepository;
@@ -23,8 +29,8 @@ public class AuthenticationService {
     
     private final UserRepository userRepository;
     private final OrganizationRepository organizationRepository;
-    // private final JobSeekerRepository jobSeekerRepository;
-    // private final JobCreatorRepository jobCreatorRepository;
+    private final JobSeekerRepository jobSeekerRepository;
+    private final JobCreatorRepository jobCreatorRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -49,5 +55,35 @@ public class AuthenticationService {
             System.out.println(e.getMessage());
             return null;
         }
+    }
+
+    public AuthenticationResponse registerJobSeeker(JobSeekerRegistrationRequest request) {
+        JobSeeker jobSeeker = new JobSeeker(
+                                            request.getEmail(),
+                                            passwordEncoder.encode(request.getPassword()),
+                                            request.getAddress(),
+                                            request.getTitle(),
+                                            request.getFirstName(),
+                                            request.getLastName(),
+                                            request.getContact(),
+                                            request.getDob(),
+                                            request.getGender());
+        jobSeekerRepository.save(jobSeeker);
+        return jwtService.generateToken((User)jobSeeker);
+    }
+
+    public AuthenticationResponse registerJobCreator(JobCreatorRegistrationRequest request) {
+        JobCreator jobCreator = new JobCreator(
+                                            request.getEmail(),
+                                            passwordEncoder.encode(request.getPassword()),
+                                            request.getAddress(),
+                                            request.getTitle(),
+                                            request.getFirstName(),
+                                            request.getLastName(),
+                                            request.getContact(),
+                                            request.getDob(),
+                                            request.getGender());
+        jobCreatorRepository.save(jobCreator);
+        return jwtService.generateToken((User)jobCreator);
     }
 }
