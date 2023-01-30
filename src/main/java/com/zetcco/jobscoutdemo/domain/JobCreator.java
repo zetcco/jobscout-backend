@@ -15,13 +15,13 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor
-public class Organization extends User {
-    private String companyName;
-    private String businessRegistration;
+@AllArgsConstructor
+public class JobCreator extends User {
+    private String firstName;
+    private String lastName;
 
-    public Organization(String email, String password, Address address) {
-        super(email, password, Role.ROLE_ORGANIZATION, address);
+    public JobCreator(String email, String password, Address address) {
+        super(email, password, Role.ROLE_JOB_CREATOR, address);
     }
 }

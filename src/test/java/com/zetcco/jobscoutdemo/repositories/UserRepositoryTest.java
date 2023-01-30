@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.zetcco.jobscoutdemo.domain.support.Address;
+import com.zetcco.jobscoutdemo.domain.support.Role;
 import com.zetcco.jobscoutdemo.domain.support.User;
 
 @SpringBootTest
@@ -16,8 +17,9 @@ public class UserRepositoryTest {
     @Test
     public void saveUser() {
         User user = User.builder()
-                        .email("indrajith@gmail.com")
+                        .email("indjajith@gmail.com")
                         .password("hello")
+                        .role(Role.ROLE_ORGANIZATION)
                         .address(Address.builder()
                                         .number("21/B")
                                         .street("Baker Street")
@@ -28,6 +30,13 @@ public class UserRepositoryTest {
                                         .build())
                         .displayPicture("https://.../...")
                         .build();
+        userRepository.save(user);
+    }
+
+    @Test
+    public void updatePassword() {
+        User user = userRepository.findById(152L).orElseThrow();
+        user.setEmail("New email update");
         userRepository.save(user);
     }
 }

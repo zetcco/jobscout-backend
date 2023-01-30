@@ -10,6 +10,8 @@ import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,10 +33,13 @@ import lombok.experimental.SuperBuilder;
 public class User implements UserDetails {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String email;
     private String password;
+
+    @Enumerated(value = EnumType.STRING)
+    private Role role;
 
     @Embedded
     @AttributeOverrides({
@@ -48,6 +53,13 @@ public class User implements UserDetails {
     private Address address;
 
     private String displayPicture;
+
+    protected User(String email, String password, Role role, Address address) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.address = address;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
