@@ -1,6 +1,9 @@
 package com.zetcco.jobscoutdemo.controllers.auth;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,7 +33,15 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(authenticationService.login(request));
+        try {
+            return new ResponseEntity<>(authenticationService.login(request), HttpStatus.OK);
+        } catch (BadCredentialsException | InternalAuthenticationServiceException e) {
+            System.out.println(e);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Bad Credentials").build(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/register/organization")

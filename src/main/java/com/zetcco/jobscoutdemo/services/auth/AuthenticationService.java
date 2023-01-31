@@ -43,18 +43,31 @@ public class AuthenticationService {
                     request.getCompanyName(),
                     request.getBusinessRegistration());
         organizationRepository.save(organization);
-        return jwtService.generateToken((User)organization);
+        String token = jwtService.generateToken((User)organization);
+        return AuthenticationResponse.builder().jwtToken(token).build();
     }
 
-    public AuthenticationResponse login(LoginRequest request) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-            User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-            return jwtService.generateToken(user);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
+    public AuthenticationResponse login(LoginRequest request) throws Exception {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        String token = jwtService.generateToken(user);
+
+        String name;
+        String className = user.getClass().getSimpleName().toString();
+        if (className == "Organization") {
+            name = ((Organization)user).getCompanyName();
+        } else if (className == "JobSeeker") {
+            name = ((JobSeeker)user).getFirstName();
+        } else {
+            name = ((JobCreator)user).getFirstName();
         }
+
+        return AuthenticationResponse.builder()
+                                     .jwtToken(token)
+                                     .name(name)
+                                     .email(user.getEmail())
+                                     .role(user.getRole().name())
+                                     .build();
     }
 
     public AuthenticationResponse registerJobSeeker(JobSeekerRegistrationRequest request) {
@@ -69,7 +82,12 @@ public class AuthenticationService {
                                             request.getDob(),
                                             request.getGender());
         jobSeekerRepository.save(jobSeeker);
-        return jwtService.generateToken((User)jobSeeker);
+        String token = jwtService.generateToken((User)jobSeeker);
+        return AuthenticationResponse.builder()
+                                               .jwtToken(token)
+                                               .email(jobSeeker.getEmail())
+                                               .role(jobSeeker.getRole().name())
+                                               .build();
     }
 
     public AuthenticationResponse registerJobCreator(JobCreatorRegistrationRequest request) {
@@ -84,6 +102,7 @@ public class AuthenticationService {
                                             request.getDob(),
                                             request.getGender());
         jobCreatorRepository.save(jobCreator);
-        return jwtService.generateToken((User)jobCreator);
+        String token = jwtService.generateToken((User)jobCreator);
+        return AuthenticationResponse.builder().jwtToken(token).build();
     }
 }

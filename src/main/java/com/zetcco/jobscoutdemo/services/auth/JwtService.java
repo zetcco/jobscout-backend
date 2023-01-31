@@ -6,7 +6,6 @@ import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 
-import com.zetcco.jobscoutdemo.controllers.auth.support.AuthenticationResponse;
 import com.zetcco.jobscoutdemo.domain.support.User;
 
 import io.jsonwebtoken.Claims;
@@ -45,13 +44,13 @@ public class JwtService {
         return tokeN_email.equals(user.getEmail());
     }
 
-    public AuthenticationResponse generateToken(User user) {
+    public String generateToken(User user) {
         String token =  Jwts.builder()
                             .setSubject(user.getEmail())
                             .setIssuedAt(new Date(System.currentTimeMillis()))
                             .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24))
                             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                             .compact();
-        return new AuthenticationResponse(token);
+        return token;
     }
 }
