@@ -1,5 +1,9 @@
 package com.zetcco.jobscoutdemo.controllers.auth;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -46,7 +50,13 @@ public class AuthenticationController {
 
     @PostMapping("/register/organization")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody OrganizationRegisterRequest request) {
-        return ResponseEntity.ok(authenticationService.registerOrganization(request));
+        try {
+            return new ResponseEntity<>(authenticationService.registerOrganization(request), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        // return ResponseEntity.ok(authenticationService.registerOrganization(request));
     }
 
     @PostMapping("/register/jobseeker")
@@ -57,5 +67,16 @@ public class AuthenticationController {
     @PostMapping("/register/jobcreator")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody JobCreatorRegistrationRequest request) {
         return ResponseEntity.ok(authenticationService.registerJobCreator(request));
+    }
+
+    @GetMapping("/countries")
+    public ResponseEntity<List<String>> getCountries() {
+        List<String> countriesList = new ArrayList<String>();
+        String[] locales = Locale.getISOCountries();
+        for (String code : locales) {
+            Locale obj = new Locale("", code);
+            countriesList.add(obj.getDisplayCountry());
+        }
+        return ResponseEntity.ok(countriesList);
     }
 }
