@@ -20,8 +20,15 @@ import lombok.experimental.SuperBuilder;
 public class Organization extends User {
     private String companyName;
     private String businessRegistration;
+    private String logo;
 
     public Organization(String email, String password, Address address) {
         super(email, password, Role.ROLE_ORGANIZATION, address);
+    }
+
+    public Organization(String email, String password, Address address, String companyName, String businessRegistration) {
+        super(email, password, Role.ROLE_ORGANIZATION, address);
+        this.companyName = companyName;
+        this.businessRegistration = businessRegistration;
     }
 }
