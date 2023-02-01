@@ -47,8 +47,8 @@ public class AuthenticationService {
         String token = jwtService.generateToken((User)organization);
         return AuthenticationResponse.builder()
                                      .jwtToken(token)
-                                     .name(request.getCompanyName())
-                                     .email(request.getEmail())
+                                     .name(organization.getCompanyName())
+                                     .email(organization.getEmail())
                                      .role(Role.ROLE_ORGANIZATION.name())
                                      .build();
     }
@@ -60,7 +60,6 @@ public class AuthenticationService {
 
         String name = null;
         String className = user.getClass().getSimpleName().toString();
-        System.out.println(className);
         if (className.equals("Organization")) {
             name = ((Organization)user).getCompanyName();
         } else if (className.equals("JobSeeker")) {
@@ -92,6 +91,7 @@ public class AuthenticationService {
         String token = jwtService.generateToken((User)jobSeeker);
         return AuthenticationResponse.builder()
                                                .jwtToken(token)
+                                               .name(jobSeeker.getFirstName() + " " + jobSeeker.getLastName())
                                                .email(jobSeeker.getEmail())
                                                .role(jobSeeker.getRole().name())
                                                .build();
@@ -110,6 +110,11 @@ public class AuthenticationService {
                                             request.getGender());
         jobCreatorRepository.save(jobCreator);
         String token = jwtService.generateToken((User)jobCreator);
-        return AuthenticationResponse.builder().jwtToken(token).build();
+        return AuthenticationResponse.builder()
+                                     .jwtToken(token)
+                                     .name(jobCreator.getFirstName() + " " + jobCreator.getLastName())
+                                     .email(jobCreator.getEmail())
+                                     .role(jobCreator.getRole().name())
+                                     .build();
     }
 }
