@@ -46,16 +46,31 @@ public class AuthenticationController {
 
     @PostMapping("/register/organization")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody OrganizationRegisterRequest request) {
-        return ResponseEntity.ok(authenticationService.registerOrganization(request));
+        try {
+            return new ResponseEntity<>(authenticationService.registerOrganization(request), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/register/jobseeker")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody JobSeekerRegistrationRequest request) {
-        return ResponseEntity.ok(authenticationService.registerJobSeeker(request));
+        try {
+            return new ResponseEntity<>(authenticationService.registerJobSeeker(request), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @PostMapping("/register/jobcreator")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody JobCreatorRegistrationRequest request) {
-        return ResponseEntity.ok(authenticationService.registerJobCreator(request));
+        try {
+            return new ResponseEntity<>(authenticationService.registerJobCreator(request), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
