@@ -4,6 +4,7 @@ import com.zetcco.jobscoutdemo.domain.support.Address;
 import com.zetcco.jobscoutdemo.domain.support.Role;
 import com.zetcco.jobscoutdemo.domain.support.User;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Organization extends User {
+    
+    @Column(unique = true)
     private String companyName;
     private String businessRegistration;
     private String logo;
