@@ -7,6 +7,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.zetcco.jobscoutdemo.domain.JobCreator;
+import com.zetcco.jobscoutdemo.domain.JobSeeker;
+import com.zetcco.jobscoutdemo.domain.Organization;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -89,6 +93,18 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // TODO: Find a better way to get the Name from the parent class, this adds a lot of dependancy
+    public String getDisplayName() {
+        if (this instanceof Organization)
+            return ((Organization)this).getCompanyName();
+        else if (this instanceof JobSeeker)
+            return ((JobSeeker)this).getFirstName();
+        else if (this instanceof JobCreator)
+            return ((JobSeeker)this).getFirstName();
+        else
+            return null;
     }
 
 }
