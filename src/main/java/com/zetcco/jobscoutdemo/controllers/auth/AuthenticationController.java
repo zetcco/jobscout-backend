@@ -50,7 +50,7 @@ public class AuthenticationController {
         try {
             return new ResponseEntity<>(authenticationService.registerOrganization(request), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Company or Email already registered").build(), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Company Name or Email has been already registered").build(), HttpStatus.CONFLICT);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -61,6 +61,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody JobSeekerRegistrationRequest request) {
         try {
             return new ResponseEntity<>(authenticationService.registerJobSeeker(request), HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Email is already registered").build(), HttpStatus.CONFLICT);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -71,6 +73,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody JobCreatorRegistrationRequest request) {
         try {
             return new ResponseEntity<>(authenticationService.registerJobCreator(request), HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Email is already registered").build(), HttpStatus.CONFLICT);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
