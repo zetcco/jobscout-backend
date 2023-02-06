@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutdemo.controllers.auth;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -48,6 +49,8 @@ public class AuthenticationController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody OrganizationRegisterRequest request) {
         try {
             return new ResponseEntity<>(authenticationService.registerOrganization(request), HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            return new ResponseEntity<>(AuthenticationResponse.builder().status("Company or Email already registered").build(), HttpStatus.CONFLICT);
         } catch (Exception e) {
             System.out.println(e);
             return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
