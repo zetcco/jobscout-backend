@@ -102,7 +102,7 @@ public class User implements UserDetails {
         else if (this instanceof JobSeeker)
             return ((JobSeeker)this).getFirstName();
         else if (this instanceof JobCreator)
-            return ((JobSeeker)this).getFirstName();
+            return ((JobCreator)this).getFirstName();
         else
             return null;
     }
