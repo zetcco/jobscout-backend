@@ -46,7 +46,7 @@ public class AuthenticationService {
                     passwordEncoder.encode(request.getPassword()), 
                     request.getAddress(),
                     request.getCompanyName(),
-                    request.getBusinessRegistration());
+                    request.getBrFileName());
         organizationRepository.save(organization);
 
         String token = jwtService.generateToken(organization);

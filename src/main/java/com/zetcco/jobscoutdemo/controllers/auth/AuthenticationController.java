@@ -1,7 +1,9 @@
 package com.zetcco.jobscoutdemo.controllers.auth;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
@@ -10,6 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.zetcco.jobscoutdemo.controllers.auth.support.AuthenticationResponse;
 import com.zetcco.jobscoutdemo.controllers.auth.support.JobCreatorRegistrationRequest;
@@ -17,6 +21,7 @@ import com.zetcco.jobscoutdemo.controllers.auth.support.JobSeekerRegistrationReq
 import com.zetcco.jobscoutdemo.controllers.auth.support.LoginRequest;
 import com.zetcco.jobscoutdemo.controllers.auth.support.OrganizationRegisterRequest;
 import com.zetcco.jobscoutdemo.services.auth.AuthenticationService;
+import com.zetcco.jobscoutdemo.services.support.StorageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final StorageService storageService;
 
     @GetMapping("/allopen")
     public ResponseEntity<String> allopen() {
@@ -45,9 +51,15 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("/register/organization")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody OrganizationRegisterRequest request) {
+    // @PostMapping("/register/organization")
+
+    // @RequestMapping(path = "/register/organization", method = RequestMethod.POST, consumes = "multipart/form-data")
+    @PostMapping(path = "/register/organization", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<AuthenticationResponse> register(@RequestPart OrganizationRegisterRequest request, @RequestPart MultipartFile file) {
         try {
+            String filename = storageService.store(file);
+            request.setBrFileName(filename);
+            TimeUnit.SECONDS.sleep(3);
             return new ResponseEntity<>(authenticationService.registerOrganization(request), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
             return new ResponseEntity<>(AuthenticationResponse.builder().status("Company Name or Email has been already registered").build(), HttpStatus.CONFLICT);

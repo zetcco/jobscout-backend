@@ -32,7 +32,6 @@ public class FileUploadController {
         String message = "";
         try {
             storageService.store(file);
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
             TimeUnit.SECONDS.sleep(3);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
         } catch (Exception e) {

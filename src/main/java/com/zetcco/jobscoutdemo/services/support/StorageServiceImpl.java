@@ -6,10 +6,12 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,15 +31,24 @@ public class StorageServiceImpl implements StorageService {
     }
 
     @Override
-    public void store(MultipartFile file) {
-        try {
-            Files.copy(file.getInputStream(), this.root.resolve(file.getOriginalFilename()));
-        } catch (Exception e) {
-            if (e instanceof FileAlreadyExistsException) {
-                throw new RuntimeException("A file of that name already exists.");
+    @Nullable
+    public String store(MultipartFile file) {
+        String originalFileName = file.getOriginalFilename();
+        if (originalFileName != null) {
+            String[] fileNameStruct = originalFileName.split("\\.");
+            String extension = fileNameStruct[fileNameStruct.length - 1];
+            String filename = UUID.randomUUID().toString() + "." + extension;
+            try {
+                Files.copy(file.getInputStream(), this.root.resolve(filename));
+                return filename;
+            } catch (Exception e) {
+                if (e instanceof FileAlreadyExistsException) {
+                    throw new RuntimeException("A file of that name already exists.");
+                }
+            throw new RuntimeException("Unknown Error: " + e.getMessage());
             }
-        throw new RuntimeException("Unknown Error: " + e.getMessage());
         }
+        return null;
     }
 
     @Override
