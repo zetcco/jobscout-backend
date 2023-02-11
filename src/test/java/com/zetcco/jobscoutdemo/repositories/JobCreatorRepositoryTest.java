@@ -4,9 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.zetcco.jobscoutdemo.domain.JobCreator;
-import com.zetcco.jobscoutdemo.domain.support.Address;
-import com.zetcco.jobscoutdemo.domain.support.NameTitle;
+import com.zetcco.jobscoutserver.domain.JobCreator;
+import com.zetcco.jobscoutserver.domain.support.Address;
+import com.zetcco.jobscoutserver.domain.support.NameTitle;
+import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 
 @SpringBootTest
 public class JobCreatorRepositoryTest {
