@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutdemo;
+package com.zetcco.jobscoutserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

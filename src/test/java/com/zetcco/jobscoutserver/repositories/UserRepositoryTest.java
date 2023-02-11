@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutdemo.repositories;
+package com.zetcco.jobscoutserver.repositories;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import com.zetcco.jobscoutserver.domain.support.Address;
 import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.User;
-import com.zetcco.jobscoutserver.repositories.UserRepository;
 
 @SpringBootTest
 public class UserRepositoryTest {
