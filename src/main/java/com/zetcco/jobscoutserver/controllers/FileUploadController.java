@@ -21,13 +21,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.core.io.Resource;
 
 @Controller
-@RequestMapping("/auth/upload")
+@RequestMapping("/media")
 public class FileUploadController {
 
     @Autowired
     private StorageService storageService;
 
-    @PostMapping("/file")
+    @PostMapping("/upload/file")
     public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
         System.out.println(file);
         String message = "";

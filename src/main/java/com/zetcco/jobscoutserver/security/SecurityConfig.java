@@ -23,7 +23,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http.authorizeHttpRequests().requestMatchers("/auth/**", "/address/**").permitAll();
+        http.authorizeHttpRequests().requestMatchers(
+            "/auth/**",
+            "/address/**",
+            "/media/**"
+        ).permitAll();
         http.authorizeHttpRequests().requestMatchers("/error").anonymous();
         http.authorizeHttpRequests().anyRequest().authenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
