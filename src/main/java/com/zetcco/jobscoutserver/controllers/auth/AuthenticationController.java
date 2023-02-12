@@ -8,12 +8,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.controllers.auth.support.AuthenticationResponse;
 import com.zetcco.jobscoutserver.controllers.auth.support.JobCreatorRegistrationRequest;
@@ -33,27 +33,18 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final StorageService storageService;
 
-    @GetMapping("/allopen")
-    public ResponseEntity<String> allopen() {
-        return ResponseEntity.ok("All open end");
-    }
-
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
         try {
             return new ResponseEntity<>(authenticationService.login(request), HttpStatus.OK);
         } catch (BadCredentialsException | InternalAuthenticationServiceException e) {
-            System.out.println(e);
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Bad Credentials").build(), HttpStatus.UNAUTHORIZED);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Bad Credentials");
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error");
         }
     }
 
-    // @PostMapping("/register/organization")
-
-    // @RequestMapping(path = "/register/organization", method = RequestMethod.POST, consumes = "multipart/form-data")
     @PostMapping(path = "/register/organization", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<AuthenticationResponse> register(@RequestPart OrganizationRegisterRequest request, @RequestPart MultipartFile file) {
         try {
@@ -62,10 +53,10 @@ public class AuthenticationController {
             TimeUnit.SECONDS.sleep(3);
             return new ResponseEntity<>(authenticationService.registerOrganization(request), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Company Name or Email has been already registered").build(), HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Company Name or Email has been already registered");
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error");
         }
     }
 
@@ -74,10 +65,10 @@ public class AuthenticationController {
         try {
             return new ResponseEntity<>(authenticationService.registerJobSeeker(request), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Email is already registered").build(), HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered");
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error");
         }
     }
     
@@ -86,10 +77,10 @@ public class AuthenticationController {
         try {
             return new ResponseEntity<>(authenticationService.registerJobCreator(request), HttpStatus.OK);
         } catch (DataIntegrityViolationException e) {
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Email is already registered").build(), HttpStatus.CONFLICT);
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered");
         } catch (Exception e) {
             System.out.println(e);
-            return new ResponseEntity<>(AuthenticationResponse.builder().status("Server Error").build(), HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error");
         }
     }
 }
