@@ -16,7 +16,7 @@ import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
 @Controller
-@RequestMapping("/profile")
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
