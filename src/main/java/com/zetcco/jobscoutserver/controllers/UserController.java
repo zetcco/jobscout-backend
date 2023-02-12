@@ -25,6 +25,11 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping("/")
+    public ResponseEntity<ProfileDTO> getUserProfile() {
+        return new ResponseEntity<ProfileDTO>(userService.getUser(), HttpStatus.OK);
+    }
+
     @GetMapping("/{profileId}")
     public ResponseEntity<ProfileDTO> getProfile(@PathVariable Long profileId) {
         return new ResponseEntity<ProfileDTO>(userService.getUser(profileId), HttpStatus.OK);

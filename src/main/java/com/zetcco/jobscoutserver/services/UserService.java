@@ -39,4 +39,9 @@ public class UserService {
             profile.setDisplayPicture(PROFILE_RESOURCE_URL.concat(profile.getDisplayPicture()));
         return profile;
     }
+
+    public ProfileDTO getUser() {
+        Long profileId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        return getUser(profileId);
+    }
 }
