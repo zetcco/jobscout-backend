@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.services;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final Environment environment;
 
     // @TODO : Add exception handling here
     public User loadUserByEmail(String email) {
@@ -29,7 +31,12 @@ public class UserService {
         return file;
     }
 
+    // @zetcco @TODO: Find more convinent way to attach the server url to media resources
     public ProfileDTO getUser(Long profileId) {
-        return modelMapper.map(userRepository.findById(profileId).orElseThrow(null), ProfileDTO.class);
+        ProfileDTO profile = modelMapper.map(userRepository.findById(profileId).orElseThrow(null), ProfileDTO.class);
+        final String PROFILE_RESOURCE_URL = environment.getProperty("server.url") + "/media/file/";
+        if (PROFILE_RESOURCE_URL != null)
+            profile.setDisplayPicture(PROFILE_RESOURCE_URL.concat(profile.getDisplayPicture()));
+        return profile;
     }
 }

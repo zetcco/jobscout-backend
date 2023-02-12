@@ -13,3 +13,4 @@ spring:
 server:
     error:
         include-message: always
+    url: http://localhost:8080
