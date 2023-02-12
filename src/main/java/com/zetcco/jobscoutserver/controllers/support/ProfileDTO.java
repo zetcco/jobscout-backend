@@ -10,6 +10,7 @@ public class ProfileDTO {
     private Long id;
     private String email;
     private Role role;
+    private String displayName;
     private Address address;
     private String displayPicture;
 }

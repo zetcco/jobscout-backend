@@ -35,7 +35,7 @@ public class UserService {
     public ProfileDTO getUser(Long profileId) {
         ProfileDTO profile = modelMapper.map(userRepository.findById(profileId).orElseThrow(null), ProfileDTO.class);
         final String PROFILE_RESOURCE_URL = environment.getProperty("server.url") + "/media/file/";
-        if (PROFILE_RESOURCE_URL != null)
+        if (PROFILE_RESOURCE_URL != null && profile.getDisplayPicture() != null)
             profile.setDisplayPicture(PROFILE_RESOURCE_URL.concat(profile.getDisplayPicture()));
         return profile;
     }
