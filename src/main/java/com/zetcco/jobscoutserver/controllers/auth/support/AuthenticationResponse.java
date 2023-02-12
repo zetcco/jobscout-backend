@@ -11,12 +11,7 @@ import lombok.Setter;
 @Builder
 public class AuthenticationResponse {
 
-    private String name;
-    private String email;
-    private String role;
-    
     @Setter(AccessLevel.NONE)
     private String jwtToken;
 
-    private String status;
 }
