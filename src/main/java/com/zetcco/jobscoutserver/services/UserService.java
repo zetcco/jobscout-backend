@@ -24,11 +24,11 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow();
     }
 
-    public String setProfilePicture(String file) {
+    public ProfileDTO setProfilePicture(String file) {
         User user = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         user.setDisplayPicture(file);
         userRepository.save(user);
-        return file;
+        return this.getUser();
     }
 
     // @zetcco @TODO: Find more convinent way to attach the server url to media resources

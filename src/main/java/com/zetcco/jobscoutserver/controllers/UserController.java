@@ -36,8 +36,8 @@ public class UserController {
     }
     
     @PutMapping("/display-picture")
-    public ResponseEntity<String> setProfilePicture(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<ProfileDTO> setProfilePicture(@RequestParam("file") MultipartFile file) {
         String filename = storageService.store(file);
-        return new ResponseEntity<String>(userService.setProfilePicture(filename), HttpStatus.OK);
+        return new ResponseEntity<ProfileDTO>(userService.setProfilePicture(filename), HttpStatus.OK);
     }
 }
