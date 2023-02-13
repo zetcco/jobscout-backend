@@ -21,9 +21,7 @@ public class SecurityConfig {
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // http.cors();
         http.csrf().disable();
-        // http.addFilterBefore(corsFilter, ChannelProcessingFilter.class); <--- @INFO Add this to disable CORS on server 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests().requestMatchers(
             "/auth/**",
