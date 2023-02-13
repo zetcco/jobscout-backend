@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutserver.security;
+package com.zetcco.jobscoutserver.configs.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
