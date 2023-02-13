@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.UserService;
@@ -37,7 +38,11 @@ public class UserController {
     
     @PutMapping("/display-picture")
     public ResponseEntity<ProfileDTO> setProfilePicture(@RequestParam("file") MultipartFile file) {
-        String filename = storageService.store(file);
-        return new ResponseEntity<ProfileDTO>(userService.setProfilePicture(filename), HttpStatus.OK);
+        try {
+            String filename = storageService.store(file);
+            return new ResponseEntity<ProfileDTO>(userService.setProfilePicture(filename), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 }
