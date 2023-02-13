@@ -36,6 +36,7 @@ public class UserController {
         return new ResponseEntity<ProfileDTO>(userService.getUser(profileId), HttpStatus.OK);
     }
     
+    // TODO: Set proper HttpStatus codes for exceptions
     @PutMapping("/display-picture")
     public ResponseEntity<ProfileDTO> setProfilePicture(@RequestParam("file") MultipartFile file) {
         try {
