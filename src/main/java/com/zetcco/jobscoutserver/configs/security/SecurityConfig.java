@@ -26,7 +26,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests().requestMatchers(
             "/auth/**",
             "/address/**",
-            "/media/**"
+            "/media/**",
+            "/organization/search/**"
         ).permitAll();
         http.authorizeHttpRequests().requestMatchers("/error").anonymous();
         http.authorizeHttpRequests().anyRequest().authenticated();
