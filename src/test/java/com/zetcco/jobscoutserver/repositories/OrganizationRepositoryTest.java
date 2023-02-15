@@ -59,4 +59,17 @@ public class OrganizationRepositoryTest {
         orgs = organizationRepository.findOrganizationByNameFTS("creative", page2).getContent();
         for (Organization organization : orgs) System.out.println(organization.getCompanyName());
     }
+
+    @Test
+    public void getOrganizationByName() {
+        Pageable page = PageRequest.of(0, 2);
+        List<Organization> orgs = organizationRepository.findByCompanyNameContainingIgnoreCase("c", page).getContent();
+        for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+
+        System.out.println("----------------");
+
+        Pageable page2 = PageRequest.of(1, 2);
+        orgs = organizationRepository.findByCompanyNameContainingIgnoreCase("c", page2).getContent();
+        for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+    }
 }
