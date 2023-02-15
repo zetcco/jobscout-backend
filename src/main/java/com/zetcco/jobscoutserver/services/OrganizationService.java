@@ -20,9 +20,23 @@ public class OrganizationService {
     private OrganizationRepository organizationRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     public List<ProfileDTO> searchOrganizationsByName(String name, int pageCount, int pageSize) {
+        if (name.equals(""))
+            throw new IllegalArgumentException("Wrong Parameters");
+        Pageable page = PageRequest.of(pageCount, pageSize);
+        List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page).getContent();
+        List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
+        for (Organization organization : organizations) 
+            profiles.add(userService.getUser(organization.getId()));
+        return profiles; 
+    }
+
+    public List<ProfileDTO> searchOrganizationsByNameFTS(String name, int pageCount, int pageSize) {
         String keywords = name.replace(' ', '&');
         Pageable page = PageRequest.of(pageCount, pageSize);
         List<Organization> organizations = organizationRepository.findOrganizationByNameFTS(keywords, page).getContent();
