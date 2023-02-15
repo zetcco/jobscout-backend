@@ -18,4 +18,5 @@ public interface OrganizationRepository extends UserBaseRepository<Organization>
             nativeQuery = true)
     public Page<Organization> findOrganizationByNameFTS(@Param("keyword") String keyword, Pageable page);
 
+    Page<Organization> findByCompanyNameContainingIgnoreCase(String name, Pageable page);
 }
