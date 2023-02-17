@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.Address;
 
@@ -16,6 +17,9 @@ public class OrganizationRepositoryTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private JobCreatorRepository jobCreatorRepository;
 
     @Test
     public void saveNewOrganization() {
@@ -37,6 +41,18 @@ public class OrganizationRepositoryTest {
         organization.setCompanyName("Creative Software");
         organization.setBusinessRegistration("https://..../...");
         organization.setDisplayPicture("New dp bro");
+        organizationRepository.save(organization);
+    }
+
+    @Test
+    public void setJobCreator() {
+        Organization organization = organizationRepository.findById(1L).orElseThrow();
+        List<JobCreator> jobCreators = organization.getJobCreators();
+        jobCreators.add(jobCreatorRepository.findById(73L).orElseThrow());
+        for (JobCreator jobCreator : jobCreators) 
+            jobCreator.setOrganization(organization);
+        jobCreatorRepository.saveAll(jobCreators);
+        organization.setJobCreators(jobCreators);
         organizationRepository.save(organization);
     }
 
