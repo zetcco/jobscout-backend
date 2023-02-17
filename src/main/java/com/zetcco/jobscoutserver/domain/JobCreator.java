@@ -12,6 +12,8 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,10 @@ public class JobCreator extends User {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+
+    @ManyToOne
+    @JoinColumn(name = "organizatin_id")
+    private Organization organization;
 
     public JobCreator(String email, String password, Address address) {
         super(email, password, Role.ROLE_JOB_CREATOR, address);
