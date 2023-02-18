@@ -39,12 +39,12 @@ public class OrganizationController {
 
     // TODO: Add authorization
     @PostMapping("{organizationId}/add-creator")
-    public ResponseEntity<ProfileDTO> addCreatorToOrganization(@PathVariable("organizationId") Long organizationId, @RequestBody Map<String, Long> request) {
+    public ResponseEntity<List<ProfileDTO>> addCreatorToOrganization(@PathVariable("organizationId") Long organizationId, @RequestBody Map<String, Long> request) {
         try {
             Long jobCreatorId = request.get("id");
             System.out.println(jobCreatorId);
             System.out.println(organizationId);
-            return new ResponseEntity<ProfileDTO>(organizationService.addJobCreatorToOrganization(organizationId, jobCreatorId), HttpStatus.OK);
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.addJobCreatorToOrganization(organizationId, jobCreatorId), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
