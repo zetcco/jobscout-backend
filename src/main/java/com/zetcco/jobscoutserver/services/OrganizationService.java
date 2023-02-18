@@ -2,20 +2,23 @@ package com.zetcco.jobscoutserver.services;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
+import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -59,8 +62,13 @@ public class OrganizationService {
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
+    public List<ProfileDTO> addJobCreatorToOrganization(Long jobCreatorId) throws NotFoundException {
+        Long organizationId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        return this.addCreatorToOrganization(organizationId, jobCreatorId);
+    }
+
     @Transactional
-    public List<ProfileDTO> addJobCreatorToOrganization(Long organizationId, Long jobCreatorId) {
+    List<ProfileDTO> addCreatorToOrganization(Long organizationId, Long jobCreatorId) throws NotFoundException, DataIntegrityViolationException {
         Organization organization = this.getOrganizationById(organizationId);
         List<JobCreator> jobCreators = organization.getJobCreators();
         List<JobCreator> request_list = organization.getJobCreatorRequests();
@@ -78,17 +86,16 @@ public class OrganizationService {
             ProfileDTO updatedJobCreator = userService.getUser(jobCreatorService.save(requestee).getId());
 
             return List.of(updatedJobCreator, updatedOrganization);
-            
         } else {
-            throw new NoSuchElementException();
+            throw new NotFoundException("No request from Job Creator found");
         }
     }
 
-    protected Organization getOrganizationById(Long organizationId) {
-        return organizationRepository.findById(organizationId).orElseThrow();
+    Organization getOrganizationById(Long organizationId) throws NotFoundException {
+        return organizationRepository.findById(organizationId).orElseThrow(() -> new NotFoundException("Organization not Found"));
     }
 
-    protected Organization save(Organization organization) {
+    Organization save(Organization organization) {
         return organizationRepository.save(organization);
     }
 
