@@ -12,6 +12,8 @@ import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.Address;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @SpringBootTest
 public class OrganizationRepositoryTest {
 
@@ -41,18 +43,6 @@ public class OrganizationRepositoryTest {
         organization.setCompanyName("Creative Software");
         organization.setBusinessRegistration("https://..../...");
         organization.setDisplayPicture("New dp bro");
-        organizationRepository.save(organization);
-    }
-
-    @Test
-    public void setJobCreator() {
-        Organization organization = organizationRepository.findById(1L).orElseThrow();
-        List<JobCreator> jobCreators = organization.getJobCreators();
-        jobCreators.add(jobCreatorRepository.findById(73L).orElseThrow());
-        for (JobCreator jobCreator : jobCreators) 
-            jobCreator.setOrganization(organization);
-        jobCreatorRepository.saveAll(jobCreators);
-        organization.setJobCreators(jobCreators);
         organizationRepository.save(organization);
     }
 
@@ -87,5 +77,37 @@ public class OrganizationRepositoryTest {
         Pageable page2 = PageRequest.of(1, 2);
         orgs = organizationRepository.findByCompanyNameContainingIgnoreCase("c", page2).getContent();
         for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+    }
+
+    @Test
+    public void setJobCreator() {
+        Organization organization = organizationRepository.findById(74L).orElseThrow();
+        List<JobCreator> requests = organization.getJobCreatorRequests();
+        List<JobCreator> jobCreators = organization.getJobCreators();
+        JobCreator requestee = jobCreatorRepository.findById(72L).orElseThrow();
+
+        if (requests.contains(requestee)) {
+            jobCreators.add(requestee);
+            requests.remove(requestee);
+            requestee.setOrganization(organization);
+            organization.setJobCreatorRequests(requests);
+            organization.setJobCreators(jobCreators);
+            organizationRepository.save(organization);
+            jobCreatorRepository.save(requestee);
+        } else {
+            throw new EntityNotFoundException();
+        }
+    }
+
+    @Test
+    public void setJobCreatorRequest() {
+        Organization organization = organizationRepository.findById(74L).orElseThrow();
+        JobCreator requestee = jobCreatorRepository.findById(72L).orElseThrow();
+        List<JobCreator> requests = organization.getJobCreatorRequests();
+
+        requests.add(requestee);
+        organization.setJobCreatorRequests(requests);
+
+        organizationRepository.save(organization);
     }
 }
