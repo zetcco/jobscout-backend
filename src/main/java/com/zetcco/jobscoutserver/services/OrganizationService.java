@@ -2,9 +2,11 @@ package com.zetcco.jobscoutserver.services;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,25 +15,27 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
-import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class OrganizationService {
     
-    @Autowired
-    private OrganizationRepository organizationRepository;
-
     @Autowired
     private UserService userService;
 
     @Autowired
-    private JobCreatorRepository jobCreatorRepository;
+    private OrganizationRepository organizationRepository;
 
     @Autowired
     private ModelMapper modelMapper;
+
+    // TODO: Fix CircularDependency without using setter injection
+    @Autowired @Lazy
+    private JobCreatorService jobCreatorService;
 
     public List<ProfileDTO> searchOrganizationsByName(String name, int pageCount, int pageSize) {
         if (name.equals(""))
@@ -56,18 +60,28 @@ public class OrganizationService {
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     @Transactional
-    public ProfileDTO addJobCreatorToOrganization(Long organizationId, Long jobCreatorId) {
-        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+    public List<ProfileDTO> addJobCreatorToOrganization(Long organizationId, Long jobCreatorId) {
+        Organization organization = this.getOrganizationById(organizationId);
         List<JobCreator> jobCreators = organization.getJobCreators();
-        jobCreators.add(jobCreatorRepository.findById(jobCreatorId).orElseThrow());
-        for (JobCreator jobCreator : jobCreators) 
-            jobCreator.setOrganization(organization);
-        organization.setJobCreators(jobCreators);
+        List<JobCreator> request_list = organization.getJobCreatorRequests();
+        JobCreator requestee = jobCreatorService.getJobCreatorById(jobCreatorId);
 
-        jobCreatorRepository.saveAll(jobCreators);
-        organizationRepository.save(organization);
+        if (request_list.contains(requestee)) {
+            jobCreators.add(requestee);
+            request_list.remove(requestee);
 
-        return userService.getUser(organizationId);
+            organization.setJobCreatorRequests(request_list);
+            organization.setJobCreators(jobCreators);
+            requestee.setOrganization(organization);
+
+            ProfileDTO updatedOrganization = userService.getUser(this.save(organization).getId());
+            ProfileDTO updatedJobCreator = userService.getUser(jobCreatorService.save(requestee).getId());
+
+            return List.of(updatedJobCreator, updatedOrganization);
+            
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 
     protected Organization getOrganizationById(Long organizationId) {
@@ -77,4 +91,5 @@ public class OrganizationService {
     protected Organization save(Organization organization) {
         return organizationRepository.save(organization);
     }
+
 }
