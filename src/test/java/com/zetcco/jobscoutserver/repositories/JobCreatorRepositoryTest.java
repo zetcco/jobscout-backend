@@ -30,10 +30,11 @@ public class JobCreatorRepositoryTest {
 
     @Test
     public void saveJobCreatorProfile() {
-        JobCreator jobCreator = jobCreatorRepository.findById(1L).orElseThrow();
+        JobCreator jobCreator = jobCreatorRepository.findById(77L).orElseThrow();
         jobCreator.setTitle(NameTitle.MR);
         jobCreator.setFirstName("Sanjan");
         jobCreator.setLastName("Madushan");
+        // jobCreator.setOrganization(organizationRepository.findById(1L).orElseThrow());
         jobCreatorRepository.save(jobCreator);
     }
 }

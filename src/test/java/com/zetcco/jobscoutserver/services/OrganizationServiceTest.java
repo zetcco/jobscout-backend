@@ -22,4 +22,9 @@ public class OrganizationServiceTest {
         // System.out.println(organizationService.searchOrganizationsByName("creative", 1, 1));
     }
 
+    @Test
+    void testAddJobCreatorToOrganization() {
+        // System.out.println(organizationService.addJobCreatorToOrganization(67L, 72L));
+    }
+
 }
