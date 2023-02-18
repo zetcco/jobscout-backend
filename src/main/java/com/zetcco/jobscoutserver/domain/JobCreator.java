@@ -41,7 +41,7 @@ public class JobCreator extends User {
     private Gender gender;
 
     @ManyToOne
-    @JoinColumn(name = "organizatin_id")
+    @JoinColumn(name = "organization_id")
     private Organization organization;
 
     public JobCreator(String email, String password, Address address) {
