@@ -69,4 +69,12 @@ public class OrganizationService {
 
         return userService.getUser(organizationId);
     }
+
+    protected Organization getOrganizationById(Long organizationId) {
+        return organizationRepository.findById(organizationId).orElseThrow();
+    }
+
+    protected Organization save(Organization organization) {
+        return organizationRepository.save(organization);
+    }
 }
