@@ -14,9 +14,6 @@ public class JobCreatorRepositoryTest {
     @Autowired
     private JobCreatorRepository jobCreatorRepository;
 
-    @Autowired
-    private OrganizationRepository organizationRepository;
-
     @Test
     public void saveJobCreator() {
         Address address = Address.builder()
