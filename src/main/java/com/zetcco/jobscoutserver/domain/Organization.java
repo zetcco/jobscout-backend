@@ -9,6 +9,8 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,7 +32,12 @@ public class Organization extends User {
     private String logo;
 
     @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_creator_id"))
     private List<JobCreator> jobCreators;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_creator_id"))
+    private List<JobCreator> jobCreatorRequests;
 
     public Organization(String email, String password, Address address) {
         super(email, password, Role.ROLE_ORGANIZATION, address);
