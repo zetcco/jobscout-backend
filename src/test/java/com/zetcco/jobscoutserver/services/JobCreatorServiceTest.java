@@ -12,7 +12,7 @@ public class JobCreatorServiceTest {
 
     @Test
     void testRequestForOrganization() {
-        System.out.println(jobCreatorService.requestForOrganization(107L, 75L));
+        System.out.println(jobCreatorService.requestForOrganization(72L, 67L));
     }
 
 }

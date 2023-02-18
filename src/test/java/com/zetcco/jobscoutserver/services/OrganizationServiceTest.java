@@ -24,7 +24,7 @@ public class OrganizationServiceTest {
 
     @Test
     void testAddJobCreatorToOrganization() {
-        organizationService.addJobCreatorToOrganization(67L, 72L);
+        System.out.println(organizationService.addJobCreatorToOrganization(67L, 72L));
     }
 
 }
