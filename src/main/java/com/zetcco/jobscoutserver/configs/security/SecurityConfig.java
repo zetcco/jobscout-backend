@@ -27,7 +27,7 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests().requestMatchers(
             "/auth/**",
-            "/ws/**",
+            "/ws/**", // This is authenticated seperately using WebSocketAuthenticationService
             "/address/**",
             "/media/**",
             "/organization/search/**"
