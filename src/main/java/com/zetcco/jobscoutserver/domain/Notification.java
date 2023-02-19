@@ -2,6 +2,7 @@ package com.zetcco.jobscoutserver.domain;
 
 import java.time.OffsetDateTime;
 
+import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
 import com.zetcco.jobscoutserver.domain.support.NotificationType;
 import com.zetcco.jobscoutserver.domain.support.User;
