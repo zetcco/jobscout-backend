@@ -12,16 +12,12 @@ import com.zetcco.jobscoutserver.controllers.auth.support.LoginRequest;
 import com.zetcco.jobscoutserver.controllers.auth.support.OrganizationRegisterRequest;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
-import com.zetcco.jobscoutserver.domain.Notification;
 import com.zetcco.jobscoutserver.domain.Organization;
-import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
-import com.zetcco.jobscoutserver.domain.support.NotificationType;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
-import com.zetcco.jobscoutserver.services.NotificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,23 +32,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final NotificationService notificationService;
 
     public AuthenticationResponse login(LoginRequest request) throws Exception {
-
-        Notification notification = Notification.builder()
-                                                .user(userRepository.findById(60L).orElseThrow())
-                                                .type(NotificationType.JOIN_REQUEST)
-                                                .status(NotificationStatus.UNREAD)
-                                                .header("Test Message Header")
-                                                .content("Test message content")
-                                                .build();
-        notificationService.sendToUser(notification);
-        
-        notification.setContent("public?");
-
-        notificationService.sendToAll(notification);
-
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(user);
