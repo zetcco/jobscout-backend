@@ -12,8 +12,12 @@ public class CategoryRepositoryTest {
     private CategoryRepository categoryRepository;
 
     @Test
-    private void SaveCategory(){
-        Category category = Category
+    public void saveCategory(){
+        Category category = Category.builder()
+                                    .name("Software Engineer")
+                                    .description("Senior Software Engineer")
+                                    .build();
+        categoryRepository.save(category);   
                                 
     }
     
