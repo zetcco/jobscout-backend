@@ -19,11 +19,11 @@ public class SkillsRepositoryTest {
     public void addSkills() {
         // Skill skill = new Skill("spring", "springjpa");
         Skill skill1 = Skill.builder()
-                            .name("react")
-                            .description("redux")
-                            .build();
+                .name("react")
+                .description("redux")
+                .build();
         skillsRepository.save(skill1);
-//        System.out.println(skill);
+        // System.out.println(skill);
 
     }
 
@@ -33,11 +33,10 @@ public class SkillsRepositoryTest {
         System.out.println(skill);
     }
 
-//    @Test
-//     public void fetchSkillByName(String name) {
-//         Skill skill = skillsRepository.findByName("spring");
-//         System.out.println(skill);
-//     }
-
+    // @Test
+    // public void fetchSkillByName(String name) {
+    // Skill skill = skillsRepository.findByName("spring");
+    // System.out.println(skill);
+    // }
 
 }
