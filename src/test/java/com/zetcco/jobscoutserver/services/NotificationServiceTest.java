@@ -1,5 +1,7 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +10,7 @@ import com.zetcco.jobscoutserver.domain.Notification;
 import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
 import com.zetcco.jobscoutserver.domain.support.NotificationType;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
+import com.zetcco.jobscoutserver.services.support.NotificationDTO;
 
 @SpringBootTest
 public class NotificationServiceTest {
@@ -44,5 +47,13 @@ public class NotificationServiceTest {
     @Test
     void testMapToDTO() {
         System.out.println( notificationService.getNotification(2L) );
+    }
+
+    @Test
+    void testGetNotificationsForUser() {
+        List<NotificationDTO> notificationDTOs = notificationService.getNotifications(95L);
+        for (NotificationDTO notificationDTO : notificationDTOs) {
+            System.out.println(notificationDTO);
+        }
     }
 }
