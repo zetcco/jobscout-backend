@@ -10,13 +10,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Category {
@@ -29,7 +27,7 @@ public class Category {
     private String description;
 
     @OneToMany
-    private List<Skill> skillList;
+    private List<Skill> skills;
 
     @OneToMany
     private List<JobSeeker> jobSeeker;

@@ -2,8 +2,6 @@ package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
 
-import org.hibernate.annotations.ManyToAny;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zetcco.jobscoutserver.domain.support.Address;
 import com.zetcco.jobscoutserver.domain.support.Gender;
@@ -14,7 +12,6 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
