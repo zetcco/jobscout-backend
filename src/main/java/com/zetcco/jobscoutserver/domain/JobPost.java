@@ -12,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -48,6 +49,7 @@ public class JobPost {
     @Enumerated(value = EnumType.STRING)
     private JobPostStatus status;
 
+    @OneToMany
     private List<Skill> skillList;
 
     @OneToOne

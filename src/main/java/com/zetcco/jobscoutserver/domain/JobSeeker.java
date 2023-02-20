@@ -14,6 +14,8 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,6 +57,6 @@ public class JobSeeker extends User {
         this.gender = gender;
     }
 
-    @ManyToAny
+    @OneToOne
     private Category category;
 }

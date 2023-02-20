@@ -28,10 +28,11 @@ public class Category {
 
     private String description;
 
+    @OneToMany
     private List<Skill> skillList;
 
     @OneToMany
-    private JobSeeker jobSeeker;
+    private List<JobSeeker> jobSeeker;
 
     @OneToOne
     private JobPost jobPost;
