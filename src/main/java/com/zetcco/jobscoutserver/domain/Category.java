@@ -2,7 +2,6 @@ package com.zetcco.jobscoutserver.domain;
 
 import java.util.List;
 
-import com.zetcco.jobscoutserver.domain.support.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +30,7 @@ public class Category {
     private List<Skill> skillList;
 
     @OneToMany
-    private User user;
+    private JobSeeker jobSeeker;
 
 
 }
