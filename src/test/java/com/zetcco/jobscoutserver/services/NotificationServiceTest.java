@@ -40,4 +40,9 @@ public class NotificationServiceTest {
                                                 .build();
         notificationService.sendToUser(notification);
     }
+
+    @Test
+    void testMapToDTO() {
+        System.out.println( notificationService.getNotification(2L) );
+    }
 }
