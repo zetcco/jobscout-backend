@@ -3,7 +3,6 @@ package com.zetcco.jobscoutserver.repositories;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -33,10 +32,10 @@ public class SkillsRepositoryTest {
         System.out.println(skill);
     }
 
-    // @Test
-    // public void fetchSkillByName(String name) {
-    // Skill skill = skillsRepository.findByName("spring");
-    // System.out.println(skill);
-    // }
+    @Test
+    public void fetchSkillByName() {
+        List<Skill> skill = skillsRepository.findByNameContainingIgnoreCase("spring");
+        System.out.println(skill);
+    }
 
 }
