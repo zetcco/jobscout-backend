@@ -1,6 +1,5 @@
 package com.zetcco.jobscoutserver.domain;
 
-import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
