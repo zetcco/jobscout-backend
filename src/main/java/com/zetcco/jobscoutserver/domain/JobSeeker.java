@@ -2,6 +2,8 @@ package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
 
+import org.hibernate.annotations.ManyToAny;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zetcco.jobscoutserver.domain.support.Address;
 import com.zetcco.jobscoutserver.domain.support.Gender;
@@ -52,4 +54,7 @@ public class JobSeeker extends User {
         this.dob = dob;
         this.gender = gender;
     }
+
+    @ManyToAny
+    private Category category;
 }
