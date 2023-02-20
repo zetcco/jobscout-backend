@@ -1,8 +1,7 @@
 package com.zetcco.jobscoutserver.domain;
 
-import java.time.OffsetDateTime;
+import java.util.Date;
 
-import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
 import com.zetcco.jobscoutserver.domain.support.NotificationType;
 import com.zetcco.jobscoutserver.domain.support.User;
@@ -38,6 +37,6 @@ public class Notification {
     private String header;
     private String content;
     
-    private OffsetDateTime timestamp;
+    private Date timestamp;
 
 }
