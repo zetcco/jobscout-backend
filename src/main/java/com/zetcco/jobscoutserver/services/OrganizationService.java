@@ -13,12 +13,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

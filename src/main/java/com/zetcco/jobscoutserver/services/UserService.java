@@ -5,9 +5,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
 import lombok.RequiredArgsConstructor;
 
