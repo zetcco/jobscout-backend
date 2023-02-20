@@ -1,8 +1,8 @@
 package com.zetcco.jobscoutserver.services;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
@@ -29,8 +29,12 @@ public class NotificationService {
     @Autowired
     private AuthenticationService authenticationService;
 
+    private TypeMap<Notification, NotificationDTO> propertyMapper;
+
     @Autowired
-    private ModelMapper modelMapper;
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.propertyMapper = modelMapper.createTypeMap(Notification.class, NotificationDTO.class);
+    }
 
     public void sendToUser(Notification notification) {
         notification.setTimestamp(new Date());
@@ -43,38 +47,42 @@ public class NotificationService {
         simpMessagingTemplate.convertAndSend("/all/notify", notification);
     }
 
-    public List<NotificationDTO> getNotifications() {
+    public List<NotificationDTO> getNotificationsForCurrentUser(int pageCount, int pageSize) {
         Long userId = authenticationService.getCurrentLoggedInUserId();
-        return getNotifications(userId);
+        return getNotifications(userId, pageCount, pageSize);
     }
 
-    List<NotificationDTO> getNotifications(Long userId) {
-        Pageable page = PageRequest.of(0, 2);
+    List<NotificationDTO> getNotifications(Long userId, int pageCount, int pageSize) {
+        Pageable page = PageRequest.of(pageCount, pageSize);
         List<Notification> notifications = notificationRepository.findByUserIdOrderByTimestampDesc(userId, page).getContent();
-        List<NotificationDTO> notificationDTOs = new ArrayList<NotificationDTO>();
-        for (Notification notification : notifications) 
-            notificationDTOs.add(this.map(notification));
-        return notificationDTOs;
+        return this.mapNotifications(notifications);
     }
 
     protected NotificationDTO getNotification(Long notificationId) {
         Notification notification = notificationRepository.findById(notificationId).orElseThrow();
-        return this.map(notification);
+        return this.mapNotification(notification);
     }
 
-    protected Notification geNotification(Long notificationId) {
-        return notificationRepository.findById(notificationId).orElseThrow();
-    }
-
-    private NotificationDTO map(Notification notification) {
-        TypeMap<Notification, NotificationDTO> propertyMapper = modelMapper.createTypeMap(Notification.class, NotificationDTO.class);
+    private NotificationDTO mapNotification(Notification notification) {
         propertyMapper.addMapping(src -> src.getUser().getId(), (dest, v) -> dest.setUserId((Long)v));
         NotificationDTO notificationDTO = propertyMapper.map(notification);
         return notificationDTO;
     }
 
+    private List<NotificationDTO> mapNotifications(List<Notification> notifications) {
+        return notifications
+                .stream()
+                .map( notification -> propertyMapper.map(notification))
+                .collect(Collectors.toList());
+    }
+
     private Notification save(Notification notification) {
         return notificationRepository.save(notification);
     }
+
+    Notification geNotification(Long notificationId) {
+        return notificationRepository.findById(notificationId).orElseThrow();
+    }
+
     
 }

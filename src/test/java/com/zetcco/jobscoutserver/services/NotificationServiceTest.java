@@ -51,9 +51,17 @@ public class NotificationServiceTest {
 
     @Test
     void testGetNotificationsForUser() {
-        List<NotificationDTO> notificationDTOs = notificationService.getNotifications(95L);
+        List<NotificationDTO> notificationDTOs = notificationService.getNotifications(95L, 0, 2);
         for (NotificationDTO notificationDTO : notificationDTOs) {
             System.out.println(notificationDTO);
         }
+    }
+
+    @Test
+    void testGetNotificationById() {
+        NotificationDTO notificationDTO = notificationService.getNotification(3L);
+        System.out.println(notificationDTO);
+        notificationDTO = notificationService.getNotification(4L);
+        System.out.println(notificationDTO);
     }
 }
