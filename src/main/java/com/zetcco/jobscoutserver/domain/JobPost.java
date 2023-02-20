@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
@@ -45,5 +46,9 @@ public class JobPost {
     
     @Enumerated(value = EnumType.STRING)
     private JobPostStatus status;
+
+    private List<Skill> skillList;
+
+    
 
 }
