@@ -7,5 +7,7 @@ import com.zetcco.jobscoutserver.domain.Category;
 
 public interface CategoryRepository extends JpaRepository<Category , Long>{
 
-        List<Category> findByNameIgnoreCase(String name);    
+        List<Category> findByNameIgnoreCase(String name); 
+        
+        List<Category> findByNameContainingIgnoreCase(String name);
 }
