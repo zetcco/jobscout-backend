@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Skill;
@@ -22,6 +20,8 @@ public class SkillService {
 
     @Autowired
     private SkillsRepository skillsRepository;
+
+    
     // public List<ProfileDTO> searchOrganizationsByName(String name, int pageCount, int pageSize) {
     //     if (name.equals(""))
     //         throw new IllegalArgumentException("Wrong Parameters");
