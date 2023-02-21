@@ -17,8 +17,6 @@ import com.zetcco.jobscoutserver.services.UserService;
 @Service
 public class WebSocketAuthenticationService implements ChannelInterceptor {
     
-    private static final String TOKEN_HEADER = "token";
-
     @Autowired
     private JwtService jwtService;
 
@@ -31,8 +29,8 @@ public class WebSocketAuthenticationService implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         try {
             final StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
-            if ( headerAccessor != null && headerAccessor.getCommand() == StompCommand.CONNECT) {
-                final String token = headerAccessor.getFirstNativeHeader(TOKEN_HEADER);
+            if ( headerAccessor != null &&  ( headerAccessor.getCommand() == StompCommand.CONNECT || headerAccessor.getCommand() == StompCommand.SUBSCRIBE ) ) {
+                final String token = headerAccessor.getFirstNativeHeader("token");
                 final User user = userService.loadUserByEmail(jwtService.getUserEmail(token));
                 if ( token != null && jwtService.isTokenValid(token, user)) 
                     return message;
