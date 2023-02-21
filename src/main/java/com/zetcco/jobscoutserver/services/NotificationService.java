@@ -2,6 +2,7 @@ package com.zetcco.jobscoutserver.services;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -10,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Notification;
+import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
 import com.zetcco.jobscoutserver.repositories.NotificationRepository;
 import com.zetcco.jobscoutserver.services.auth.AuthenticationService;
 import com.zetcco.jobscoutserver.services.support.NotificationDTO;
@@ -50,6 +53,15 @@ public class NotificationService {
     public List<NotificationDTO> getNotificationsForCurrentUser(int pageCount, int pageSize) {
         Long userId = authenticationService.getCurrentLoggedInUserId();
         return getNotifications(userId, pageCount, pageSize);
+    }
+
+    public NotificationDTO markAsSeen(Long notificationId) throws NoSuchElementException, AccessDeniedException {
+        Notification notification = notificationRepository.findById(notificationId).orElseThrow();
+        if (notification.getUser().getId() != authenticationService.getCurrentLoggedInUserId())
+            throw new AccessDeniedException("Notification does not belong to the specified user");
+        notification.setStatus(NotificationStatus.READ);
+        notification = this.save(notification);
+        return this.mapNotification(notification);
     }
 
     List<NotificationDTO> getNotifications(Long userId, int pageCount, int pageSize) {
