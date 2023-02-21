@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutserver.controllers.support;
+package com.zetcco.jobscoutserver.services.support;
 
 import com.zetcco.jobscoutserver.domain.support.Address;
 import com.zetcco.jobscoutserver.domain.support.Role;
