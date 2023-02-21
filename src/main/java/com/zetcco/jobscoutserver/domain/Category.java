@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +21,7 @@ import lombok.NoArgsConstructor;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long id;
 
     private String name;
 
@@ -32,9 +31,9 @@ public class Category {
     private List<Skill> skills;
 
     @OneToMany
-    private List<JobSeeker> jobSeeker;
+    private List<JobSeeker> jobSeekers;
 
-    @OneToOne
-    private JobPost jobPost;
+    @OneToMany
+    private List<JobPost> jobPosts;
 
 }
