@@ -34,7 +34,7 @@ public class SkillService {
         return skills;
     }
 
-    Skill addSkills(Skill skill) throws NotFoundException, DataIntegrityViolationException {
+    public Skill addSkills(Skill skill) throws NotFoundException, DataIntegrityViolationException {
         return skillsRepository.save(skill);
     }
 }
