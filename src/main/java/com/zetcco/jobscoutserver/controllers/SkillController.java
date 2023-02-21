@@ -26,7 +26,7 @@ public class SkillController {
     private SkillService skillService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<Skill>> searchSkills(@RequestParam("search") String name) {
+    public ResponseEntity<List<Skill>> searchSkills(@RequestParam("q") String name) {
         try {
             return new ResponseEntity<List<Skill>>(skillService.searchSkillByName(name), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
@@ -39,6 +39,6 @@ public class SkillController {
     @PostMapping("/add-skills")
     public ResponseEntity<Skill> addSkills(@RequestBody Skill skill) throws DataIntegrityViolationException, NotFoundException {
         return new ResponseEntity<Skill>(skillService.addSkills(skill), HttpStatus.OK);
-    }
+    } 
     
 }
