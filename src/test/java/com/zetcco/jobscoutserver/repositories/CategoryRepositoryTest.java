@@ -24,7 +24,7 @@ public class CategoryRepositoryTest {
 
     @Test
     public void getAllCategories() throws Exception{
-            List<Category> category =  categoryRepository.findAll();
+            List<Category> category = categoryRepository.findAll();
             category.forEach((p)->{
                 System.out.println(p.getName());
             }); 
@@ -36,6 +36,14 @@ public class CategoryRepositoryTest {
             category.forEach((p)->{
                 System.out.println(p.getName());
             });
-    }        
+    } 
+    
+    @Test
+    public void getCategoryByIgnoringType(){
+            List<Category> category = categoryRepository.findByNameContainingIgnoreCase("Software");
+            category.forEach((p)->{
+                System.out.println(p.getName());
+            });
+    }
     
 }
