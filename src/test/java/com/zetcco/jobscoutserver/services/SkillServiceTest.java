@@ -27,4 +27,9 @@ public class SkillServiceTest {
     void testSearchSkillByName() {
         System.out.println(skillService.searchSkillByName("react"));
     }
+
+    @Test
+    void testFetchSkills() {
+        System.out.println(skillService.fetchSkills());
+    }
 }
