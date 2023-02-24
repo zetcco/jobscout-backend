@@ -34,6 +34,11 @@ public class SkillService {
         return skills;
     }
 
+    public List<Skill> fetchSkills() {
+        List<Skill> skills = skillsRepository.findAll();
+        return skills;
+    }
+
     public Skill addSkills(Skill skill) throws NotFoundException, DataIntegrityViolationException {
         return skillsRepository.save(skill);
     }
