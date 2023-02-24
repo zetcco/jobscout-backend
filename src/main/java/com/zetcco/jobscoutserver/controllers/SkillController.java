@@ -36,9 +36,15 @@ public class SkillController {
         }
     }
 
+    @GetMapping("/")
+    public ResponseEntity<List<Skill>> fetchSkills() {
+        return new ResponseEntity<List<Skill>>(skillService.fetchSkills(), HttpStatus.OK);
+    }
+
     @PostMapping("/add-skills")
-    public ResponseEntity<Skill> addSkills(@RequestBody Skill skill) throws DataIntegrityViolationException, NotFoundException {
+    public ResponseEntity<Skill> addSkills(@RequestBody Skill skill)
+            throws DataIntegrityViolationException, NotFoundException {
         return new ResponseEntity<Skill>(skillService.addSkills(skill), HttpStatus.OK);
-    } 
-    
+    }
+
 }
