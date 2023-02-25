@@ -32,10 +32,8 @@ public class CategoryRepositoryTest {
 
     @Test
     public void getCategoryByName(){
-            List<Category> category = categoryRepository.findByNameIgnoreCase("Software Engineer");
-            category.forEach((p)->{
-                System.out.println(p.getName());
-            });
+            Category category = categoryRepository.findByNameIgnoreCase("hr manager");
+            System.out.println(category.getName());
     } 
     
     @Test
