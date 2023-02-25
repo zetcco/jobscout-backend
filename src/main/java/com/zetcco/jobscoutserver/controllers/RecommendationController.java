@@ -18,8 +18,8 @@ public class RecommendationController {
     private RecommendationRepository recommendationRepository;
 
     @GetMapping("/all")
-    private List<Recommendation> gRecommendations() {
-        return null;
+    private List<Recommendation> getRecommendation() {
+        return recommendationRepository.findAll();
 
     } 
 }
