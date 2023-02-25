@@ -25,6 +25,17 @@ public class CategoryService {
         }
     }
 
+    public void updateCategory(String name1 , String name2 ,String description){
+        Category category = categoryRepository.findByNameIgnoreCase(name1);
+        if(category == null){
+            throw new NotFoundException("Such A Category Not Found!");
+        }else{
+            category.setName(name2);
+            category.setDescription(description);
+            categoryRepository.save(category);
+        }
+    }
+
     public List<Category> getAllCategories() throws NotFoundException {
         List<Category> category = categoryRepository.findAll();
         if(category.isEmpty() == true){
