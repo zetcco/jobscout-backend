@@ -11,6 +11,6 @@ public class CategoryServiceTest {
 
     @Test
     void testAddNewCategory(){
-        categoryService.addNewCategory("Service manager", "FullTime job with good salary");
+        categoryService.addNewCategory("HR manager", "part time job with good salary");
     }
 }
