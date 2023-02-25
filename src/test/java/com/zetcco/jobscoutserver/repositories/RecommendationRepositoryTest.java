@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.repositories;
 
+
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,12 @@ public class RecommendationRepositoryTest {
         Recommendation recommendation = recommendationRepository.findById(1L).orElseThrow();
         System.out.println(recommendation);
     }
+
+    // @Test
+    // public void getRecommendationTestByRequester() {
+    //     Recommendation recommendation = recommendationRepository.findByRequester(1L).
+    //     System.out.println(recommendation);
+    // }
         
     @Test
     public void updateRecommendation() {
@@ -84,5 +91,11 @@ public class RecommendationRepositoryTest {
         Recommendation recommendation = recommendationRepository.findById(3L).orElseThrow();
         recommendationRepository.delete(recommendation);
 
+    }
+
+    @Test
+    public void findByRequesterId() {
+        List<Recommendation> recommendations = recommendationRepository.findByRequesterId(1L);
+        System.out.println(recommendations);
     }
 }
