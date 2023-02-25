@@ -19,6 +19,20 @@ public class CategoryServiceTest {
     }
 
     @Test
+    void testUpdateCategory(){
+        List<Category> category1 = categoryService.getAllCategories();
+        category1.forEach((p)->{
+            System.out.println(p.getName());
+        }); 
+        categoryService.updateCategory("senior hr manager" , "HR Manager" , "full time with good salary");
+        List<Category> category2 = categoryService.getAllCategories();
+        category2.forEach((p)->{
+            System.out.println(p.getName());
+        });
+    }
+
+
+    @Test
     void testGetAllCatgorie(){
 
         List<Category> category = categoryService.getAllCategories();
