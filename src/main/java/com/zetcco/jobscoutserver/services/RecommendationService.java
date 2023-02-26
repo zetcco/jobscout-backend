@@ -1,7 +1,5 @@
 package com.zetcco.jobscoutserver.services;
 
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 import org.modelmapper.ModelMapper;
@@ -18,9 +16,6 @@ public class RecommendationService {
     
     @Autowired
     private static RecommendationRepository recommendationRepository;
-
-    @Autowired
-    private ModelMapper modelMapper;
 
     private TypeMap<Recommendation, RecommendationDTO> propertyMapper;
 
@@ -40,12 +35,7 @@ public class RecommendationService {
         return recommendationDTO;
     }
 
-    private List<RecommendationDTO> mapRecommendations(List<Recommendation> recommendations) {
-        return recommendations
-                .stream()
-                .map(recommendation -> propertyMapper.map(recommendation))
-                .collect(Collectors.toList());
-    }
+    
 
     // List<RecommendationDTO> getRecommendations(Long recommendationId, String contetnt) {
     //     List<Recommendation> recommendations = recommendationRepository.findById(recommendationId).orElseThrow();
