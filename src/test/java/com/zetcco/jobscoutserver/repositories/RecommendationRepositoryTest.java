@@ -96,21 +96,21 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void addRecommendationRequest() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
 
         List<JobSeeker> requestRecommendation = responder.getRequestRecommendation();
         if (requestRecommendation.contains(requester))
             throw new DataIntegrityViolationException("Request already exitsts");
-            requestRecommendation.add(requester);
+        requestRecommendation.add(requester);
         responder.setRequestRecommendation(requestRecommendation);
         jobCreatorRepository.save(responder);
     }
 
     @Test
     public void addRecommendation() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
 
         List<JobSeeker> requestRecommendation = responder.getRequestRecommendation();
         if(requestRecommendation.contains(requester)) {
@@ -136,9 +136,10 @@ public class RecommendationRepositoryTest {
     }
     
     @Test
-    public void searchRecommendationById() {
-        Recommendation recommendation = recommendationRepository.findByRecommendationId(4L);
-        System.out.println(recommendation);
+    public void searchByJobSeeker() {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(4L).orElseThrow();
+        List<Recommendation> searchRecommendationList = jobSeeker.getRecommendations();
+        System.out.println(searchRecommendationList);
     }
 
     
