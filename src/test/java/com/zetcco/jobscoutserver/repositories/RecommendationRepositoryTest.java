@@ -12,6 +12,9 @@ import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
+
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class RecommendationRepositoryTest {
@@ -35,7 +38,6 @@ public class RecommendationRepositoryTest {
 
         Recommendation recommendation = Recommendation.builder()
                                             .content("recommended")
-                                            .requester(requester)
                                             .responder(responder)
                                             .build();
         
@@ -49,7 +51,6 @@ public class RecommendationRepositoryTest {
 
         Recommendation recommendation = Recommendation.builder()
                                             .content("not-recommended")
-                                            .requester(requester)
                                             .responder(responder)
                                             .build();
         
@@ -63,7 +64,6 @@ public class RecommendationRepositoryTest {
 
         Recommendation recommendation = Recommendation.builder()
                                             .content("weakly-recommended")
-                                            .requester(requester)
                                             .responder(responder)
                                             .build();
         
@@ -77,12 +77,6 @@ public class RecommendationRepositoryTest {
         System.out.println(recommendation);
     }
 
-    // @Test
-    // public void getRecommendationTestByRequester() {
-    //     Recommendation recommendation = recommendationRepository.findByRequester(1L).
-    //     System.out.println(recommendation);
-    // }
-        
     @Test
     public void updateRecommendation() {
         Recommendation recommendation = recommendationRepository.findById(2L).orElseThrow();
@@ -102,22 +96,44 @@ public class RecommendationRepositoryTest {
     }
 
     @Test
-    public void findByRequesterId() {
-        List<Recommendation> recommendations = recommendationRepository.findByRequesterId(1L);
-        System.out.println(recommendations);
+    public void addRecommendationRequest() {
+        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
+
+        List<JobSeeker> requestRecommendation = responder.getRequestRecommendation();
+        if (requestRecommendation.contains(requester))
+            throw new DataIntegrityViolationException("Request already exitsts");
+            requestRecommendation.add(requester);
+        responder.setRequestRecommendation(requestRecommendation);
+        jobCreatorRepository.save(responder);
     }
 
     @Test
-    public void addRecommendationRequest() {
-        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
+    public void addRecommendation() {
+        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
 
-        List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
-        if (recommendationRequest.contains(requester))
-            throw new DataIntegrityViolationException("Request already exitsts");
-        recommendationRequest.add(requester);
-        responder.setRecommendationRequests(recommendationRequest);
-        jobCreatorRepository.save(responder);
+        List<JobSeeker> requestRecommendation = responder.getRequestRecommendation();
+        if(requestRecommendation.contains(requester)) {
+                List<Recommendation> requestRecommendationList = requester.getRecommendations();
+                Recommendation recommendation = Recommendation.builder()
+                                                    .content("Highly-recommended")
+                                                    .responder(responder)
+                                                    .build();
+                recommendation = recommendationRepository.save(recommendation);
+
+                requestRecommendationList.add(recommendation);
+                requester.setRecommendations(requestRecommendationList);
+                jobSeekerRepository.save(requester);
+
+                requestRecommendation.remove(requester);
+                responder.setRecommendationRequests(requestRecommendation);
+                jobCreatorRepository.save(responder);
+
+
+        }else{
+            throw new NotFoundException("Request not found");
+        }
     }
     
     
