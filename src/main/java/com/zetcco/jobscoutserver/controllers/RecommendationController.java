@@ -1,25 +1,45 @@
 package com.zetcco.jobscoutserver.controllers;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zetcco.jobscoutserver.domain.Recommendation;
-import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
+import com.zetcco.jobscoutserver.services.RecommendationService;
+import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 
 @RestController
-@RequestMapping("/recommendation")
+@RequestMapping("/recommendations")
 public class RecommendationController {
     
     @Autowired
-    private RecommendationRepository recommendationRepository;
+    private RecommendationService recommendationService;
 
-    @GetMapping("/all")
-    private List<Recommendation> getRecommendation() {
-        return recommendationRepository.findAll();
+    // @GetMapping("/{requesterId}")
+    // private List<RecommendationDTO> addRecommendation(@PathVariable Long requesterId) {
+    //     return recommendationService.addRecommendation(requesterId);
+
+    // } 
+
+    @PostMapping("/")
+    private RecommendationDTO addRecommendation(@RequestBody Recommendation recommendation) {
+        return recommendationService.addRecommendation(recommendation);
 
     } 
+
+    @DeleteMapping("/{recommendationId}")
+    private void deleteRecommendation(@PathVariable Long recommendationId) {
+        recommendationService.deleteRecommendation(recommendationId);
+    }
+
+    @PutMapping("/{recommendationId}")
+    private RecommendationDTO updateRecommendation(@PathVariable Long recommendationId) {
+       return recommendationService.updateRecommendation(recommendationId);
+    }
 }
