@@ -1,17 +1,12 @@
 package com.zetcco.jobscoutserver.services;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.management.Notification;
 
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
-import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Recommendation;
@@ -23,7 +18,7 @@ import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 public class RecommendationService {
     
     @Autowired
-    private RecommendationRepository recommendationRepository;
+    private static RecommendationRepository recommendationRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -56,6 +51,21 @@ public class RecommendationService {
     List<RecommendationDTO> getRecommendations(Long recommendationId, String contetnt, User responder) {
         List<Recommendation> recommendations = recommendationRepository.findByRequesterId(recommendationId);
         return this.mapRecommendations(recommendations);
+    }
+
+    public RecommendationDTO addRecommendation(Recommendation recommendation) {
+        Recommendation newRecommendation = recommendationRepository.save(recommendation);
+        return this.mapRecommendation(newRecommendation);
+    }
+
+    public void deleteRecommendation(Long recommendationId) {
+        recommendationRepository.deleteById(recommendationId);
+        // Recommendation recommendation = recommendationRepository.findById(recommendationId).orElseThrow();
+    }
+
+    public RecommendationDTO updateRecommendation(Long recommendationId) {
+        Recommendation updatedRecommendation = recommendationRepository.findById(recommendationId).orElseThrow();
+        return this.mapRecommendation(updatedRecommendation);
     }
 
 }
