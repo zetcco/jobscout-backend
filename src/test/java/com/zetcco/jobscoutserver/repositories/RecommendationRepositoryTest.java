@@ -14,7 +14,6 @@ import com.zetcco.jobscoutserver.domain.Recommendation;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
-import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class RecommendationRepositoryTest {
@@ -33,7 +32,7 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void saveRecommendationTest1() {
-        User requester = userRepository.findById(1L).orElseThrow();
+        // User requester = userRepository.findById(1L).orElseThrow();
         User responder = userRepository.findById(2L).orElseThrow();
 
         Recommendation recommendation = Recommendation.builder()
@@ -46,7 +45,7 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void saveRecommendationTest2() {
-        User requester = userRepository.findById(3L).orElseThrow();
+        // User requester = userRepository.findById(3L).orElseThrow();
         User responder = userRepository.findById(4L).orElseThrow();
 
         Recommendation recommendation = Recommendation.builder()
@@ -59,7 +58,7 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void saveRecommendationTest3() {
-        User requester = userRepository.findById(3L).orElseThrow();
+        // User requester = userRepository.findById(3L).orElseThrow();
         User responder = userRepository.findById(1L).orElseThrow();
 
         Recommendation recommendation = Recommendation.builder()
@@ -90,7 +89,7 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void deleteRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(3L).orElseThrow();
+        Recommendation recommendation = recommendationRepository.findById(2L).orElseThrow();
         recommendationRepository.delete(recommendation);
 
     }
@@ -136,5 +135,11 @@ public class RecommendationRepositoryTest {
         }
     }
     
+    @Test
+    public void searchRecommendationById() {
+        Recommendation recommendation = recommendationRepository.findByRecommendationId(4L);
+        System.out.println(recommendation);
+    }
+
     
 }
