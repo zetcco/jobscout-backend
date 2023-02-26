@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zetcco.jobscoutserver.domain.support.Address;
@@ -12,7 +13,10 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,6 +47,10 @@ public class JobCreator extends User {
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_seeker_id"))
+    private List<JobSeeker> recommendationRequests;
 
     public JobCreator(String email, String password, Address address) {
         super(email, password, Role.ROLE_JOB_CREATOR, address);
