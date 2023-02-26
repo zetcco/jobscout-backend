@@ -8,59 +8,41 @@ import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class CategoryService {
     
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public void addNewCategory( String name , String description){
-        Category category = this.categoryRepository.findByNameIgnoreCase(name);
-        if( category == null){
-            Category newCategory = new Category(null, name , description, null, null, null);
-            categoryRepository.save(newCategory);
-        }
+    public Category addNewCategory(Category category){
+        return categoryRepository.findByNameIgnoreCase(category.getName())
+        .orElse(categoryRepository.save(category));
     }
 
-    public void updateCategory(String name1 , String name2 ,String description){
-        Category category = categoryRepository.findByNameIgnoreCase(name1);
-        if(category == null){
-            throw new NotFoundException("Such A Category Not Found!");
-        }else{
-            category.setName(name2);
-            category.setDescription(description);
-            categoryRepository.save(category);
-        }
+    public Category updateCategory(Long categoryId, Category category){
+        Category exsistingCategory = categoryRepository.findById(categoryId)
+        .orElseThrow(()->new NotFoundException("Such A Category Not Found!"));
+            exsistingCategory.setName(category.getName());
+            exsistingCategory.setDescription(category.getDescription());
+            categoryRepository.save(exsistingCategory);
+            return exsistingCategory;
     }
 
     public List<Category> getAllCategories() throws NotFoundException {
-        List<Category> category = categoryRepository.findAll();
-        if(category.isEmpty() == true){
-            throw new NotFoundException("Categories Not Found!");
-        }else{
-            return category;
-        }
-        
+            return categoryRepository.findAll();   
     }
 
     public Category getCategoryByNameIgnoreCase(String name) throws NotFoundException{
-            Category category = categoryRepository.findByNameIgnoreCase(name);
-            if(category == null){
-                throw new NotFoundException("Category Not Found!");
-            }else{
-                return category;
-            }
+           return categoryRepository.findByNameIgnoreCase(name)
+           .orElseThrow(()->new NotFoundException("Category Not Found!"));
     }
 
     public List<Category> getCategoryByNameContainingIgnoreCase(String name) throws NotFoundException{
-            List<Category> category =  categoryRepository.findByNameContainingIgnoreCase(name);
-            if(category.isEmpty() == true){
-                throw new NotFoundException("Categories Not Found!");
-            }else{
-                return category;
-            }
+            return categoryRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public Category getCategoryById(Long Id) throws NotFoundException{
+            return  categoryRepository.findById(Id)
+            .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
     }
 }
