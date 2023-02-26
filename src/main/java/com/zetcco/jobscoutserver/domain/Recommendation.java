@@ -25,15 +25,8 @@ public class Recommendation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long recommendationId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-    
     private String content;
-
-    @OneToOne
-    private User requester;
-
+    
     @OneToOne
     private User responder;
 
