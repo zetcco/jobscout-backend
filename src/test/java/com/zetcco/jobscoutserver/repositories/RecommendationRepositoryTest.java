@@ -6,7 +6,10 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
 
+import com.zetcco.jobscoutserver.domain.JobCreator;
+import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
 import com.zetcco.jobscoutserver.domain.support.User;
 
@@ -18,8 +21,13 @@ public class RecommendationRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
-    
-    
+
+    @Autowired
+    private JobCreatorRepository jobCreatorRepository;
+
+    @Autowired
+    private JobSeekerRepository jobSeekerRepository;
+
     @Test
     public void saveRecommendationTest1() {
         User requester = userRepository.findById(1L).orElseThrow();
@@ -98,4 +106,19 @@ public class RecommendationRepositoryTest {
         List<Recommendation> recommendations = recommendationRepository.findByRequesterId(1L);
         System.out.println(recommendations);
     }
+
+    @Test
+    public void addRecommendationRequest() {
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
+
+        List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
+        if (recommendationRequest.contains(requester))
+            throw new DataIntegrityViolationException("Request already exitsts");
+        recommendationRequest.add(requester);
+        responder.setRecommendationRequests(recommendationRequest);
+        jobCreatorRepository.save(responder);
+    }
+    
+    
 }
