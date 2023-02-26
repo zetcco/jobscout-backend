@@ -28,6 +28,9 @@ public class Recommendation {
     @OneToOne
     private User responder;
 
+    public void setRequester(User requester) {
+    }
+
     
     
 }
