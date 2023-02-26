@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Recommendation;
-import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 
@@ -48,10 +47,10 @@ public class RecommendationService {
                 .collect(Collectors.toList());
     }
 
-    List<RecommendationDTO> getRecommendations(Long recommendationId, String contetnt, User responder) {
-        List<Recommendation> recommendations = recommendationRepository.findByRequesterId(recommendationId);
-        return this.mapRecommendations(recommendations);
-    }
+    // List<RecommendationDTO> getRecommendations(Long recommendationId, String contetnt) {
+    //     List<Recommendation> recommendations = recommendationRepository.findById(recommendationId).orElseThrow();
+    //     return this.mapRecommendations(recommendations);
+    // }
 
     public RecommendationDTO addRecommendation(Recommendation recommendation) {
         Recommendation newRecommendation = recommendationRepository.save(recommendation);
