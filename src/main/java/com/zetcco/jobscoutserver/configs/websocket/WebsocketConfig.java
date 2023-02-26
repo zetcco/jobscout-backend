@@ -31,7 +31,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         /* Websocket will be connected to this endpoint, so, ex: http://localhost:8080/ws. Then it will switch fron HTTP to WS */
-        registry.addEndpoint("/ws");
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*");
         registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS(); // For devices which doesn't support websockets.
     }
 
