@@ -19,7 +19,7 @@ public class RecommendationRepositoryTest {
     @Autowired
     private UserRepository userRepository;
     
-
+    
     @Test
     public void saveRecommendationTest1() {
         User requester = userRepository.findById(1L).orElseThrow();
