@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutserver.domain;
+package com.zetcco.jobscoutserver.domain.support;
 
 import lombok.Builder;
 import lombok.Data;

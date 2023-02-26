@@ -5,7 +5,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
-import com.zetcco.jobscoutserver.domain.RTCSignal;
+import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.services.RTCService;
 
 @Controller
