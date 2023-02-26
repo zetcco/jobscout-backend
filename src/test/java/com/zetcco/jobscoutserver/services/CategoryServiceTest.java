@@ -15,7 +15,11 @@ public class CategoryServiceTest {
 
     @Test
     void testAddNewCategory(){
-        categoryService.addNewCategory("Associate software engineer", "part time job with good salary");
+        Category category = Category.builder()
+                                .name("Graphics Designer")
+                                .description("part time job with good salary")
+                                .build();
+        categoryService.addNewCategory(category);
     }
 
     @Test
@@ -24,7 +28,9 @@ public class CategoryServiceTest {
         category1.forEach((p)->{
             System.out.println(p.getName());
         }); 
-        categoryService.updateCategory("senior hr manager" , "HR Manager" , "full time with good salary");
+        Category exisitingCategory = categoryService.getCategoryById(3L);
+        exisitingCategory.setName("Updated");
+        categoryService.updateCategory(3L , exisitingCategory);
         List<Category> category2 = categoryService.getAllCategories();
         category2.forEach((p)->{
             System.out.println(p.getName());
@@ -43,15 +49,19 @@ public class CategoryServiceTest {
 
     @Test 
     void testGetCategoryByNameIgnoreCase(){
-        Category category = categoryService.getCategoryByNameIgnoreCase("HR manager");
-        System.out.println(category.getName());
+        System.out.println(categoryService.getCategoryByNameIgnoreCase("HR manager").getName());
     }
 
     @Test
     void testGetCategoryByNameContainingIgnoreCase(){
-        List<Category> category = categoryService.getCategoryByNameContainingIgnoreCase("engineer");
+        List<Category> category = categoryService.getCategoryByNameContainingIgnoreCase("Software");
         category.forEach((p)->{
             System.out.println(p.getName());
         });
+    }
+
+    @Test
+    void testGetById(){        
+        System.out.print(categoryService.getCategoryById(2L).getName());
     }
 }
