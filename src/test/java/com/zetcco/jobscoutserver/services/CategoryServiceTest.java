@@ -49,7 +49,7 @@ public class CategoryServiceTest {
 
     @Test 
     void testGetCategoryByNameIgnoreCase(){
-        System.out.println(categoryService.getCategoryByNameIgnoreCase("HR manager").getName());
+        System.out.println(categoryService.getCategoryByNameIgnoreCase("graphics designer").getName());
     }
 
     @Test
