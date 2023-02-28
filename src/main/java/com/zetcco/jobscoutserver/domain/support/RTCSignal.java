@@ -8,7 +8,6 @@ import lombok.Data;
 public class RTCSignal {
     
     Long senderId;
-    Long recieverId;
     String type;
     String data;
     
