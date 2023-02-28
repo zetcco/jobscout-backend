@@ -30,7 +30,7 @@ public class CategoryServiceTest {
         }); 
         Category exisitingCategory = categoryService.getCategoryById(3L);
         exisitingCategory.setName("Updated");
-        categoryService.updateCategory(3L , exisitingCategory);
+        categoryService.updateCategory(exisitingCategory);
         List<Category> category2 = categoryService.getAllCategories();
         category2.forEach((p)->{
             System.out.println(p.getName());

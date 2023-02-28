@@ -3,6 +3,7 @@ package com.zetcco.jobscoutserver.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
@@ -15,34 +16,36 @@ public class CategoryService {
     private CategoryRepository categoryRepository;
 
     public Category addNewCategory(Category category){
-        return categoryRepository.findByNameIgnoreCase(category.getName())
-        .orElse(categoryRepository.save(category));
+        if (categoryRepository.findByNameContainingIgnoreCase(category.getName()).isEmpty())
+            return categoryRepository.save(category);
+        else
+            throw new DataIntegrityViolationException("Category already exists!");
     }
 
-    public Category updateCategory(Long categoryId, Category category){
-        Category exsistingCategory = categoryRepository.findById(categoryId)
-        .orElseThrow(()->new NotFoundException("Such A Category Not Found!"));
-            exsistingCategory.setName(category.getName());
-            exsistingCategory.setDescription(category.getDescription());
-            categoryRepository.save(exsistingCategory);
-            return exsistingCategory;
+    public Category updateCategory(Category category) throws NotFoundException {
+        Category exsistingCategory = categoryRepository.findById(category.getId())
+                .orElseThrow(()->new NotFoundException("Such A Category Not Found!"));
+        exsistingCategory.setName(category.getName());
+        exsistingCategory.setDescription(category.getDescription());
+        categoryRepository.save(exsistingCategory);
+        return exsistingCategory;
     }
 
-    public List<Category> getAllCategories() throws NotFoundException {
+    public List<Category> getAllCategories() {
             return categoryRepository.findAll();   
     }
 
     public Category getCategoryByNameIgnoreCase(String name) throws NotFoundException{
            return categoryRepository.findByNameIgnoreCase(name)
-           .orElseThrow(()->new NotFoundException("Category Not Found!"));
+                .orElseThrow(()->new NotFoundException("Category Not Found!"));
     }
 
-    public List<Category> getCategoryByNameContainingIgnoreCase(String name) throws NotFoundException{
+    public List<Category> getCategoryByNameContainingIgnoreCase(String name) {
             return categoryRepository.findByNameContainingIgnoreCase(name);
     }
 
-    public Category getCategoryById(Long Id) throws NotFoundException{
+    public Category getCategoryById(Long Id) throws NotFoundException {
             return  categoryRepository.findById(Id)
-            .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
+                .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
     }
 }
