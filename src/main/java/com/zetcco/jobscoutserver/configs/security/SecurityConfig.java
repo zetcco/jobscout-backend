@@ -27,9 +27,11 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.authorizeHttpRequests().requestMatchers(
             "/auth/**",
+            "/ws/**", // This is authenticated seperately using WebSocketAuthenticationService
             "/address/**",
             "/media/**",
-            "/organization/search/**"
+            "/organization/search/**",
+            "/test/notification/**" // TODO: Remove this on deploy
         ).permitAll();
         http.authorizeHttpRequests().requestMatchers("/error").anonymous();
         http.authorizeHttpRequests().anyRequest().authenticated();
