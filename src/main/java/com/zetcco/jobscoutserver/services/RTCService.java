@@ -13,6 +13,6 @@ public class RTCService {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     public void sendToUser(RTCSignal signal) {
-        simpMessagingTemplate.convertAndSendToUser(signal.getRecieverId().toString(), "/call", signal);
+        // simpMessagingTemplate.convertAndSendToUser(signal.getRecieverId().toString(), "/call", signal);
     }
 }
