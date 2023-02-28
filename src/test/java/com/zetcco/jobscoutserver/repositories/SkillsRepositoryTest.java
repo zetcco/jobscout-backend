@@ -16,14 +16,11 @@ public class SkillsRepositoryTest {
 
     @Test
     public void addSkills() {
-        // Skill skill = new Skill("spring", "springjpa");
         Skill skill1 = Skill.builder()
                 .name("react")
                 .description("redux")
                 .build();
         skillsRepository.save(skill1);
-        // System.out.println(skill);
-
     }
 
     @Test

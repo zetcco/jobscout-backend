@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,10 +40,13 @@ public class SkillController {
         return new ResponseEntity<List<Skill>>(skillService.fetchSkills(), HttpStatus.OK);
     }
 
-    @PostMapping("/add-skills")
-    public ResponseEntity<Skill> addSkills(@RequestBody Skill skill)
-            throws DataIntegrityViolationException, NotFoundException {
-        return new ResponseEntity<Skill>(skillService.addSkills(skill), HttpStatus.OK);
+    @PostMapping("/")
+    public ResponseEntity<Skill> addSkills(@RequestBody Skill skill) {
+        try {
+            return new ResponseEntity<Skill>(skillService.addSkills(skill), HttpStatus.OK);
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
     }
 
 }
