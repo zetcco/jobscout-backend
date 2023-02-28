@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.zetcco.jobscoutserver.domain.Category;
+import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 
 @SpringBootTest
 public class CategoryServiceTest {
@@ -15,36 +15,24 @@ public class CategoryServiceTest {
 
     @Test
     void testAddNewCategory(){
-        Category category = Category.builder()
-                                .name("Graphics Designer")
-                                .description("part time job with good salary")
-                                .build();
-        categoryService.addNewCategory(category);
+        CategoryDTO categoryDTO = CategoryDTO.builder()
+                                                .name("UI/UX Engineer new")
+                                                .description("Test Description")
+                                                .build();
+        System.out.println(categoryService.addNewCategory(categoryDTO));
     }
 
     @Test
     void testUpdateCategory(){
-        List<Category> category1 = categoryService.getAllCategories();
-        category1.forEach((p)->{
-            System.out.println(p.getName());
-        }); 
-        Category exisitingCategory = categoryService.getCategoryById(3L);
-        exisitingCategory.setName("Updated");
-        categoryService.updateCategory(exisitingCategory);
-        List<Category> category2 = categoryService.getAllCategories();
-        category2.forEach((p)->{
-            System.out.println(p.getName());
-        });
+        CategoryDTO exisCategoryDTO = categoryService.getCategoryById(3L);
+        exisCategoryDTO.setName("Updated Name 3");
+        System.out.println(categoryService.updateCategory(exisCategoryDTO));
     }
-
 
     @Test
     void testGetAllCatgorie(){
-
-        List<Category> category = categoryService.getAllCategories();
-            category.forEach((p)->{
-                System.out.println(p.getName());
-            }); 
+        List<CategoryDTO> category = categoryService.getAllCategories();
+        category.forEach((p)->{ System.out.println(p); }); 
     }
 
     @Test 
@@ -54,10 +42,8 @@ public class CategoryServiceTest {
 
     @Test
     void testGetCategoryByNameContainingIgnoreCase(){
-        List<Category> category = categoryService.getCategoryByNameContainingIgnoreCase("Software");
-        category.forEach((p)->{
-            System.out.println(p.getName());
-        });
+        List<CategoryDTO> category = categoryService.getCategoryByNameContainingIgnoreCase("Software");
+        category.forEach((p)->{ System.out.println(p); });
     }
 
     @Test
