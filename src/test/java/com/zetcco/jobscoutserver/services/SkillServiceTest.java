@@ -3,8 +3,6 @@ package com.zetcco.jobscoutserver.services;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
 import com.zetcco.jobscoutserver.domain.Skill;
 
@@ -15,7 +13,7 @@ public class SkillServiceTest {
     private SkillService skillService;
 
     @Test
-    void testAddSkills() throws DataIntegrityViolationException, NotFoundException {
+    void testAddSkills() {
         Skill skill = Skill.builder()
                 .name("mongo")
                 .description("mongoos")
@@ -25,7 +23,11 @@ public class SkillServiceTest {
 
     @Test
     void testSearchSkillByName() {
-        System.out.println(skillService.searchSkillByName("react"));
+        try {
+            System.out.println(skillService.searchSkillByName("react"));
+        } catch (IllegalAccessException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     @Test

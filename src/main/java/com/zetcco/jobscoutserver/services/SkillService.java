@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Skill;
@@ -27,7 +26,7 @@ public class SkillService {
     // return skills;
     // }
 
-    public List<Skill> searchSkillByName(String name) {
+    public List<Skill> searchSkillByName(String name) throws IllegalAccessException {
         if (name.equals(""))
             throw new IllegalArgumentException("Wrong Parameters");
         List<Skill> skills = skillsRepository.findByNameContainingIgnoreCase(name);
@@ -39,7 +38,7 @@ public class SkillService {
         return skills;
     }
 
-    public Skill addSkills(Skill skill) throws NotFoundException, DataIntegrityViolationException {
+    public Skill addSkills(Skill skill) throws DataIntegrityViolationException {
         return skillsRepository.save(skill);
     }
 }
