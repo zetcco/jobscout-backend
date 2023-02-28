@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.zetcco.jobscoutserver.domain.Category;
+import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.services.CategoryService;
 
 @Controller
@@ -24,45 +24,47 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("/")
-    public ResponseEntity<List<Category>> getAllCategories(){
+    public ResponseEntity<List<CategoryDTO>> getAllCategories(){
         try {
-            return new ResponseEntity<List<Category>>(categoryService.getAllCategories(), HttpStatus.OK);
+            return new ResponseEntity<List<CategoryDTO>>(categoryService.getAllCategories(), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Category>> getCategoryByContainingIgnoreType(@RequestParam("q") String name){
+    public ResponseEntity<List<CategoryDTO>> getCategoryByContainingIgnoreType(@RequestParam("q") String name){
         try{
-           return new ResponseEntity<List<Category>>(categoryService.getCategoryByNameContainingIgnoreCase(name) , HttpStatus.OK); 
+           return new ResponseEntity<List<CategoryDTO>>(categoryService.getCategoryByNameContainingIgnoreCase(name) , HttpStatus.OK); 
         } catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }      
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Long categoryId){
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long categoryId){
         try{
-            return new ResponseEntity<Category>(categoryService.getCategoryById(categoryId) , HttpStatus.OK); 
+            return new ResponseEntity<CategoryDTO>(categoryService.getCategoryById(categoryId) , HttpStatus.OK); 
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }    
     }
 
     @PostMapping("/")
-    public ResponseEntity<Category> saveCategory(@RequestBody Category category){ 
+    public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDto){ 
         try{
-            return new ResponseEntity<Category>(categoryService.addNewCategory(category) , HttpStatus.OK);
+            return new ResponseEntity<CategoryDTO>(categoryService.addNewCategory(categoryDto) , HttpStatus.OK);
         } catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }    
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Long categoryId, @RequestBody Category category){
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDTO category){
         try{
-            return new ResponseEntity<Category>(categoryService.updateCategory(category), HttpStatus.OK);
+            if (categoryId != category.getId())
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect parameters");
+            return new ResponseEntity<CategoryDTO>(categoryService.updateCategory(category), HttpStatus.OK);
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }       
