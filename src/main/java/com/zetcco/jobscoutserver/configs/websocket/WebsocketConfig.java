@@ -23,7 +23,8 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         /* STOMP subscribe endpoints */
         registry.enableSimpleBroker(
             "/user/",       // Subscription Endpoint: /user/<userid>/<service>
-            "/all/notify"         // Subscription Endpoint: /all/<channel>/<service>
+            "/all/notify",         // Subscription Endpoint: /all/<channel>/<service>
+            "/room/"
         );
         registry.setUserDestinationPrefix("/user");
     }
