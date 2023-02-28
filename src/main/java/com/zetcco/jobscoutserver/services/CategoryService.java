@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.Category;
+import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
+import com.zetcco.jobscoutserver.services.mappers.CategoryMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Service
@@ -15,37 +17,43 @@ public class CategoryService {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    public Category addNewCategory(Category category){
-        if (categoryRepository.findByNameContainingIgnoreCase(category.getName()).isEmpty())
-            return categoryRepository.save(category);
+    @Autowired
+    private CategoryMapper mapper;
+
+    public CategoryDTO addNewCategory(CategoryDTO categoryDTO) throws DataIntegrityViolationException {
+        if (categoryDTO.getId() == null && categoryRepository.findByNameContainingIgnoreCase(categoryDTO.getName()).isEmpty()) {
+            Category category = mapper.mapToEntity(categoryDTO);
+            return this.mapper.mapToDto(categoryRepository.save(category));
+        }
         else
             throw new DataIntegrityViolationException("Category already exists!");
     }
 
-    public Category updateCategory(Category category) throws NotFoundException {
-        Category exsistingCategory = categoryRepository.findById(category.getId())
-                .orElseThrow(()->new NotFoundException("Such A Category Not Found!"));
-        exsistingCategory.setName(category.getName());
-        exsistingCategory.setDescription(category.getDescription());
-        categoryRepository.save(exsistingCategory);
-        return exsistingCategory;
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO) throws NotFoundException {
+        Category exsistingCategory = mapper.mapToEntity(categoryDTO);
+        if (!categoryRepository.existsById(exsistingCategory.getId()))
+            throw new NotFoundException("Category not found!");
+        return this.mapper.mapToDto(categoryRepository.save(exsistingCategory));
     }
 
-    public List<Category> getAllCategories() {
-            return categoryRepository.findAll();   
+    public List<CategoryDTO> getAllCategories() {
+        return this.mapper.mapToDtos(categoryRepository.findAll());   
     }
 
-    public Category getCategoryByNameIgnoreCase(String name) throws NotFoundException{
-           return categoryRepository.findByNameIgnoreCase(name)
+    public CategoryDTO getCategoryByNameIgnoreCase(String name) throws NotFoundException{
+           Category category = categoryRepository.findByNameIgnoreCase(name)
                 .orElseThrow(()->new NotFoundException("Category Not Found!"));
+
+            return this.mapper.mapToDto(category);
     }
 
-    public List<Category> getCategoryByNameContainingIgnoreCase(String name) {
-            return categoryRepository.findByNameContainingIgnoreCase(name);
+    public List<CategoryDTO> getCategoryByNameContainingIgnoreCase(String name) {
+            return this.mapper.mapToDtos(categoryRepository.findByNameContainingIgnoreCase(name));
     }
 
-    public Category getCategoryById(Long Id) throws NotFoundException {
-            return  categoryRepository.findById(Id)
+    public CategoryDTO getCategoryById(Long Id) throws NotFoundException {
+            Category category = categoryRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
+            return this.mapper.mapToDto(category);
     }
 }
