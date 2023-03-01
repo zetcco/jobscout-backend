@@ -9,7 +9,6 @@ import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
-import com.zetcco.jobscoutserver.repositories.SkillsRepository;
 import com.zetcco.jobscoutserver.services.mappers.CategoryMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
@@ -18,9 +17,6 @@ public class CategoryService {
     
     @Autowired
     private CategoryRepository categoryRepository;
-
-    @Autowired
-    private SkillsRepository skillsRepository;
 
     @Autowired
     private CategoryMapper mapper;
