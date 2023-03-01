@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Meeting;
@@ -12,6 +13,7 @@ import com.zetcco.jobscoutserver.domain.support.MeetingDTO;
 import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.repositories.MeetingRepository;
 import com.zetcco.jobscoutserver.services.mappers.MeetingMapper;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Service
 public class MeetingService {
@@ -28,6 +30,7 @@ public class MeetingService {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    @PreAuthorize("hasRole('JOB_CREATOR')")
     public MeetingDTO hostMeeting(MeetingDTO meetingDTO) {
         String link = RandomStringUtils.randomAlphanumeric(3) + "-" + RandomStringUtils.randomAlphanumeric(3) + "-" + RandomStringUtils.randomAlphanumeric(3);
         Meeting newMeeting = Meeting.builder()
@@ -36,7 +39,12 @@ public class MeetingService {
                                     .link(link)
                                     .build();
         Meeting meeting = meetingRepository.save(newMeeting);
-        return mapper.mapNotification(meeting);
+        return mapper.mapMeeting(meeting);
+    }
+
+    public MeetingDTO getMeetingByLink(String link) {
+        Meeting meeting = meetingRepository.findByLink(link).orElseThrow(() -> new NotFoundException("Meeting not found"));
+        return mapper.mapMeeting(meeting);
     }
 
     MeetingDTO mapToDTO(Meeting meeting) {
