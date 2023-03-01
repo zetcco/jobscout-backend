@@ -45,7 +45,7 @@ public class JobSeeker extends User {
     public JobSeeker(String email, String password, Address address) {
         super(email, password, Role.ROLE_JOB_SEEKER, address);
     }
-    
+
     public JobSeeker(String email, String password, Address address, NameTitle title,
             String firstName, String lastName, String contact, Date dob, Gender gender) {
         super(email, password, Role.ROLE_JOB_SEEKER, address);
@@ -62,4 +62,5 @@ public class JobSeeker extends User {
 
     @OneToMany
     private List<Skill> skills;
+
 }
