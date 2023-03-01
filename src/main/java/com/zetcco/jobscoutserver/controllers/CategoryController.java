@@ -14,14 +14,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.services.CategoryService;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Controller
 @RequestMapping(value = "/category")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+
+
 
     @GetMapping("/")
     public ResponseEntity<List<CategoryDTO>> getAllCategories(){
@@ -68,6 +72,15 @@ public class CategoryController {
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }       
+    }
+
+    @GetMapping("/{categoryId}/skills")
+    public ResponseEntity<List<Skill>> getCategorySkills(@PathVariable Long categoryId) throws NotFoundException{
+        try {
+            return new ResponseEntity<List<Skill>>(categoryService.getSkillsByCategory(categoryId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 }
