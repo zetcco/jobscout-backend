@@ -1,5 +1,7 @@
 package com.zetcco.jobscoutserver.domain;
 
+import java.util.Date;
+
 import com.zetcco.jobscoutserver.domain.support.User;
 
 import jakarta.persistence.Entity;
@@ -25,4 +27,9 @@ public class Meeting {
 
     @ManyToOne
     private User hoster;
+
+    private Date timestamp;
+
+    private String link;
+
 }
