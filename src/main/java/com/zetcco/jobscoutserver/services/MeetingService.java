@@ -5,6 +5,7 @@ import java.util.Date;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +41,16 @@ public class MeetingService {
                                     .build();
         Meeting meeting = meetingRepository.save(newMeeting);
         return mapper.mapMeeting(meeting);
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    public void endMeetingByLink(String link) throws AccessDeniedException {
+        Long userId = userService.getAuthUser().getId();
+        Meeting meeting = meetingRepository.findByLink(link).orElseThrow(() -> new NotFoundException("Meeting not found"));
+        if (meeting.getHoster().getId() == userId)
+            meetingRepository.delete(meeting);
+        else
+            throw new AccessDeniedException("You do not have permission to do that");
     }
 
     public MeetingDTO getMeetingByLink(String link) {
