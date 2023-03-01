@@ -12,7 +12,7 @@ public class MeetingMapper {
     @Autowired
     private UserMapper userMapper;
 
-    public MeetingDTO mapNotification(Meeting meeting) {
+    public MeetingDTO mapMeeting(Meeting meeting) {
         MeetingDTO meetingDTO = MeetingDTO.builder()
                                             .id(meeting.getId())
                                             .link(meeting.getLink())
