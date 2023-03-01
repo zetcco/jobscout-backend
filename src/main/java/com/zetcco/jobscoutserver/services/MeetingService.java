@@ -1,5 +1,8 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.Date;
+
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -8,9 +11,13 @@ import com.zetcco.jobscoutserver.domain.Meeting;
 import com.zetcco.jobscoutserver.domain.support.MeetingDTO;
 import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.repositories.MeetingRepository;
+import com.zetcco.jobscoutserver.services.mappers.MeetingMapper;
 
 @Service
 public class MeetingService {
+
+    @Autowired
+    private MeetingMapper mapper;
     
     @Autowired
     private MeetingRepository meetingRepository;
@@ -22,11 +29,14 @@ public class MeetingService {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     public MeetingDTO hostMeeting(MeetingDTO meetingDTO) {
+        String link = RandomStringUtils.randomAlphanumeric(3) + "-" + RandomStringUtils.randomAlphanumeric(3) + "-" + RandomStringUtils.randomAlphanumeric(3);
         Meeting newMeeting = Meeting.builder()
+                                    .timestamp(meetingDTO.getTimestamp() != null ? meetingDTO.getTimestamp() : new Date())
                                     .hoster(userService.getAuthUser())
+                                    .link(link)
                                     .build();
         Meeting meeting = meetingRepository.save(newMeeting);
-        return mapToDTO(meeting);
+        return mapper.mapNotification(meeting);
     }
 
     MeetingDTO mapToDTO(Meeting meeting) {
