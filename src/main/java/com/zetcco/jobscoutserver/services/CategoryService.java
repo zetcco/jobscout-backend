@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.Category;
+import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
+import com.zetcco.jobscoutserver.repositories.SkillsRepository;
 import com.zetcco.jobscoutserver.services.mappers.CategoryMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
@@ -16,6 +18,9 @@ public class CategoryService {
     
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private SkillsRepository skillsRepository;
 
     @Autowired
     private CategoryMapper mapper;
@@ -55,5 +60,11 @@ public class CategoryService {
             Category category = categoryRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
             return this.mapper.mapToDto(category);
+    }
+
+    public List<Skill> getSkillsByCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Category Not Found"));
+        return category.getSkills();
     }
 }
