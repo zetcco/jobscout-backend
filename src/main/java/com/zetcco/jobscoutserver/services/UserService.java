@@ -46,6 +46,10 @@ public class UserService {
         return this.mapUser(user);
     }
 
+    protected User getAuthUser() {
+        return ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
     private ProfileDTO mapUser(User user) {
         ProfileDTO profile = modelMapper.map(user, ProfileDTO.class);
         final String PROFILE_RESOURCE_URL = environment.getProperty("server.url") + "/media/file/";
