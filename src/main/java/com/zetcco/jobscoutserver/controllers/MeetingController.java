@@ -28,6 +28,7 @@ public class MeetingController {
         try {
             return new ResponseEntity<MeetingDTO>(meetingService.hostMeeting(meetingDTO), HttpStatus.OK);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
