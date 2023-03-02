@@ -14,6 +14,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,8 +47,6 @@ public class JobSeeker extends User {
         super(email, password, Role.ROLE_JOB_SEEKER, address);
     }
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Recommendation> recommendations;
     
     public JobSeeker(String email, String password, Address address, NameTitle title,
             String firstName, String lastName, String contact, Date dob, Gender gender) {
@@ -58,4 +58,16 @@ public class JobSeeker extends User {
         this.dob = dob;
         this.gender = gender;
     }
+
+    // @OneToMany(fetch = FetchType.EAGER)
+    // @JoinTable(inverseJoinColumns = @JoinColumn(name = "recommended_recommendataion_id"))
+    // private List<Recommendation> getRecommendation;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(inverseJoinColumns = @JoinColumn(name = "recommended_recommendataion_ids"))
+    private List<Recommendation> recommendation;
+
+    // @OneToMany(fetch = FetchType.EAGER)
+    // @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_creator_id"))
+    // private List<JobSeeker> recommendationRequests;
 }
