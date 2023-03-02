@@ -48,9 +48,8 @@ public class JobCreator extends User {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_seeker_id"))
-    private List<JobSeeker> requestRecommendation;
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<JobSeeker> recommendationRequests;
 
     public JobCreator(String email, String password, Address address) {
         super(email, password, Role.ROLE_JOB_CREATOR, address);
@@ -67,6 +66,4 @@ public class JobCreator extends User {
         this.gender = gender;
     }
 
-    public void setRecommendationRequests(List<JobSeeker> requestRecommendation2) {
-    }
 }
