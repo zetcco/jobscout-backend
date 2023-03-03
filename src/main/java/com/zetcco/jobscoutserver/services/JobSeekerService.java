@@ -11,6 +11,7 @@ import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Service
 public class JobSeekerService {
@@ -27,7 +28,7 @@ public class JobSeekerService {
     @Autowired
     private UserService userService;
 
-    public JobSeeker getCategoryAndSkillListById(Long categortId, List<Long> skillId) {
+    public JobSeeker getCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
         Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
         List<Skill> skillObj = new ArrayList<>();
         for (Long id : skillId) {
