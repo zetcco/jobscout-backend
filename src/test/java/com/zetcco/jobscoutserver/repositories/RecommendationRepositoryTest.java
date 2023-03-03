@@ -62,8 +62,8 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void addRecommendation() {
-        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
 
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
         if(recommendationRequest.contains(requester)) {

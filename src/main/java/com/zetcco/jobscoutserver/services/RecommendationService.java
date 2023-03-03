@@ -1,13 +1,15 @@
 package com.zetcco.jobscoutserver.services;
 
 
-
 import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
@@ -16,15 +18,22 @@ import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 
-@Service    
+@Service
 public class RecommendationService {
+    @Autowired
+    private RecommendationRepository recommendationRepository;
 
+    @Autowired
     private JobCreatorRepository jobCreatorRepository;
+
+    @Autowired
     private JobSeekerRepository jobSeekerRepository;
 
-    
     @Autowired
-    private static RecommendationRepository recommendationRepository;
+    private UserService userService;
+
+    @Autowired
+    public ModelMapper modelMapper;
 
     private TypeMap<Recommendation, RecommendationDTO> propertyMapper;
 
@@ -32,45 +41,56 @@ public class RecommendationService {
     public void setModelMapper(ModelMapper modelMapper) {
         this.propertyMapper = modelMapper.createTypeMap(Recommendation.class, RecommendationDTO.class);
     }
-    
-    protected RecommendationDTO getRecommendation(Long recommendationId) {
-        Recommendation recommendation = recommendationRepository.findById(recommendationId).orElseThrow();
-        return this.mapRecommendation(recommendation);
-    } 
+
+    public ProfileDTO addRecommendationRequest(Long responderId, Long requesterId) {
+        JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
+
+        responder.getRecommendationRequests().contains(requester);
+        List<JobSeeker> requestRecommendation = responder.getRecommendationRequests();
+        if (!recommendationRepository.existsById(responderId))
+            throw new DataIntegrityViolationException("Request already exitsts");
+        requestRecommendation.add(requester);
+        responder.setRecommendationRequests(requestRecommendation);
+        jobCreatorRepository.save(responder);
+        return userService.getUser(responderId);
+    }
+
+    public void addRecommendation(RecommendationDTO recommendationDTO) {
+        JobCreator responder = jobCreatorRepository.findById(recommendationDTO.getResponder().getId()).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(recommendationDTO.getRequester().getId()).orElseThrow();
+        List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
+
+        if(! recommendationRepository.existsById(recommendationDTO.getRecommendationId()))
+            throw new DataIntegrityViolationException("Request already exitsts");
+        
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        recommendationRequest.add(requester);
+        requester.setRecommendation(requestRecommendationList);
+        requester = jobSeekerRepository.save(requester);
+        
+        recommendationRequest.remove(requester);
+        requester.setRecommendation(requestRecommendationList);
+        jobCreatorRepository.save(responder);
+        
+        for(JobSeeker checkRecommendationRequest : recommendationRequest) {
+            requestRecommendationList.remove(requestRecommendationList);
+        }
+    }
 
     private RecommendationDTO mapRecommendation(Recommendation recommendation) {
-        propertyMapper.addMapping(src -> src.getRecommendationId(), (dest, v) -> dest.setRecommendationId((Long)v));
+        propertyMapper.addMapping(src -> src.getReccomendationId(), (dest, v) -> dest.setRecommendationId((Long)v));
         RecommendationDTO recommendationDTO = propertyMapper.map(recommendation);
         return recommendationDTO;
     }
 
-
-    public RecommendationDTO addRecommendation(Recommendation recommendation) {
-        Recommendation newRecommendation = recommendationRepository.save(recommendation);
-        return this.mapRecommendation(newRecommendation);
+    public void updateRecommendation(Recommendation recommendation) {
+        recommendation.setContent(recommendation.getContent());
+        recommendationRepository.save(recommendation);
     }
 
-    public void deleteRecommendation(Long recommendationId) {
-        recommendationRepository.deleteById(recommendationId);
-        // Recommendation recommendation = recommendationRepository.findById(recommendationId).orElseThrow();
+    public void deleteRecommendation(Recommendation recommendation) {
+        recommendationRepository.delete(recommendation);
     }
 
-    public RecommendationDTO updateRecommendation(Long recommendationId) {
-        Recommendation updatedRecommendation = recommendationRepository.findById(recommendationId).orElseThrow();
-        return this.mapRecommendation(updatedRecommendation);
-    }
-    
-    public RecommendationDTO addRecommendation(Long requesterId, Long responderId) {
-        JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
-
-
-        List<JobSeeker> requestRecommendation = responder.getRequestRecommendation();
-        // if (requestRecommendation.contains(requester))
-        //     throw new DataIntegrityViolationException("Request already exitsts");
-        requestRecommendation.add(requester);
-        responder.setRequestRecommendation(requestRecommendation);
-        jobCreatorRepository.save(responder);
-        return this.getRecommendation(responderId);
-    }
 }
