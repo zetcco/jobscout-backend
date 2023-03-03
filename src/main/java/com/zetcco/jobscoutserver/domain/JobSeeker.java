@@ -59,15 +59,7 @@ public class JobSeeker extends User {
         this.gender = gender;
     }
 
-    // @OneToMany(fetch = FetchType.EAGER)
-    // @JoinTable(inverseJoinColumns = @JoinColumn(name = "recommended_recommendataion_id"))
-    // private List<Recommendation> getRecommendation;
-
     @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "recommended_recommendataion_ids"))
     private List<Recommendation> recommendation;
-
-    // @OneToMany(fetch = FetchType.EAGER)
-    // @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_creator_id"))
-    // private List<JobSeeker> recommendationRequests;
 }

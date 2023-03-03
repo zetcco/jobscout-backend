@@ -18,4 +18,6 @@ public class RecommendationDTO {
     private User requester;
     private User responder;
 
+    
+
 }
