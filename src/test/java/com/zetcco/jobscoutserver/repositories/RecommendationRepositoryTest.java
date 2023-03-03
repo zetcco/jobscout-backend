@@ -31,7 +31,7 @@ public class RecommendationRepositoryTest {
     
     @Test
     public void saveRecommendation() {
-        User responder = userRepository.findById(3L).orElseThrow();
+        User responder = userRepository.findById(7L).orElseThrow();
         // User requester = userRepository.findById(2L).orElseThrow();
 
         Recommendation recommendation = Recommendation.builder()
@@ -49,7 +49,7 @@ public class RecommendationRepositoryTest {
     
     @Test
     public void addRecommendationRequest() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
 
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
@@ -62,7 +62,7 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void addRecommendation() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
 
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
@@ -95,15 +95,15 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void updateRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(5L).orElseThrow();
-        recommendation.setContent("highly recommended");
+        Recommendation recommendation = recommendationRepository.findById(1L).orElseThrow();
+        recommendation.setContent("Not recommended");
         Recommendation updatedRecommendation = recommendationRepository.save(recommendation);
         System.out.println(updatedRecommendation);
     }
 
     @Test
     public void deleteRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(3L).orElseThrow();
+        Recommendation recommendation = recommendationRepository.findById(1L).orElseThrow();
         recommendationRepository.delete(recommendation);
 
     }
