@@ -36,4 +36,10 @@ public class ConversationRepositoryTest {
         System.out.println(conversation);
     }
 
+    @Test
+    public void testGetConversationByParticipants() {
+        List<Conversation> conversations = conversationRepository.findByParticipantsId(95L);
+        System.out.println(conversations);
+    }
+
 }

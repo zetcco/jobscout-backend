@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +19,7 @@ import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Service
-public class MessagingService {
+public class MessageService {
 
     @Autowired
     private MessageRepository messageRepository;
@@ -30,6 +32,9 @@ public class MessagingService {
 
     @Autowired
     private MessageMapper messageMapper;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
     
     public MessageDTO creatMessage(Long conversation_id, String content) throws NotFoundException, AccessDeniedException {
         Conversation conversation = conversationService.getConversation(conversation_id);
@@ -52,7 +57,12 @@ public class MessagingService {
         if (!conversation.getParticipants().contains(requester))
             throw new AccessDeniedException("You do not have permission to access this conversation");
         PageRequest page = PageRequest.of(pageNo, pageSize);
-        List<Message> messages = messageRepository.findByConversationId(conversation_id, page).getContent();
+        List<Message> messages = messageRepository.findByConversationId(conversation_id, page, Sort.by(Sort.Direction.DESC, "timestamp")).getContent();
         return messageMapper.mapToDtos(messages);
+    }
+
+    // TODO: Add authorization to this
+    public void sendMessage(Long conversation_id, MessageDTO messageDTO) {
+        this.simpMessagingTemplate.convertAndSend("/conversation/" + conversation_id, messageDTO);
     }
 }

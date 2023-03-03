@@ -2,6 +2,8 @@ package com.zetcco.jobscoutserver.services.support;
 
 import java.util.List;
 
+import com.zetcco.jobscoutserver.domain.messaging.Message;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +17,6 @@ public class ConversationDTO {
     
     private Long id;
     private List<ProfileDTO> participants;
+    private List<Message> messages;
 
 }

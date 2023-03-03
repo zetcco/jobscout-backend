@@ -100,9 +100,9 @@ public class User implements UserDetails {
         if (this instanceof Organization)
             return ((Organization)this).getCompanyName();
         else if (this instanceof JobSeeker)
-            return ((JobSeeker)this).getFirstName();
+            return ((JobSeeker)this).getFirstName() + " " + ((JobSeeker)this).getLastName();
         else if (this instanceof JobCreator)
-            return ((JobCreator)this).getFirstName();
+            return ((JobCreator)this).getFirstName() + " " + ((JobCreator)this).getLastName();
         else
             return null;
     }

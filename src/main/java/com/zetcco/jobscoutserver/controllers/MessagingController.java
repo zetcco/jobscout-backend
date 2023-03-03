@@ -6,6 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.services.ConversationService;
-import com.zetcco.jobscoutserver.services.MessagingService;
+import com.zetcco.jobscoutserver.services.MessageService;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
@@ -30,12 +33,11 @@ public class MessagingController {
     private ConversationService conversationService;
 
     @Autowired
-    private MessagingService messagingService;
+    private MessageService messagingService;
 
     @PostMapping("/create")
     public ResponseEntity<ConversationDTO> createConversation(@RequestBody Map<String, Long> request) {
         try {
-            System.out.println(request.get("id"));
             Long end_user_id = request.get("id");
             return new ResponseEntity<ConversationDTO>(conversationService.createConversation(end_user_id), HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -43,6 +45,11 @@ public class MessagingController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ConversationDTO>> getConversations() {
+        return new ResponseEntity<List<ConversationDTO>>(conversationService.getConversations(), HttpStatus.OK);
     }
 
     @GetMapping("/{conversationId}")
@@ -54,8 +61,14 @@ public class MessagingController {
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (Exception e) {
+            System.out.println(e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @MessageMapping("/messaging/{conversationId}")
+    public void sendMessage(@DestinationVariable Long conversationId, @Payload MessageDTO messageDTO) {
+        messagingService.sendMessage(conversationId, messageDTO);
     }
     
 }

@@ -1,5 +1,8 @@
 package com.zetcco.jobscoutserver.services.mappers;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +22,10 @@ public class ConversationMapper {
                                                 .build();
         return conversationDTO;
                                                 
+    }
+
+    public List<ConversationDTO> mapToDtos(List<Conversation> conversations) {
+        return conversations.stream().map( conversation -> this.mapToDto(conversation) ).collect(Collectors.toList());
     }
     
 }
