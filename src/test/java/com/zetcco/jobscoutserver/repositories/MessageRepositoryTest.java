@@ -2,18 +2,15 @@ package com.zetcco.jobscoutserver.repositories;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.data.domain.PageRequest;
 
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
 import com.zetcco.jobscoutserver.domain.messaging.Message;
 import com.zetcco.jobscoutserver.domain.support.User;
-
-import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class MessageRepositoryTest {
@@ -28,22 +25,34 @@ public class MessageRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    @Transactional
-    @Rollback(false)
     public void testSendMessage() {
-        Conversation conversation = conversationRepository.findById(1L).orElseThrow();
-        List<Message> messages = conversation.getMessages();
-        User user = userRepository.findById(115L).orElseThrow();
+        Conversation conversation = conversationRepository.findById(3L).orElseThrow();
+        User sender = userRepository.findById(95L).orElseThrow();
         Message message = Message.builder()
-                                 .conversation(conversation)
-                                 .sender(user)
-                                 .seen(false)
-                                 .timestamp(new Date())
-                                 .build();
-        messages.add(message);
-
+                                .conversation(conversation)
+                                .content("Hello bitch")
+                                .seen(false)
+                                .timestamp(new Date())
+                                .sender(sender)
+                                .build();
         messageRepository.save(message);
-        conversationRepository.save(conversation);
+    }
+
+    @Test
+    public void testGetConversationMessages() {
+        System.out.println("--------------------");
+        PageRequest page = PageRequest.of(0, 1);
+        List<Message> messages = messageRepository.findByConversationId(3L, page).getContent();
+        System.out.println(messages);
+        System.out.println("--------------------");
+        page = PageRequest.of(1, 1);
+        messages = messageRepository.findByConversationId(3L, page).getContent();
+        System.out.println(messages);
+        System.out.println("--------------------");
+        page = PageRequest.of(2, 1);
+        messages = messageRepository.findByConversationId(3L, page).getContent();
+        System.out.println(messages);
+        System.out.println("--------------------");
     }
 
 }

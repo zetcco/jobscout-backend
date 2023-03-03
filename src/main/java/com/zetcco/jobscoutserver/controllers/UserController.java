@@ -33,7 +33,7 @@ public class UserController {
 
     @GetMapping("/{profileId}")
     public ResponseEntity<ProfileDTO> getProfile(@PathVariable Long profileId) {
-        return new ResponseEntity<ProfileDTO>(userService.getUser(profileId), HttpStatus.OK);
+        return new ResponseEntity<ProfileDTO>(userService.getUserProfileDTO(profileId), HttpStatus.OK);
     }
     
     // TODO: Set proper HttpStatus codes for exceptions

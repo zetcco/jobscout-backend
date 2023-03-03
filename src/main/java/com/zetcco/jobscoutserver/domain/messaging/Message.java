@@ -1,7 +1,6 @@
 package com.zetcco.jobscoutserver.domain.messaging;
 
 import java.util.Date;
-import java.util.UUID;
 
 import com.zetcco.jobscoutserver.domain.support.User;
 

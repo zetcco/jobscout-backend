@@ -23,7 +23,7 @@ public class ConversationRepositoryTest {
     @Test
     public void testStartConversation() {
         Conversation conversation = new Conversation();
-        User user1 = userRepository.findById(60L).orElseThrow();
+        User user1 = userRepository.findById(95L).orElseThrow();
         User user2 = userRepository.findById(63L).orElseThrow();
         conversation.setParticipants(List.of(user1, user2));
         conversationRepository.save(conversation);
@@ -32,15 +32,8 @@ public class ConversationRepositoryTest {
     @Test
     @Transactional
     public void testGetConversation() {
-        Conversation conversation = conversationRepository.findById(1L).orElseThrow();
+        Conversation conversation = conversationRepository.findById(3L).orElseThrow();
         System.out.println(conversation);
-    }
-
-    @Test
-    @Transactional
-    public void testGetConversationMessages() {
-        Conversation conversation = conversationRepository.findById(1L).orElseThrow();
-        System.out.println(conversation.getMessages());
     }
 
 }

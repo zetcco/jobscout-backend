@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,8 @@ public class UserService {
     }
 
     // @zetcco @TODO: Find more convinent way to attach the server url to media resources
-    public ProfileDTO getUser(Long profileId) {
-        User user = userRepository.findById(profileId).orElseThrow();
+    public ProfileDTO getUserProfileDTO(Long profileId) {
+        User user = userRepository.findById(profileId).orElseThrow(() -> new NotFoundException("User not found"));
         return this.getUser(user);
     }
 
@@ -48,6 +49,10 @@ public class UserService {
 
     protected User getAuthUser() {
         return ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
+    protected User getUser(Long userId) throws NotFoundException {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     private ProfileDTO mapUser(User user) {
