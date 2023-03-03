@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zetcco.jobscoutserver.domain.support.Address;
@@ -13,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,4 +58,7 @@ public class JobSeeker extends User {
 
     @ManyToOne
     private Category category;
+
+    @OneToMany
+    private List<Skill> skills;
 }
