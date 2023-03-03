@@ -5,7 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import com.zetcco.jobscoutserver.domain.Recommendation;
 
-@Repository
 public interface RecommendationRepository extends JpaRepository <Recommendation, Long> {
     
 }
