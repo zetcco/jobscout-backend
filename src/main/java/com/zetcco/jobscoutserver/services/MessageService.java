@@ -1,15 +1,16 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
 import com.zetcco.jobscoutserver.domain.messaging.Message;
 import com.zetcco.jobscoutserver.domain.support.User;
@@ -34,7 +35,7 @@ public class MessageService {
     private MessageMapper messageMapper;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private RTCService rtcService;
 
     public List<MessageDTO> getMessages(Long conversation_id, int pageNo, int pageSize) throws NotFoundException {
         Conversation conversation = conversationService.getConversation(conversation_id);
@@ -50,7 +51,7 @@ public class MessageService {
     }
 
     // TODO: Add authentication to this so that SenderID and jwtToken ID can be cross checked (may be check the Websocket filter)
-    public void sendMessage(Long conversation_id, MessageDTO message) {
+    public void sendMessage(Long conversation_id, MessageDTO message) throws JsonProcessingException {
         Conversation conversation = conversationService.getConversation(conversation_id);
         List<User> participants = conversation.getParticipants();
         if (participants.contains(userService.getUser(message.getSenderId()))) {
@@ -59,11 +60,12 @@ public class MessageService {
                                     .sender(User.builder().id(message.getSenderId()).build())
                                     .conversation(Conversation.builder().id(message.getConversationId()).build())
                                     .timestamp(new Date())
+                                    .seenUsers(new ArrayList<User>())
                                     .build();
             newMessage = messageRepository.save(newMessage);
             MessageDTO newMessageDTO = messageMapper.mapToDto(newMessage);
             for (User participant : conversation.getParticipants()) 
-                this.simpMessagingTemplate.convertAndSend("/messaging/private/" + participant.getId(), newMessageDTO);
+                rtcService.sendToUser(participant.getId(), "/messaging/private", "MESSAGE", newMessageDTO);
         }
         else
             throw new AccessDeniedException("User " + message.getSenderId() + " do not have permission to Conversation " + conversation_id);
