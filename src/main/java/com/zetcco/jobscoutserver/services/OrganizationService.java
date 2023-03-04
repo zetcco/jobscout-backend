@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class OrganizationService {
-    
+
     @Autowired
     private UserService userService;
 
@@ -37,38 +37,42 @@ public class OrganizationService {
     private ModelMapper modelMapper;
 
     // TODO: Fix CircularDependency without using setter injection
-    @Autowired @Lazy
+    @Autowired
+    @Lazy
     private JobCreatorService jobCreatorService;
 
     public List<ProfileDTO> searchOrganizationsByName(String name, int pageCount, int pageSize) {
         if (name.equals(""))
             throw new IllegalArgumentException("Wrong Parameters");
         Pageable page = PageRequest.of(pageCount, pageSize);
-        List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page).getContent();
+        List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page)
+                .getContent();
         List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
-        for (Organization organization : organizations) 
+        for (Organization organization : organizations)
             profiles.add(userService.getUser(organization.getId()));
-        return profiles; 
+        return profiles;
     }
 
     public List<ProfileDTO> searchOrganizationsByNameFTS(String name, int pageCount, int pageSize) {
         String keywords = name.replace(' ', '&');
         Pageable page = PageRequest.of(pageCount, pageSize);
-        List<Organization> organizations = organizationRepository.findOrganizationByNameFTS(keywords, page).getContent();
+        List<Organization> organizations = organizationRepository.findOrganizationByNameFTS(keywords, page)
+                .getContent();
         List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
-        for (Organization organization : organizations) 
+        for (Organization organization : organizations)
             profiles.add(modelMapper.map(organization, ProfileDTO.class));
-        return profiles; 
+        return profiles;
     }
 
     @PreAuthorize("hasRole('ORGANIZATION')")
     public List<ProfileDTO> addJobCreatorToOrganization(Long jobCreatorId) throws NotFoundException {
-        Long organizationId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Long organizationId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         return this.addCreatorToOrganization(organizationId, jobCreatorId);
     }
 
     @Transactional
-    List<ProfileDTO> addCreatorToOrganization(Long organizationId, Long jobCreatorId) throws NotFoundException, DataIntegrityViolationException {
+    List<ProfileDTO> addCreatorToOrganization(Long organizationId, Long jobCreatorId)
+            throws NotFoundException, DataIntegrityViolationException {
         Organization organization = this.getOrganizationById(organizationId);
         List<JobCreator> jobCreators = organization.getJobCreators();
         List<JobCreator> request_list = organization.getJobCreatorRequests();
@@ -92,11 +96,20 @@ public class OrganizationService {
     }
 
     Organization getOrganizationById(Long organizationId) throws NotFoundException {
-        return organizationRepository.findById(organizationId).orElseThrow(() -> new NotFoundException("Organization not Found"));
+        return organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new NotFoundException("Organization not Found"));
     }
 
     Organization save(Organization organization) {
         return organizationRepository.save(organization);
+    }
+
+    public List<JobCreator> fetchJobCreatorsRequest(Long organizationId) {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+        List<JobCreator> jRequest = organization.getJobCreatorRequests();
+
+        return jRequest;
+
     }
 
 }
