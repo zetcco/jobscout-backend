@@ -26,10 +26,10 @@ public class JobPostService {
         return this.mapper.mapToDto(jobPostRepository.save(jobPost));
     }
 
-    public JobPostDTO updateJobPost(Long jobPostId , JobPostDTO jobPostDTO) throws NotFoundException{
+    public JobPostDTO updateJobPost(JobPostDTO jobPostDTO) throws NotFoundException{
         JobPost exsistingjobPost = mapper.mapToEntity(jobPostDTO);
-        if(!jobPostRepository.existsById(jobPostId))
-                throw new NotFoundException("Job Post Not Found! - jobPostId : " + jobPostId);
+        if(!jobPostRepository.existsById(exsistingjobPost.getId()))
+                throw new NotFoundException("Job Post Not Found! - jobPostId : " + exsistingjobPost.getId());
             return this.mapper.mapToDto(jobPostRepository.save(exsistingjobPost));
     }
 

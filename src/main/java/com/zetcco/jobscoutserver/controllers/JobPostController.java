@@ -77,7 +77,7 @@ public class JobPostController {
         try{
             if(jobPostId != jobPostDTO.getId())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Incorrect parameters");
-            return new ResponseEntity<JobPostDTO>(jobPostService.updateJobPost(jobPostId, jobPostDTO), HttpStatus.OK);
+            return new ResponseEntity<JobPostDTO>(jobPostService.updateJobPost(jobPostDTO), HttpStatus.OK);
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
