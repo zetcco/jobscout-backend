@@ -45,9 +45,9 @@ public class JobPostServiceTest {
         List<JobPostDTO> jobPost_1 = jobPostService.getAllJobPosts();
         jobPost_1.forEach((p)->{System.out.println(p.getTitle());});
 
-        JobPostDTO exsistingJobPost = jobPostService.getJobPostById(1L);
+        JobPostDTO exsistingJobPost = jobPostService.getJobPostById(4L);
         exsistingJobPost.setTitle("Updated Title");
-        jobPostService.updateJobPost(1L , exsistingJobPost);
+        jobPostService.updateJobPost(exsistingJobPost);
 
         List<JobPostDTO> jobPost_2 = jobPostService.getAllJobPosts();
         jobPost_2.forEach((p)->{System.out.println(p.getTitle());});
