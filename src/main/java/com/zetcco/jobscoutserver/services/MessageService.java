@@ -35,21 +35,6 @@ public class MessageService {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
-    
-    public MessageDTO creatMessage(Long conversation_id, String content) throws NotFoundException, AccessDeniedException {
-        Conversation conversation = conversationService.getConversation(conversation_id);
-        User sender = userService.getAuthUser();
-        if (!conversation.getParticipants().contains(sender))
-            throw new AccessDeniedException("You do not have permission to access this conversation");
-        Message message = Message.builder()
-                                .content(content)
-                                .seen(false)
-                                .sender(sender)
-                                .timestamp(new Date())
-                                .conversation(conversation)
-                                .build();
-        return messageMapper.mapToDto(messageRepository.save(message));
-    }
 
     public List<MessageDTO> getMessages(Long conversation_id, int pageNo, int pageSize) throws NotFoundException {
         Conversation conversation = conversationService.getConversation(conversation_id);
@@ -57,7 +42,10 @@ public class MessageService {
         if (!conversation.getParticipants().contains(requester))
             throw new AccessDeniedException("You do not have permission to access this conversation");
         PageRequest page = PageRequest.of(pageNo, pageSize);
+
+        // TODO: Find a way to get just User ID's rather than whole User objects to reduce JOINS (possibly custom queries, explore that)
         List<Message> messages = messageRepository.findByConversationId(conversation_id, page, Sort.by(Sort.Direction.DESC, "timestamp")).getContent();
+
         return messageMapper.mapToDtos(messages);
     }
 

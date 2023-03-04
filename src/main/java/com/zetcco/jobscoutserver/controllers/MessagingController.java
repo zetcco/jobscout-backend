@@ -42,10 +42,10 @@ public class MessagingController {
     private ObjectMapper objectMapper;
 
     @PostMapping("/create")
-    public ResponseEntity<ConversationDTO> createConversation(@RequestBody Map<String, Long> request) {
+    public ResponseEntity<ConversationDTO> createConversation(@RequestBody Map<String, List<Long>> request) {
         try {
-            Long end_user_id = request.get("id");
-            return new ResponseEntity<ConversationDTO>(conversationService.createConversation(end_user_id), HttpStatus.OK);
+            List<Long> participantIds = request.get("ids");
+            return new ResponseEntity<ConversationDTO>(conversationService.createConversation(participantIds), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {

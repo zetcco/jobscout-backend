@@ -32,7 +32,6 @@ public class MessageRepositoryTest {
         Message message = Message.builder()
                                 .conversation(conversation)
                                 .content("Same as you bro! Doing great")
-                                .seen(false)
                                 .timestamp(new Date())
                                 .sender(sender)
                                 .build();

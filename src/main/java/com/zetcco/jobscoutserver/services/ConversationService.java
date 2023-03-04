@@ -1,11 +1,12 @@
 package com.zetcco.jobscoutserver.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.ConversationRepository;
@@ -26,15 +27,28 @@ public class ConversationService {
     private UserService userService;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private RTCService rtcService;
 
-    public ConversationDTO createConversation(Long end_user_id) throws NotFoundException {
-        User end_user = userService.getUser(end_user_id);
+    // TODO: Remove duplicates
+    public ConversationDTO createConversation(List<Long> participantIds) throws NotFoundException, JsonProcessingException {
         User start_user = userService.getAuthUser();
-        Conversation conversation = Conversation.builder().participants(List.of(start_user, end_user)).build();
-        ConversationDTO conversationDTO = conversationMapper.mapToDto(conversationRepository.save(conversation));
-        simpMessagingTemplate.convertAndSend("/messaging/private/" + end_user_id, conversationDTO);
-        return conversationDTO;
+        participantIds.add(start_user.getId());
+        List<User> participants = participantIds.stream().map( (id) -> userService.getUser(id)).collect(Collectors.toList());
+        List<String> participantNames = participants.stream().map((participant) -> participant.getDisplayName()).collect(Collectors.toList());
+        String convoName = participants.size() == 2 ?  null : String.join(", ", participantNames);
+        Conversation conversation = Conversation.builder()
+                                                    .participants(participants)
+                                                    .name(convoName)
+                                                    .build();
+        
+        conversation = conversationRepository.save(conversation);
+        ConversationDTO newConversationDTO = conversationMapper.mapToDto(conversation);
+        for (Long userId : participantIds) 
+            rtcService.sendToUser(userId, "/messaging/private", "CONVERSATION", newConversationDTO);
+            // simpMessagingTemplate.convertAndSend("/messaging/private/" + userId, newConversationDTO);
+
+
+        return newConversationDTO;
     }
 
     public Conversation getConversation(Long conversation_id) throws NotFoundException {

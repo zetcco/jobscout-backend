@@ -18,6 +18,7 @@ public class MessageMapper {
         MessageDTO messageDTO = MessageDTO.builder()
                                             .id(message.getId())
                                             .content(message.getContent())
+                                            .seenUsers(message.getSeenUsers().stream().map((user) -> user.getId()).collect(Collectors.toList()))
                                             .senderId(message.getSender().getId())
                                             .conversationId(message.getConversation().getId())
                                             .timestamp(message.getTimestamp())
@@ -33,6 +34,7 @@ public class MessageMapper {
         Message newMessage = Message.builder()
                                 .content(messageDto.getContent())
                                 .sender(User.builder().id(messageDto.getSenderId()).build())
+                                .seenUsers(messageDto.getSeenUsers().stream().map((userId) -> User.builder().id(userId).build()).collect(Collectors.toList()))
                                 .conversation(Conversation.builder().id(messageDto.getConversationId()).build())
                                 .timestamp(new Date())
                                 .build();

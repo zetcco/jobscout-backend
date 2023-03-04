@@ -9,7 +9,10 @@ import org.springframework.stereotype.Component;
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
 
+import lombok.NoArgsConstructor;
+
 @Component
+@NoArgsConstructor
 public class ConversationMapper {
 
     @Autowired
@@ -18,6 +21,7 @@ public class ConversationMapper {
     public ConversationDTO mapToDto(Conversation conversation) {
         ConversationDTO conversationDTO = ConversationDTO.builder()
                                                 .id(conversation.getId())
+                                                .name(conversation.getName())
                                                 .participants(userMapper.mapToDtos(conversation.getParticipants()))
                                                 .build();
         return conversationDTO;

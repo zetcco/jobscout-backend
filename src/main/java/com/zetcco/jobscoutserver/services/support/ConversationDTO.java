@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 public class ConversationDTO {
     
     private Long id;
+    private String name;
     private List<ProfileDTO> participants;
     private List<Message> messages;
 
