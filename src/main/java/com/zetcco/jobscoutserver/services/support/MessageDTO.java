@@ -17,8 +17,9 @@ import lombok.NoArgsConstructor;
 public class MessageDTO {
     
     private Long id;
-    private ProfileDTO sender;
+    private Long senderId;
     private Date timestamp;
     private String content;
+    private Long conversationId;
 
 }

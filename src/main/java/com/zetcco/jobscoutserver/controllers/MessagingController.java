@@ -6,9 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.services.ConversationService;
 import com.zetcco.jobscoutserver.services.MessageService;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
@@ -34,6 +37,9 @@ public class MessagingController {
 
     @Autowired
     private MessageService messagingService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @PostMapping("/create")
     public ResponseEntity<ConversationDTO> createConversation(@RequestBody Map<String, Long> request) {
@@ -67,8 +73,14 @@ public class MessagingController {
     }
 
     @MessageMapping("/messaging/{conversationId}")
-    public void sendMessage(@DestinationVariable Long conversationId, @Payload MessageDTO messageDTO) {
-        messagingService.sendMessage(conversationId, messageDTO);
+    public void sendMessage(@DestinationVariable Long conversationId, Message<RTCSignal> signal) {
+        try {
+            RTCSignal payload = signal.getPayload();
+            MessageDTO message = objectMapper.readValue(payload.getData(), MessageDTO.class);
+            messagingService.sendMessage(conversationId, message);
+        } catch (JsonProcessingException e) {
+            System.out.println(e);
+        }
     }
     
 }

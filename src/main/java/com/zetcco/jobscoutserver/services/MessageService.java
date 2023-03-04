@@ -61,8 +61,23 @@ public class MessageService {
         return messageMapper.mapToDtos(messages);
     }
 
-    // TODO: Add authorization to this
-    public void sendMessage(Long conversation_id, MessageDTO messageDTO) {
-        this.simpMessagingTemplate.convertAndSend("/conversation/" + conversation_id, messageDTO);
+    // TODO: Add authentication to this so that SenderID and jwtToken ID can be cross checked (may be check the Websocket filter)
+    public void sendMessage(Long conversation_id, MessageDTO message) {
+        Conversation conversation = conversationService.getConversation(conversation_id);
+        List<User> participants = conversation.getParticipants();
+        if (participants.contains(userService.getUser(message.getSenderId()))) {
+            Message newMessage = Message.builder()
+                                    .content(message.getContent())
+                                    .sender(User.builder().id(message.getSenderId()).build())
+                                    .conversation(Conversation.builder().id(message.getConversationId()).build())
+                                    .timestamp(new Date())
+                                    .build();
+            newMessage = messageRepository.save(newMessage);
+            MessageDTO newMessageDTO = messageMapper.mapToDto(newMessage);
+            for (User participant : conversation.getParticipants()) 
+                this.simpMessagingTemplate.convertAndSend("/messaging/private/" + participant.getId(), newMessageDTO);
+        }
+        else
+            throw new AccessDeniedException("User " + message.getSenderId() + " do not have permission to Conversation " + conversation_id);
     }
 }

@@ -67,10 +67,12 @@ public class MeetingService {
     }
 
     public void sentToRoom(Long roomId, RTCSignal rtcSignal) {
+        System.out.println("----------came here 1--------------");
         simpMessagingTemplate.convertAndSend("/room/" + roomId, rtcSignal);
     }
 
     public void sentToRoomUser(Long roomId, Long userId, RTCSignal rtcSignal) {
+        System.out.println("----------came here 2--------------");
         simpMessagingTemplate.convertAndSend("/room/" + roomId + "/" + userId, rtcSignal);
     }
 
