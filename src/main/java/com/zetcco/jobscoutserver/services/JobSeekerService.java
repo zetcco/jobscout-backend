@@ -23,20 +23,21 @@ public class JobSeekerService {
     private SkillService skillService;
 
     @Autowired
-    private JobSeekerRepository JobSeekerRepository;
+    private JobSeekerRepository jobSeekerRepository;
 
     @Autowired
     private UserService userService;
 
-    public JobSeeker getCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
+    public List<Skill> getCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
         Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
         List<Skill> skillObj = new ArrayList<>();
         for (Long id : skillId) {
             skillObj.add(skillService.getSkillsById(id));
         }
-        JobSeeker jobSeekerObj = JobSeekerRepository.findById(userService.getUser().getId()).orElseThrow();
+        JobSeeker jobSeekerObj = jobSeekerRepository.findById(userService.getUser().getId()).orElseThrow();
         jobSeekerObj.setCategory(categoryObj);
         jobSeekerObj.setSkills(skillObj);
-        return JobSeekerRepository.save(jobSeekerObj);
+        jobSeekerRepository.save(jobSeekerObj);
+        return skillObj;
     }
 }
