@@ -37,15 +37,15 @@ public class JobPostController {
     }
 
     @GetMapping("/{jobPostId}")
-    public ResponseEntity<JobPostDTO> getJobPostById(@PathVariable Long Id){
+    public ResponseEntity<JobPostDTO> getJobPostById(@PathVariable Long jobPostId){
         try{
-            return new ResponseEntity<JobPostDTO>(jobPostService.getJobPostById(Id) , HttpStatus.OK);
+            return new ResponseEntity<JobPostDTO>(jobPostService.getJobPostById(jobPostId) , HttpStatus.OK);
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
     }
 
-    @GetMapping("/Type")
+    @GetMapping("/type")
     public ResponseEntity<List<JobPostDTO>> getJobPostByType(@PathVariable("type") JobPostType type){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByType(type) , HttpStatus.OK);
@@ -54,7 +54,7 @@ public class JobPostController {
         }
     }
  
-    @GetMapping("/Status")
+    @GetMapping("/status")
     public ResponseEntity<List<JobPostDTO>> getJobPostByStatus(@PathVariable("status") JobPostStatus status){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByStatus(status) , HttpStatus.OK);
@@ -72,7 +72,7 @@ public class JobPostController {
         }
     }
 
-    @PutMapping("/{JobPostId}")
+    @PutMapping("/{jobPostId}")
     public ResponseEntity<JobPostDTO> updateJobPost(@PathVariable Long jobPostId , @RequestBody JobPostDTO jobPostDTO){
         try{
             if(jobPostId != jobPostDTO.getId())
@@ -85,11 +85,11 @@ public class JobPostController {
         }
 
     @DeleteMapping("/")
-    public void deleteJobPostById(@PathVariable Long JobPostId , @RequestBody JobPostDTO jobPostDTO){
+    public void deleteJobPostById(@PathVariable Long jobPostId , @RequestBody JobPostDTO jobPostDTO){
         try{
-            if(JobPostId != jobPostDTO.getId())
+            if(jobPostId != jobPostDTO.getId())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect parameters");
-            jobPostService.deleteJobPostById(JobPostId, jobPostDTO);
+            jobPostService.deleteJobPostById(jobPostId, jobPostDTO);
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
