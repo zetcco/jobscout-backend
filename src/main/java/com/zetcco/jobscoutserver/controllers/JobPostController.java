@@ -84,12 +84,10 @@ public class JobPostController {
         
         }
 
-    @DeleteMapping("/")
-    public void deleteJobPostById(@PathVariable Long jobPostId , @RequestBody JobPostDTO jobPostDTO){
+    @DeleteMapping("/{jobPostId}")
+    public void deleteJobPostById(@PathVariable Long jobPostId){
         try{
-            if(jobPostId != jobPostDTO.getId())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect parameters");
-            jobPostService.deleteJobPostById(jobPostId, jobPostDTO);
+            jobPostService.deleteJobPostById(jobPostId);
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }

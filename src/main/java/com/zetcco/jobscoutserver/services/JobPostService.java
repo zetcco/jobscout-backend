@@ -55,8 +55,7 @@ public class JobPostService {
         return this.mapper.mapToDtos(jobPost);
     }
 
-    public void deleteJobPostById(Long Id , JobPostDTO jobPostDTO) throws NotFoundException{
-        JobPost jobPost = mapper.mapToEntity(jobPostDTO);
+    public void deleteJobPostById(Long Id) throws NotFoundException{
         if(!jobPostRepository.existsById(Id))
                 throw new NotFoundException("Job Post Not Found!" + Id);
             jobPostRepository.deleteById(Id);

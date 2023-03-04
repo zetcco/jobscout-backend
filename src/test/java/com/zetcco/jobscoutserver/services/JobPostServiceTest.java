@@ -67,7 +67,6 @@ public class JobPostServiceTest {
   
      @Test
       void testDeleteJobPostById(){
-        JobPostDTO jobPostDTO = jobPostService.getJobPostById(3L);
-        jobPostService.deleteJobPostById(3L , jobPostDTO);
+        jobPostService.deleteJobPostById(4L);
       }
  }
