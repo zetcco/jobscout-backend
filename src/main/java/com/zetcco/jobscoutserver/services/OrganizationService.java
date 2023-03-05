@@ -107,7 +107,6 @@ public class OrganizationService {
     public List<JobCreator> fetchJobCreatorsRequest(Long organizationId) {
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
         List<JobCreator> jRequest = organization.getJobCreatorRequests();
-
         return jRequest;
 
     }
