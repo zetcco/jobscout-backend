@@ -107,4 +107,16 @@ public class User implements UserDetails {
             return null;
     }
 
+    // TODO: Find a better way to get the Name from the parent class, this adds a lot of dependancy
+    public String getFirstName() {
+        if (this instanceof Organization)
+            return ((Organization)this).getCompanyName();
+        else if (this instanceof JobSeeker)
+            return ((JobSeeker)this).getFirstName();
+        else if (this instanceof JobCreator)
+            return ((JobCreator)this).getFirstName();
+        else
+            return null;
+    }
+
 }

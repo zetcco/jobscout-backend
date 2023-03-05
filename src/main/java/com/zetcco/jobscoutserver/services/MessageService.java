@@ -18,6 +18,7 @@ import com.zetcco.jobscoutserver.repositories.MessageRepository;
 import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.TypingDTO;
 
 @Service
 public class MessageService {
@@ -69,5 +70,18 @@ public class MessageService {
         }
         else
             throw new AccessDeniedException("User " + message.getSenderId() + " do not have permission to Conversation " + conversation_id);
+    }
+
+    public void sendTyping(Long conversationId, Long senderId) throws JsonProcessingException {
+        Conversation conversation = conversationService.getConversation(conversationId);
+        List<User> participants = conversation.getParticipants();
+        User sender = userService.getUser(senderId);
+        if (participants.contains(sender)) {
+            TypingDTO typingDTO = new TypingDTO(conversationId, sender.getFirstName());
+            for (User participant : conversation.getParticipants()) 
+                if (participant.getId() != senderId)
+                    rtcService.sendToUser(participant.getId(), "/messaging/private", "TYPING", typingDTO);
+        }
+        
     }
 }

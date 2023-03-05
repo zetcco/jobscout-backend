@@ -25,4 +25,9 @@ public class RTCService {
         RTCSignal signal = new RTCSignal(senderId, type, objectMapper.writeValueAsString(payload));
         simpMessagingTemplate.convertAndSend(destination + "/" + senderId.toString(), signal);
     }
+
+    public void sendToUser(Long senderId, String destination, String type) throws JsonProcessingException {
+        RTCSignal signal = new RTCSignal(senderId, type, objectMapper.writeValueAsString(null));
+        simpMessagingTemplate.convertAndSend(destination + "/" + senderId.toString(), signal);
+    }
 }

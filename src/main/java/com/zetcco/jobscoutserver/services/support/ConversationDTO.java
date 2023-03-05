@@ -17,6 +17,7 @@ public class ConversationDTO {
     
     private Long id;
     private String name;
+    private String picture;
     private List<ProfileDTO> participants;
     private List<Message> messages;
 

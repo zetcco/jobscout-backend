@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,6 +14,7 @@ import com.zetcco.jobscoutserver.repositories.ConversationRepository;
 import com.zetcco.jobscoutserver.services.mappers.ConversationMapper;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
 @Service
 public class ConversationService {
@@ -61,4 +63,19 @@ public class ConversationService {
         return conversationMapper.mapToDtos(conversations);
     }
 
+
+    public void updateConversation(Long conversation_id, String name, String fileName) throws JsonProcessingException, AccessDeniedException {
+        User user = userService.getAuthUser();
+        Conversation conversation = this.getConversation(conversation_id);
+        if (conversation.getParticipants().contains(user)) {
+            conversation.setName(name);
+            conversation.setPicture(fileName);
+            conversation = conversationRepository.save(conversation);
+            ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
+            for (ProfileDTO participantId : conversationDTO.getParticipants()) 
+                rtcService.sendToUser(participantId.getId(), "/messaging/private", "CONVERSATION_UPDATE", conversationDTO);
+        } else {
+            throw new AccessDeniedException("You do not have permission to do this action");
+        }
+    }
 }

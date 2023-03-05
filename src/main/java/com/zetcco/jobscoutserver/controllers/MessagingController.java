@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +30,7 @@ import com.zetcco.jobscoutserver.services.MessageService;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.StorageService;
 
 @Controller
 @RequestMapping("/messaging")
@@ -40,6 +44,9 @@ public class MessagingController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private StorageService storageService;
 
     @PostMapping("/create")
     public ResponseEntity<ConversationDTO> createConversation(@RequestBody Map<String, List<Long>> request) {
@@ -72,12 +79,36 @@ public class MessagingController {
         }
     }
 
+    @PostMapping(path = "/conversation/{conversationId}", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<String> updateChat(@PathVariable Long conversationId, @RequestPart String name, @RequestPart(required = false) MultipartFile picture) {
+        try {
+            String filename = null;
+            if (picture != null)
+                filename = storageService.store(picture);
+            conversationService.updateConversation(conversationId, name, filename);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @MessageMapping("/messaging/{conversationId}")
     public void sendMessage(@DestinationVariable Long conversationId, Message<RTCSignal> signal) {
         try {
             RTCSignal payload = signal.getPayload();
-            MessageDTO message = objectMapper.readValue(payload.getData(), MessageDTO.class);
-            messagingService.sendMessage(conversationId, message);
+            switch (payload.getType()) {
+                case "MESSAGE":
+                    MessageDTO message = objectMapper.readValue(payload.getData(), MessageDTO.class);
+                    messagingService.sendMessage(conversationId, message);
+                    break;
+                case "TYPING":
+                    messagingService.sendTyping(conversationId, payload.getSenderId());
+                    break;
+                default:
+                    break;
+            }
         } catch (JsonProcessingException e) {
             System.out.println(e);
         }

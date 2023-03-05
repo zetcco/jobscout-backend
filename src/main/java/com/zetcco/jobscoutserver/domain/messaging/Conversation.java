@@ -27,6 +27,8 @@ public class Conversation {
     private Long id;
 
     private String name;
+
+    private String picture;
     
     @ManyToMany(fetch = FetchType.EAGER)
     private List<User> participants;
