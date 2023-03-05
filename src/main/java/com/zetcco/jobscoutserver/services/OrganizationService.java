@@ -99,17 +99,18 @@ public class OrganizationService {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("Organization not Found"));
     }
-    public List<JobCreator> fetchJobCreatorsRequest(Long organizationId) {
+
+    public List<ProfileDTO> fetchJobCreatorsRequest(Long organizationId) {
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
         List<JobCreator> jRequest = organization.getJobCreatorRequests();
-        return jRequest;
-
+        List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
+        for (JobCreator jobCreator : jRequest)
+            profiles.add(modelMapper.map(jobCreator, ProfileDTO.class));
+        return profiles;
     }
-
 
     Organization save(Organization organization) {
         return organizationRepository.save(organization);
     }
 
-   
 }
