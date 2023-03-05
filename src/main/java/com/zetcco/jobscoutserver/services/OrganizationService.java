@@ -99,11 +99,6 @@ public class OrganizationService {
         return organizationRepository.findById(organizationId)
                 .orElseThrow(() -> new NotFoundException("Organization not Found"));
     }
-
-    Organization save(Organization organization) {
-        return organizationRepository.save(organization);
-    }
-
     public List<JobCreator> fetchJobCreatorsRequest(Long organizationId) {
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
         List<JobCreator> jRequest = organization.getJobCreatorRequests();
@@ -111,4 +106,10 @@ public class OrganizationService {
 
     }
 
+
+    Organization save(Organization organization) {
+        return organizationRepository.save(organization);
+    }
+
+   
 }
