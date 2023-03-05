@@ -33,8 +33,7 @@ public class OrganizationServiceTest {
     void testFetchJobCratorRequest() {
 
         System.out.println(organizationService.fetchJobCreatorsRequest(4L));
-        // System.out.println("...xxxx........");
-        // System.out.println(organizationService.getOrganizationById(1L));
+
     }
 
 }
