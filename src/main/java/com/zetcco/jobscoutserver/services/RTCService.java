@@ -23,7 +23,6 @@ public class RTCService {
 
     public void sendToUser(Long senderId, String destination, String type, Object payload) throws JsonProcessingException {
         RTCSignal signal = new RTCSignal(senderId, type, objectMapper.writeValueAsString(payload));
-        System.out.println("Sending to=" + destination + senderId.toString() + ", " + signal);
         simpMessagingTemplate.convertAndSend(destination + "/" + senderId.toString(), signal);
     }
 }

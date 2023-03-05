@@ -22,7 +22,7 @@ public class UserService {
 
     // @TODO : Add exception handling here
     public User loadUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow();
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User with specified email was not found"));
     }
 
     public ProfileDTO setProfilePicture(String file) {
