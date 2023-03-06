@@ -17,10 +17,11 @@ public class JobPostMapperTest {
     @Autowired
     JobPostMapper mapper;
 
-    @Test
-    void testMapToDtoTest() {
-        JobCreator jobCreator = jobCreatorRepository.findById(1L).orElseThrow(); 
-        JobPost jobpost = JobPost.builder().jobCreator(jobCreator).description("Test").build();
-        System.out.println(mapper.mapToDtoTest(jobpost));
-    }
+//     @Test
+//     void testMapToDtoTest() {
+//         JobCreator jobCreator = jobCreatorRepository.findById(1L).orElseThrow(); 
+//         JobPost jobpost = JobPost.builder().jobCreator(jobCreator).description("Test").build();
+//         System.out.println(mapper.mapToDtoTest(jobpost));
+//     }
+// 
 }

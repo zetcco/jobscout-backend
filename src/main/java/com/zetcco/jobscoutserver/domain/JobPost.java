@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
+import java.util.List;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 
@@ -12,6 +13,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -45,6 +47,9 @@ public class JobPost {
     
     @Enumerated(value = EnumType.STRING)
     private JobPostStatus status;
+
+    @OneToMany
+    private List<Skill> skillList;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private JobCreator jobCreator;

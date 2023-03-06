@@ -20,15 +20,16 @@ import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.services.JobPostService;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Controller
-@RequestMapping(value = "/jobPost")
+@RequestMapping(value = "/jobpost")
 public class JobPostController {
 
     @Autowired
     private JobPostService jobPostService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<JobPostDTO>> getAllJobPosts(){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getAllJobPosts() , HttpStatus.OK);
@@ -81,7 +82,7 @@ public class JobPostController {
     //     }
     // }
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<JobPostDTO> saveJobPost(@RequestBody JobPostDTO jobPostDTO){
         try{
             return new ResponseEntity<JobPostDTO>(jobPostService.addNewJobPost(jobPostDTO) , HttpStatus.OK);
@@ -94,9 +95,11 @@ public class JobPostController {
     public ResponseEntity<JobPostDTO> updateJobPost(@PathVariable Long jobPostId , @RequestBody JobPostDTO jobPostDTO){
         try{
             if(jobPostId != jobPostDTO.getId())
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Incorrect parameters");
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Incorrect parameters!");
             return new ResponseEntity<JobPostDTO>(jobPostService.updateJobPost(jobPostDTO), HttpStatus.OK);
-        }catch (Exception e){
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
         
@@ -107,6 +110,8 @@ public class JobPostController {
         try{
             jobPostService.deleteJobPostById(jobPostId);
             return new ResponseEntity<String>("Success", HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
         }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }

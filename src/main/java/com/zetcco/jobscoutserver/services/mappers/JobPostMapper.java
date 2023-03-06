@@ -22,6 +22,8 @@ public class JobPostMapper {
     private UserService userService;
 
     public JobPostDTO mapToDto(JobPost jobPost){
+
+        
         return this.modelMapper.map(jobPost , JobPostDTO.class);
     }
 
@@ -37,9 +39,9 @@ public class JobPostMapper {
         return Dtos.stream().map(Dto -> mapToEntity(Dto)).toList();
     }
 
-    public JobPostDTO mapToDtoTest(JobPost jobPost) {
-        TypeMap<JobPost, JobPostDTO> propertyMapper = this.modelMapper.createTypeMap(JobPost.class, JobPostDTO.class);
-        propertyMapper.addMapping(src -> src.getJobCreator(), (dest, val) -> dest.setProfileDTO( userService.getUser( ((JobCreator)val).getId() ) ) );
-        return propertyMapper.map(jobPost);
-    }
+    // public JobPostDTO mapToDtoTest(JobPost jobPost) {
+    //     TypeMap<JobPost, JobPostDTO> propertyMapper = this.modelMapper.createTypeMap(JobPost.class, JobPostDTO.class);
+    //     propertyMapper.addMapping(src -> src.getJobCreator(), (dest, val) -> dest.setProfileDTO( userService.getUser( ((JobCreator)val).getId() ) ) );
+    //     return propertyMapper.map(jobPost);
+    // }
 }
