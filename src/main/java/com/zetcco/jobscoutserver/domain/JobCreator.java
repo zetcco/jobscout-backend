@@ -49,6 +49,10 @@ public class JobCreator extends User {
     @OneToMany
     private List<JobPost> jobPost;
 
+    public JobCreator(Long id, String email, Role role, String displayPicture) {
+        super(id, email, role, displayPicture);
+    }
+
     public JobCreator(String email, String password, Address address) {
         super(email, password, Role.ROLE_JOB_CREATOR, address);
     }

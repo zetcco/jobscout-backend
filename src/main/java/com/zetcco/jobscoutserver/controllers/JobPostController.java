@@ -29,9 +29,9 @@ public class JobPostController {
     private JobPostService jobPostService;
 
     @GetMapping("/")
-    public ResponseEntity<List<JobPostDTO>> getAllJobPosts(){
+    public ResponseEntity<List<JobPostDTO>> getAllJobPosts(@RequestParam("page") int page, @RequestParam("size") int size){
         try{
-            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getAllJobPosts() , HttpStatus.OK);
+            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getAllJobPosts(page, size) , HttpStatus.OK);
         }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
