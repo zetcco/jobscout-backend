@@ -51,10 +51,10 @@ public class JobPost {
     @OneToMany
     private List<Skill> skillList;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private JobCreator jobCreator;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private Category category;
 
     public JobPost(Long id, Date timestamp, Date dueDate, String title, String description, JobPostType type,

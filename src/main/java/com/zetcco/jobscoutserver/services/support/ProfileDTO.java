@@ -1,6 +1,6 @@
 package com.zetcco.jobscoutserver.services.support;
 
-import com.zetcco.jobscoutserver.domain.support.Address;
+// import com.zetcco.jobscoutserver.domain.support.Address;
 import com.zetcco.jobscoutserver.domain.support.Role;
 
 import lombok.Data;
@@ -11,6 +11,6 @@ public class ProfileDTO {
     private String email;
     private Role role;
     private String displayName;
-    private Address address;
+    // private Address address;
     private String displayPicture;
 }
