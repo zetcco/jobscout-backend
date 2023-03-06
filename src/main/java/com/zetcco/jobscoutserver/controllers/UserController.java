@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.services.UserService;
+import com.zetcco.jobscoutserver.services.mappers.UserMapper;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
@@ -26,6 +28,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     @GetMapping("/")
     public ResponseEntity<ProfileDTO> getUserProfile() {
         return new ResponseEntity<ProfileDTO>(userService.getUser(), HttpStatus.OK);
@@ -33,7 +38,8 @@ public class UserController {
 
     @GetMapping("/{profileId}")
     public ResponseEntity<ProfileDTO> getProfile(@PathVariable Long profileId) {
-        return new ResponseEntity<ProfileDTO>(userService.getUser(profileId), HttpStatus.OK);
+        // TODO: Change this to use UserMapper
+        return new ResponseEntity<ProfileDTO>(userService.getUserProfileDTO(profileId), HttpStatus.OK);
     }
     
     // TODO: Set proper HttpStatus codes for exceptions
@@ -44,6 +50,15 @@ public class UserController {
             return new ResponseEntity<ProfileDTO>(userService.setProfilePicture(filename), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<ProfileDTO> getByEmail(@PathVariable String email) {
+        try {
+            return new ResponseEntity<ProfileDTO>(userMapper.mapToDto(userService.loadUserByEmail(email)), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 }
