@@ -34,7 +34,7 @@ import com.zetcco.jobscoutserver.services.support.StorageService;
 
 @Controller
 @RequestMapping("/messaging")
-public class MessagingController {
+public class MessageController {
 
     @Autowired
     private ConversationService conversationService;

@@ -59,7 +59,7 @@ public class MessageService {
             Message newMessage = Message.builder()
                                     .content(message.getContent())
                                     .sender(User.builder().id(message.getSenderId()).build())
-                                    .conversation(Conversation.builder().id(message.getConversationId()).build())
+                                    .conversation(Conversation.builder().id(conversation_id).build())
                                     .timestamp(new Date())
                                     .seenUsers(new ArrayList<User>())
                                     .build();
