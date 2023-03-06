@@ -39,6 +39,11 @@ public class Organization extends User {
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_creator_id"))
     private List<JobCreator> jobCreatorRequests;
 
+    public Organization(Long id, String email, Role role, String displayPicture, String companyName) {
+        super(id, email, role, displayPicture);
+        this.companyName = companyName;
+    }
+
     public Organization(String email, String password, Address address) {
         super(email, password, Role.ROLE_ORGANIZATION, address);
     }

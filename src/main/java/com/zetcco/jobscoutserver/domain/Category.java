@@ -37,4 +37,10 @@ public class Category {
     @OneToMany(fetch = FetchType.EAGER)
     private List<JobPost> jobPosts;
 
+    public Category(Long id, String name, String description) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
 }

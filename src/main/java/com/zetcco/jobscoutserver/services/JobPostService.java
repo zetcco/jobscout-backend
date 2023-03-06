@@ -3,6 +3,8 @@ package com.zetcco.jobscoutserver.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.JobPost;
@@ -33,8 +35,10 @@ public class JobPostService {
             return this.mapper.mapToDto(jobPostRepository.save(exsistingjobPost));
     }
 
-    public List<JobPostDTO> getAllJobPosts() throws NotFoundException{
-        return this.mapper.mapToDtos(jobPostRepository.findAll());
+    public List<JobPostDTO> getAllJobPosts(int page, int size) throws NotFoundException{
+        // return this.mapper.mapToDtos(jobPostRepository.findAll());
+        Pageable pageable = PageRequest.of(page, size);
+        return this.mapper.mapToDtos(jobPostRepository.getAll(pageable).getContent());
     }
 
     public JobPostDTO getJobPostById(Long jobPostId) throws NotFoundException{

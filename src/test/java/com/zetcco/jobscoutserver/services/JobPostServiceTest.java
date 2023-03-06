@@ -10,7 +10,6 @@ import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
-import com.zetcco.jobscoutserver.repositories.JobPostRepository;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
 
 @SpringBootTest
@@ -42,14 +41,14 @@ public class JobPostServiceTest {
 
     @Test
     void testUpdateJobPost(){
-        List<JobPostDTO> jobPost_1 = jobPostService.getAllJobPosts();
+        List<JobPostDTO> jobPost_1 = jobPostService.getAllJobPosts(0, 2);
         jobPost_1.forEach((p)->{System.out.println(p.getTitle());});
 
         JobPostDTO exsistingJobPost = jobPostService.getJobPostById(4L);
         exsistingJobPost.setTitle("Updated Title");
         jobPostService.updateJobPost(exsistingJobPost);
 
-        List<JobPostDTO> jobPost_2 = jobPostService.getAllJobPosts();
+        List<JobPostDTO> jobPost_2 = jobPostService.getAllJobPosts(1, 2);
         jobPost_2.forEach((p)->{System.out.println(p.getTitle());});
     }
 

@@ -63,6 +63,13 @@ public class User implements UserDetails {
 
     private String displayPicture;
 
+    public User(Long id, String email, Role role, String displayPicture) {
+        this.id = id;
+        this.email = email;
+        this.role = role;
+        this.displayPicture = displayPicture;
+    }
+
     protected User(String email, String password, Role role, Address address) {
         this.email = email;
         this.password = password;
