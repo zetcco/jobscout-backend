@@ -7,12 +7,14 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
+import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
@@ -42,7 +44,12 @@ public class RecommendationService {
         this.propertyMapper = modelMapper.createTypeMap(Recommendation.class, RecommendationDTO.class);
     }
 
-    public ProfileDTO addRecommendationRequest(Long responderId, Long requesterId) {
+    public ProfileDTO addRecommendationRequest(Long responderId) {
+        Long requester = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        return addRecommendationRequest(responderId, requester);
+    }
+
+    private ProfileDTO addRecommendationRequest(Long responderId, Long requesterId) {
         JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
 
@@ -56,7 +63,7 @@ public class RecommendationService {
         return userService.getUser(responderId);
     }
 
-    public void addRecommendation(RecommendationDTO recommendationDTO) {
+    public RecommendationDTO addRecommendation(RecommendationDTO recommendationDTO) {
         JobCreator responder = jobCreatorRepository.findById(recommendationDTO.getResponder().getId()).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(recommendationDTO.getRequester().getId()).orElseThrow();
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
@@ -74,14 +81,10 @@ public class RecommendationService {
         jobCreatorRepository.save(responder);
         
         for(JobSeeker checkRecommendationRequest : recommendationRequest) {
-            requestRecommendationList.remove(requestRecommendationList);
+            requestRecommendationList.remove(checkRecommendationRequest);
         }
-    }
 
-    private RecommendationDTO mapRecommendation(Recommendation recommendation) {
-        propertyMapper.addMapping(src -> src.getReccomendationId(), (dest, v) -> dest.setRecommendationId((Long)v));
-        RecommendationDTO recommendationDTO = propertyMapper.map(recommendation);
-        return recommendationDTO;
+        return null;
     }
 
     public void updateRecommendation(Recommendation recommendation) {
