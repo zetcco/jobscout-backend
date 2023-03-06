@@ -29,6 +29,6 @@ public class JobPostDTO {
     private Boolean urgent;
     private JobPostStatus status;
     private Category category;
-    private ProfileDTO profileDTO;
+    private ProfileDTO jobCreator;
     
 }

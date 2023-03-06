@@ -28,7 +28,7 @@ public class JobPostController {
     @Autowired
     private JobPostService jobPostService;
 
-    @GetMapping("/")
+    @GetMapping
     public ResponseEntity<List<JobPostDTO>> getAllJobPosts(@RequestParam("page") int page, @RequestParam("size") int size){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getAllJobPosts(page, size) , HttpStatus.OK);

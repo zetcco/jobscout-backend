@@ -46,10 +46,10 @@ public class JobPost {
     @Enumerated(value = EnumType.STRING)
     private JobPostStatus status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private JobCreator jobCreator;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private Category category;
 
     public JobPost(Long id, Date timestamp, Date dueDate, String title, String description, JobPostType type,

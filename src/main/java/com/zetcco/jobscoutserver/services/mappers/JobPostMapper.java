@@ -3,14 +3,13 @@ package com.zetcco.jobscoutserver.services.mappers;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
-import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.services.UserService;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
 @Component
 public class JobPostMapper {
@@ -20,10 +19,6 @@ public class JobPostMapper {
 
     @Autowired
     private UserService userService;
-
-    public JobPostDTO mapToDto(JobPost jobPost){
-        return this.modelMapper.map(jobPost , JobPostDTO.class);
-    }
 
     public List<JobPostDTO> mapToDtos(List<JobPost> jobPosts){
         return jobPosts.stream().map(jobPost -> mapToDto(jobPost)).toList(); 
@@ -37,9 +32,20 @@ public class JobPostMapper {
         return Dtos.stream().map(Dto -> mapToEntity(Dto)).toList();
     }
 
-    public JobPostDTO mapToDtoTest(JobPost jobPost) {
-        TypeMap<JobPost, JobPostDTO> propertyMapper = this.modelMapper.createTypeMap(JobPost.class, JobPostDTO.class);
-        propertyMapper.addMapping(src -> src.getJobCreator(), (dest, val) -> dest.setProfileDTO( userService.getUser( ((JobCreator)val).getId() ) ) );
-        return propertyMapper.map(jobPost);
+    public JobPostDTO mapToDto(JobPost jobPost) {
+        ProfileDTO jobCreator = userService.getUser(jobPost.getJobCreator().getId());
+        JobPostDTO jobPostDTO = JobPostDTO.builder()
+                                            .Id(jobPost.getId())
+                                            .category(jobPost.getCategory())
+                                            .title(jobPost.getTitle())
+                                            .description(jobPost.getDescription())
+                                            .dueDate(jobPost.getDueDate())
+                                            .timestamp(jobPost.getTimestamp())
+                                            .type(jobPost.getType())
+                                            .status(jobPost.getStatus())
+                                            .jobCreator(jobCreator)
+                                            .urgent(jobPost.getUrgent())
+                                            .build();
+        return jobPostDTO;
     }
 }
