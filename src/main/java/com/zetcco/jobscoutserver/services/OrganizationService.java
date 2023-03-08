@@ -100,7 +100,8 @@ public class OrganizationService {
                 .orElseThrow(() -> new NotFoundException("Organization not Found"));
     }
 
-    public List<ProfileDTO> fetchJobCreatorsRequest(Long organizationId) {
+    public List<ProfileDTO> fetchJobCreatorsRequest() {
+        Long organizationId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
         List<JobCreator> jRequest = organization.getJobCreatorRequests();
         List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
