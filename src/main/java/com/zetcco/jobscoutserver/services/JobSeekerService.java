@@ -12,6 +12,7 @@ import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.repositories.SkillsRepository;
 
 @Service
 public class JobSeekerService {

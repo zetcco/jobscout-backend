@@ -1,23 +1,24 @@
-package com.zetcco.jobscoutserver.domain.support.dto;
+package com.zetcco.jobscoutserver.services.support;
 
 import java.util.List;
 
-import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.domain.messaging.Message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CategoryDTO {
+public class ConversationDTO {
     
     private Long id;
     private String name;
-    private String description;
+    private String picture;
     private List<ProfileDTO> participants;
+    private List<Message> messages;
 
 }
