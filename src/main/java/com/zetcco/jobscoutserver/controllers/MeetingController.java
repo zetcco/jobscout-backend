@@ -63,11 +63,13 @@ public class MeetingController {
         }
     }
 
+    // TODO: FIX THIS TO USE Message<RTCSignal> !!! URGENT !!!
     @MessageMapping("/room/{roomId}")
     public void sendToRoom(@DestinationVariable Long roomId, @Payload RTCSignal rtcSignal) {
         meetingService.sentToRoom(roomId, rtcSignal);
     }
 
+    // TODO: FIX THIS TO USE Message<RTCSignal> !!! URGENT !!!
     @MessageMapping("/room/{roomId}/{userId}")
     public void sendToRoomUser(@DestinationVariable Long roomId, @DestinationVariable Long userId, @Payload RTCSignal rtcSignal) {
         meetingService.sentToRoomUser(roomId, userId, rtcSignal);

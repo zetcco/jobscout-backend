@@ -48,8 +48,8 @@ public class OrganizationService {
         List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page)
                 .getContent();
         List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
-        for (Organization organization : organizations)
-            profiles.add(userService.getUser(organization.getId()));
+        for (Organization organization : organizations) 
+            profiles.add(userService.getUserProfileDTO(organization.getId()));
         return profiles;
     }
 
@@ -86,8 +86,8 @@ public class OrganizationService {
             organization.setJobCreators(jobCreators);
             requestee.setOrganization(organization);
 
-            ProfileDTO updatedOrganization = userService.getUser(this.save(organization).getId());
-            ProfileDTO updatedJobCreator = userService.getUser(jobCreatorService.save(requestee).getId());
+            ProfileDTO updatedOrganization = userService.getUserProfileDTO(this.save(organization).getId());
+            ProfileDTO updatedJobCreator = userService.getUserProfileDTO(jobCreatorService.save(requestee).getId());
 
             return List.of(updatedJobCreator, updatedOrganization);
         } else {

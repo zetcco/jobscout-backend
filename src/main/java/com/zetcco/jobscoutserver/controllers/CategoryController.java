@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.services.CategoryService;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Controller
 @RequestMapping(value = "/category")
@@ -24,7 +26,7 @@ public class CategoryController {
     private CategoryService categoryService;
 
     @GetMapping("/")
-    public ResponseEntity<List<CategoryDTO>> getAllCategories(){
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() throws NotFoundException {
         try {
             return new ResponseEntity<List<CategoryDTO>>(categoryService.getAllCategories(), HttpStatus.OK);
         } catch (Exception e) {
@@ -33,41 +35,53 @@ public class CategoryController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<CategoryDTO>> getCategoryByContainingIgnoreType(@RequestParam("q") String name){
-        try{
-           return new ResponseEntity<List<CategoryDTO>>(categoryService.getCategoryByNameContainingIgnoreCase(name) , HttpStatus.OK); 
-        } catch(Exception e){
+    public ResponseEntity<List<CategoryDTO>> getCategoryByContainingIgnoreType(@RequestParam("q") String name)
+            throws NotFoundException {
+        try {
+            return new ResponseEntity<List<CategoryDTO>>(categoryService.getCategoryByNameContainingIgnoreCase(name),
+                    HttpStatus.OK);
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }      
+        }
     }
 
     @GetMapping("/{categoryId}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long categoryId){
-        try{
-            return new ResponseEntity<CategoryDTO>(categoryService.getCategoryById(categoryId) , HttpStatus.OK); 
-        }catch(Exception e){
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Long categoryId) throws NotFoundException {
+        try {
+            return new ResponseEntity<CategoryDTO>(categoryService.getCategoryById(categoryId), HttpStatus.OK);
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }    
+        }
     }
 
     @PostMapping("/")
-    public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDto){ 
-        try{
-            return new ResponseEntity<CategoryDTO>(categoryService.addNewCategory(categoryDto) , HttpStatus.OK);
-        } catch(Exception e){
+    public ResponseEntity<CategoryDTO> saveCategory(@RequestBody CategoryDTO categoryDto) throws NotFoundException {
+        try {
+            return new ResponseEntity<CategoryDTO>(categoryService.addNewCategory(categoryDto), HttpStatus.OK);
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }    
+        }
     }
 
     @PutMapping("/{categoryId}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDTO category){
-        try{
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Long categoryId, @RequestBody CategoryDTO category)
+            throws NotFoundException {
+        try {
             if (categoryId != category.getId())
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect parameters");
             return new ResponseEntity<CategoryDTO>(categoryService.updateCategory(category), HttpStatus.OK);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }       
+        }
+    }
+
+    @GetMapping("/{categoryId}/skills")
+    public ResponseEntity<List<Skill>> getCategorySkills(@PathVariable Long categoryId) throws NotFoundException {
+        try {
+            return new ResponseEntity<List<Skill>>(categoryService.getSkillsByCategory(categoryId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 }
