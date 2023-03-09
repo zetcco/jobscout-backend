@@ -15,15 +15,14 @@ public class CategoryRepositoryTest {
     private CategoryRepository categoryRepository;
 
     @Test
-    public void addCategory(){
+    public void addCategory() {
         Category category = Category.builder()
-                                    .name("Software Engineering")
-                                    .description("Senior Software Engineer")
-                                    .build();
-        categoryRepository.save(category);                              
+                .name("Software Engineering")
+                .description("Senior Software Engineer")
+                .build();
+        categoryRepository.save(category);
     }
 
-    
     @Test
     void testAddListOfCategories() {
         Category c1 = Category.builder().name("New category 1").description("Category 1 Desc").build();
@@ -34,32 +33,34 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    public void getAllCategories(){
-            List<Category> category = categoryRepository.findAll();
-            category.forEach((p)->{
-                System.out.println(p.getName());
-            }); 
+    public void getAllCategories() {
+        List<Category> category = categoryRepository.findAll();
+        category.forEach((p) -> {
+            System.out.println(p.getName());
+        });
     }
 
     @Test
-    public void getCategoryByName(){
-            Optional<Category> category = categoryRepository.findByNameIgnoreCase("hr manager");
-            category.ifPresent(p->{System.out.println(p.getName());});
-            
-    } 
-    
-    @Test
-    public void getCategoryByIgnoringType(){
-            List<Category> category = categoryRepository.findByNameContainingIgnoreCase("Software");
-            category.forEach((p)->{
-                System.out.println(p.getName());
-            });
+    public void getCategoryByName() {
+        Optional<Category> category = categoryRepository.findByNameIgnoreCase("hr manager");
+        category.ifPresent(p -> {
+            System.out.println(p.getName());
+        });
+
     }
 
     @Test
-    public void getCategoryById(){
-            Category category = categoryRepository.findById(2L).orElseThrow();
-            System.out.println(category.getName());
+    public void getCategoryByIgnoringType() {
+        List<Category> category = categoryRepository.findByNameContainingIgnoreCase("Software");
+        category.forEach((p) -> {
+            System.out.println(p.getName());
+        });
     }
-    
+
+    @Test
+    public void getCategoryById() {
+        Category category = categoryRepository.findById(2L).orElseThrow();
+        System.out.println(category.getName());
+    }
+
 }
