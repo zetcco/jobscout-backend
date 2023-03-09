@@ -62,5 +62,4 @@ public class JobSeeker extends User {
 
     @OneToMany
     private List<Skill> skills;
-
 }

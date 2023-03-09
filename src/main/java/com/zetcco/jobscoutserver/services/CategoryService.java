@@ -48,7 +48,7 @@ public class CategoryService {
             return this.mapper.mapToDto(category);
     }
 
-    public List<CategoryDTO> getCategoryByNameContainingIgnoreCase(String name) {
+    public List<CategoryDTO> getCategoryByNameContainingIgnoreCase(String name) throws NotFoundException{
             return this.mapper.mapToDtos(categoryRepository.findByNameContainingIgnoreCase(name));
     }
 
