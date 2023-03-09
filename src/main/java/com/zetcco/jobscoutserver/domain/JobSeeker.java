@@ -60,6 +60,6 @@ public class JobSeeker extends User {
     @ManyToOne
     private Category category;
 
-    @OneToMany
+    @ManyToMany
     private List<Skill> skills;
 }
