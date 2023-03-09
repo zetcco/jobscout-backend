@@ -98,4 +98,10 @@ public class CategoryServiceTest {
         Category category = categoryRepository.findById(2L).orElseThrow();
         System.out.println(category.getSkills());
     }
+
+    @Test
+    void testGetCategoryByIdCategory() {
+        Category category = categoryRepository.findById(2L).orElseThrow();
+        System.out.println(category);
+    }
 }
