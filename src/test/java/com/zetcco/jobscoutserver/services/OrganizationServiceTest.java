@@ -19,12 +19,21 @@ public class OrganizationServiceTest {
     @Test
     void testSearchOrganizationsByName() {
         System.out.println(organizationService.searchOrganizationsByName("not creative", 0, 1));
-        // System.out.println(organizationService.searchOrganizationsByName("creative", 1, 1));
+        // System.out.println(organizationService.searchOrganizationsByName("creative",
+        // 1, 1));
     }
 
     @Test
     void testAddJobCreatorToOrganization() {
-        // System.out.println(organizationService.addJobCreatorToOrganization(67L, 72L));
+        // System.out.println(organizationService.addJobCreatorToOrganization(67L,
+        // 72L));
+    }
+
+    @Test
+    void testFetchJobCratorRequest() {
+
+        // System.out.println(organizationService.fetchJobCreatorsRequest(4L));
+
     }
 
 }

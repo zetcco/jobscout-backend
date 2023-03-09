@@ -20,18 +20,19 @@ import com.zetcco.jobscoutserver.services.OrganizationService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
-
 @Controller
 @RequestMapping("/organization")
 public class OrganizationController {
-    
+
     @Autowired
     private OrganizationService organizationService;
 
     @GetMapping("/search")
-    public ResponseEntity<List<ProfileDTO>> searchOrganizations(@RequestParam("q") String keywords, @RequestParam("limit") int pageSize, @RequestParam("offset") int pageCount) {
+    public ResponseEntity<List<ProfileDTO>> searchOrganizations(@RequestParam("q") String keywords,
+            @RequestParam("limit") int pageSize, @RequestParam("offset") int pageCount) {
         try {
-            return new ResponseEntity<List<ProfileDTO>>(organizationService.searchOrganizationsByName(keywords, pageCount, pageSize), HttpStatus.OK);
+            return new ResponseEntity<List<ProfileDTO>>(
+                    organizationService.searchOrganizationsByName(keywords, pageCount, pageSize), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
@@ -43,13 +44,25 @@ public class OrganizationController {
     public ResponseEntity<List<ProfileDTO>> addCreatorToOrganization(@RequestBody Map<String, Long> request) {
         try {
             Long jobCreatorId = request.get("id");
-            return new ResponseEntity<List<ProfileDTO>>(organizationService.addJobCreatorToOrganization(jobCreatorId), HttpStatus.OK);
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.addJobCreatorToOrganization(jobCreatorId),
+                    HttpStatus.OK);
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already registered on an Organization. Remove it to request again for joining to an Organization");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Already registered on an Organization. Remove it to request again for joining to an Organization");
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/join-request")
+    public ResponseEntity<List<ProfileDTO>> fetchJobCreatorsRequest() {
+        try {
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.fetchJobCreatorsRequest(),
+                    HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
