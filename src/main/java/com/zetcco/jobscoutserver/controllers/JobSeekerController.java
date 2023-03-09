@@ -30,7 +30,7 @@ public class JobSeekerController {
         try {
             List<Long> participantIds = request.get("ids");
             return new ResponseEntity<List<Skill>>(
-                    jobSeekerService.getCategoryAndSkillListById(categoryId, participantIds),
+                    jobSeekerService.updateCategoryAndSkillListById(categoryId, participantIds),
                     HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
