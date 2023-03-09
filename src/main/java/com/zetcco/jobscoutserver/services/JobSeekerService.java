@@ -28,7 +28,7 @@ public class JobSeekerService {
     @Autowired
     private UserService userService;
 
-    public List<Skill> getCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
+    public List<Skill> updateCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
         Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
         List<Skill> skillObj = new ArrayList<>();
         for (Long id : skillId) {
