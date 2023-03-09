@@ -58,6 +58,12 @@ public class CategoryService {
             return this.mapper.mapToDto(category);
     }
 
+    public Category getCategoryByIdCategory(Long id) {
+        Category category = categoryRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Categor"));
+    return category;
+}
+
     public List<Skill> getSkillsByCategory(Long id) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category Not Found"));
