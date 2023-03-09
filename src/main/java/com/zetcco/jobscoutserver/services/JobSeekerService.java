@@ -9,16 +9,15 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Skill;
-import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
-import com.zetcco.jobscoutserver.repositories.SkillsRepository;
+
 
 @Service
 public class JobSeekerService {
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategoryService categoryService;
 
     @Autowired
     private SkillService skillService;
@@ -30,7 +29,7 @@ public class JobSeekerService {
     private UserService userService;
 
     public List<Skill> updateCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
-        Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
+        Category categoryObj = categoryService.getCategoryByIdCategory(categortId);
         List<Skill> skillObj = new ArrayList<>();
         for (Long id : skillId) {
             skillObj.add(skillService.getSkillsById(id));
