@@ -26,7 +26,8 @@ public class Qualification {
     @ManyToOne
     private JobSeeker jobSeeker;
 
-    private String duration;
+    private String startYear;
+    private String endYear;
     
     @ManyToOne
     private Institute institute;

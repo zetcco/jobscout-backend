@@ -45,7 +45,8 @@ public class JobSeekerRepositoryTest {
         Qualification qualification = Qualification.builder()
                                                     .degree(degree)
                                                     .institute(institute)
-                                                    .duration("2026 - 2028")
+                                                    .startYear("2023")
+                                                    .endYear("2025")
                                                     .build();
         qualification = qualificationRepository.save(qualification);
         List<Qualification> qualifications = jobSeeker.getQualifications();

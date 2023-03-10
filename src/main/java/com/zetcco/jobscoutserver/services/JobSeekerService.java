@@ -79,8 +79,10 @@ public class JobSeekerService {
     } 
 
     public List<Qualification> updateQualifications(List<Qualification> qualifications) throws NotFoundException {
-        qualifications = qualificationService.saveQualifications(qualifications);
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
+        for (Qualification qualification : qualifications) 
+            qualification.setJobSeeker(jobSeeker);
+        qualifications = qualificationService.saveQualifications(qualifications);
         jobSeeker.setQualifications(qualifications);
         jobSeeker = jobSeekerRepository.save(jobSeeker);
         return jobSeeker.getQualifications();

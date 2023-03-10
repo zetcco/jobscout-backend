@@ -41,4 +41,12 @@ public class QualificationService {
         return instituteRepository.findById(id).orElseThrow(() -> new NotFoundException("Institute not found"));
     }
 
+    public List<Degree> getDegrees() {
+        return degreeRepository.findAll();
+    }
+
+    public List<Institute> getInstitutes() {
+        return instituteRepository.findAll();
+    }
+
 }
