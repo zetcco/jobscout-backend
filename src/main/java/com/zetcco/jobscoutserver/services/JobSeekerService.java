@@ -101,4 +101,12 @@ public class JobSeekerService {
         jobSeeker = jobSeekerRepository.save(jobSeeker);
         return jobSeeker.getPastExperiences();
     }
+
+    public String updateIntro(String intro) throws NotFoundException {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
+        System.out.println(jobSeeker.getIntro());
+        jobSeeker.setIntro(intro);
+        jobSeeker = jobSeekerRepository.save(jobSeeker);
+        return jobSeeker.getIntro();
+    }
 }

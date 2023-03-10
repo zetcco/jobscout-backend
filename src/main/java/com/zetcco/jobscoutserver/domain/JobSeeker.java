@@ -12,10 +12,12 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -58,6 +60,9 @@ public class JobSeeker extends User {
         this.dob = dob;
         this.gender = gender;
     }
+
+    @Column(columnDefinition = "TEXT")
+    private String intro;
 
     @ManyToOne
     private Category category;

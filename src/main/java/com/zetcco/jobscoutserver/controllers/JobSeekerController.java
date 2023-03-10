@@ -91,4 +91,17 @@ public class JobSeekerController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PutMapping("/update/intro")
+    public ResponseEntity<String> updateIntro(@RequestBody String intro) {
+        try {
+            // jobSeekerService.updateIntro(intro);
+            return new ResponseEntity<>(jobSeekerService.updateIntro(intro), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
