@@ -10,6 +10,7 @@ import com.zetcco.jobscoutserver.domain.support.NameTitle;
 import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
+import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -66,4 +67,7 @@ public class JobSeeker extends User {
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<Qualification> qualifications;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<PastExperience> pastExperiences;
 }
