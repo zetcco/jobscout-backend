@@ -51,7 +51,7 @@ public class JobSeekerService {
         return skillObj;
     }
 
-    public void generateCV(Long profileId, Long templateId) throws RestClientException, URISyntaxException {
+    public Resource generateCV(Long profileId, Long templateId) throws RestClientException, URISyntaxException {
         JobSeeker jobSeeker = jobSeekerRepository.findById(profileId).orElseThrow();
         CVDataRequest cvDataRequest = CVDataRequest.builder()
                                                     .id(profileId)
@@ -70,6 +70,6 @@ public class JobSeekerService {
         RestTemplate restTemplate = new RestTemplate();
         URI url = new URI("http://localhost:8081/cv/generate");
         Resource result = restTemplate.postForObject(url, cvDataRequest, Resource.class);
-        // ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+        return result;
     } 
 }
