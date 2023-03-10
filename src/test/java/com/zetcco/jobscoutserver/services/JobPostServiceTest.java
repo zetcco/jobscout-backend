@@ -21,9 +21,6 @@ public class JobPostServiceTest {
     @Autowired
     private JobPostMapper mapper;
 
-    // @Autowired
-    // JobPostMapper mapper;
-
     @Test
     void testAddNewJobPost(){
         Date newDate = new Date();
@@ -63,9 +60,33 @@ public class JobPostServiceTest {
         List<JobPostDTO> jobPost = jobPostService.getJobPostByStatus(JobPostStatus.STATUS_ACTIVE);
         jobPost.forEach((p)->{System.out.println(p.getTitle());});
     }
+
+    @Test
+    void testFindJobPostByJobCreatorId(){
+        List<JobPostDTO> jobPost = jobPostService.getJobPostsByJobCreatorId(2L);
+        jobPost.forEach((p)->{System.out.println(p.getTitle());});
+    }
+
+    @Test
+    void testFindJobPostByOrganizationId(){
+        List<JobPostDTO> jobPost = jobPostService.getJobPostsByOrganizationId(2L);
+        jobPost.forEach((p)->{System.out.println(p.getTitle());});
+    }
+
+    @Test
+    void testFindJobPostByCategoryId(){
+        List<JobPostDTO> jobPost = jobPostService.getJobPostsByCategoryId(5L);
+        jobPost.forEach((p)->{System.out.println(p.getTitle());});
+    }
   
      @Test
       void testDeleteJobPostById(){
         jobPostService.deleteJobPostById(4L);
+      }
+
+      @Test
+      void testSearchJobPostsByNameFTS(){
+        List<JobPostDTO> jobPost = jobPostService.getJobPostByNameFTS("full time", 0, 1);
+        jobPost.forEach((p)->{System.out.println(p.getTitle());});
       }
  }

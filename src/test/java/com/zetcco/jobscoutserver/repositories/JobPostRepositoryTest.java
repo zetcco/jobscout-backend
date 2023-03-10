@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobPost;
+import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.services.UserService;
@@ -29,21 +30,26 @@ public class JobPostRepositoryTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private OrganizationRepository organizationRepository;
+
+    @Autowired
     private UserService userService;
 
     @Test
     public void testSaveJobPost() throws Exception{
 
-        JobCreator jobCreator = jobCreatorRepository.findById(109L).orElseThrow();
-        Category category = categoryRepository.findById(1L).orElseThrow();
+        JobCreator jobCreator = jobCreatorRepository.findById(4L).orElseThrow();
+        Category category = categoryRepository.findById(5L).orElseThrow();
+        Organization organization = organizationRepository.findById(5L).orElseThrow();
 
         Date date =  new Date(); 
         JobPost jobPost = JobPost.builder()
                                 .jobCreator(jobCreator)
                                 .category(category)
+                                .organization(organization)
                                 .timestamp(date)
                                 .dueDate(date)
-                                .title("NodeJS Developer")
+                                .title("Full Stack Developer")
                                 .description("full time job with amazing salary")
                                 .type(JobPostType.TYPE_FREELANCE)
                                 .urgent(true)
@@ -101,5 +107,49 @@ public class JobPostRepositoryTest {
                 System.out.println(userService.getUser(jobPost.getJobCreator().getId()));
         }
     }
-    
+
+    @Test
+    void testGetJobPostByJobCreatorId(){
+        List<JobPost> jobPosts = jobPostRepository.findAll();
+        for(JobPost jobPost : jobPosts){
+            if(jobPost.getJobCreator().getId() == 1L){
+                System.out.println(jobPost.getTitle());
+            }
+        }
+    }
+
+    @Test
+    void testGetJobPostByOrganizationId(){
+        List<JobPost> jobPosts = jobPostRepository.findAll();
+        for(JobPost jobPost : jobPosts){
+            if(jobPost.getOrganization().getId() == 5L){
+                System.out.println(jobPost.getTitle());
+            }
+        }
+    }
+
+    @Test
+    void testGetJobPostByCategoryId(){
+        List<JobPost> jobPosts = jobPostRepository.findAll();
+        for(JobPost jobPost : jobPosts){
+            if(jobPost.getCategory().getId() == 5L){
+                System.out.println(jobPost.getTitle());
+            }
+        }
+    }
+
+    @Test
+    void testGetJobPostNameByFTS() {
+        Pageable page = PageRequest.of(0, 3);
+        List<JobPost> posts = jobPostRepository.findJobPostByNameFTS("NodeJS&Developer", page).getContent();
+        for (JobPost jobpost : posts) System.out.println(jobpost.getTitle());
+
+        System.out.println("----------------");
+
+        Pageable page2 = PageRequest.of(1, 3);
+        posts = jobPostRepository.findJobPostByNameFTS("NodeJS", page2).getContent();
+        for (JobPost jobpost : posts) System.out.println(jobpost.getTitle());
+    }
+
+
 }

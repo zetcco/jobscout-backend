@@ -30,5 +30,6 @@ public class JobPostDTO {
     private JobPostStatus status;
     private Category category;
     private ProfileDTO jobCreator;
+    private ProfileDTO organization;
     
 }

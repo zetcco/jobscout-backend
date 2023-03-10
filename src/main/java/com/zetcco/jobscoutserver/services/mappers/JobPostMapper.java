@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.services.UserService;
+import com.zetcco.jobscoutserver.services.OrganizationService;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
 @Component
@@ -19,6 +20,9 @@ public class JobPostMapper {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private OrganizationService organizationService;
 
     public List<JobPostDTO> mapToDtos(List<JobPost> jobPosts){
         return jobPosts.stream().map(jobPost -> mapToDto(jobPost)).toList(); 
@@ -34,6 +38,7 @@ public class JobPostMapper {
 
     public JobPostDTO mapToDto(JobPost jobPost) {
         ProfileDTO jobCreator = userService.getUser(jobPost.getJobCreator().getId());
+        ProfileDTO organization = organizationService.getOrganizationDtoById(jobPost.getOrganization().getId());
         JobPostDTO jobPostDTO = JobPostDTO.builder()
                                             .Id(jobPost.getId())
                                             .category(jobPost.getCategory())
@@ -44,6 +49,7 @@ public class JobPostMapper {
                                             .type(jobPost.getType())
                                             .status(jobPost.getStatus())
                                             .jobCreator(jobCreator)
+                                            .organization(organization)
                                             .urgent(jobPost.getUrgent())
                                             .build();
         return jobPostDTO;
