@@ -13,7 +13,7 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
@@ -60,6 +60,6 @@ public class JobSeeker extends User {
     @ManyToOne
     private Category category;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Skill> skills;
 }
