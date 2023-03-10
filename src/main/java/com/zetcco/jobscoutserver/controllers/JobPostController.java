@@ -42,7 +42,42 @@ public class JobPostController {
     public ResponseEntity<JobPostDTO> getJobPostById(@PathVariable Long jobPostId){
         try{
             return new ResponseEntity<JobPostDTO>(jobPostService.getJobPostById(jobPostId) , HttpStatus.OK);
-        } catch (Exception e){
+        } catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/{jobCreatorId}")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByJobCreatorId(@PathVariable Long jobCreatorId){
+        try{
+            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByJobCreatorId(jobCreatorId) , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/{organizationId}")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByOrganizationId(@PathVariable Long organizationId){
+        try{
+            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByOrganizationId(organizationId) , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/{categoryId}")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByCategoryId(@PathVariable Long categoryId){
+        try{
+            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByCategoryId(categoryId) , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
     }
@@ -51,7 +86,9 @@ public class JobPostController {
     public ResponseEntity<List<JobPostDTO>> getJobPostByType(@RequestParam("val") JobPostType type){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByType(type) , HttpStatus.OK);
-        } catch (Exception e){
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
     }
@@ -60,7 +97,20 @@ public class JobPostController {
     public ResponseEntity<List<JobPostDTO>> getJobPostByStatus(@RequestParam("val") JobPostStatus status){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByStatus(status) , HttpStatus.OK);
-        } catch (Exception e){
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch (Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/Search")
+    public ResponseEntity<List<JobPostDTO>> getJobPostNameByFTS(@PathVariable String desc , @RequestParam ("page") int page , @RequestParam ("size") int size){
+        try{
+            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByNameFTS(desc, page, size) , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
     }
