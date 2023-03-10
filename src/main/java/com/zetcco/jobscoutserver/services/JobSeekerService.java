@@ -14,11 +14,13 @@ import org.springframework.web.client.RestTemplate;
 import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.CVDataRequest;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.Qualification.QualificationService;
 
 @Service
 public class JobSeekerService {
@@ -37,6 +39,9 @@ public class JobSeekerService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private QualificationService qualificationService;
 
     public List<Skill> updateCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
         Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
@@ -72,4 +77,12 @@ public class JobSeekerService {
         Resource result = restTemplate.postForObject(url, cvDataRequest, Resource.class);
         return result;
     } 
+
+    public List<Qualification> updateQualifications(List<Qualification> qualifications) throws NotFoundException {
+        qualifications = qualificationService.saveQualifications(qualifications);
+        JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
+        jobSeeker.setQualifications(qualifications);
+        jobSeeker = jobSeekerRepository.save(jobSeeker);
+        return jobSeeker.getQualifications();
+    }
 }

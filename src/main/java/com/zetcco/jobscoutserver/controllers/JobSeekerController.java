@@ -20,8 +20,10 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.UserService;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @RestController
 @RequestMapping("/job-seeker")
@@ -63,4 +65,14 @@ public class JobSeekerController {
         }
     }
 
+    @PutMapping("/update/qualifications")
+    public void updateQualifications(@RequestBody List<Qualification> qualifications) {
+        try {
+            jobSeekerService.updateQualifications(qualifications);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
