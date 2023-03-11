@@ -1,12 +1,8 @@
 package com.zetcco.jobscoutserver.services;
 
-import static org.mockito.Mockito.description;
-
 import java.util.List;
 
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.execution.NamespaceAwareStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

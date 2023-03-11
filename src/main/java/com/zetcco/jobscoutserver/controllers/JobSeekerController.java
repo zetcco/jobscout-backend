@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
+import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @RestController
 @RequestMapping("/job-seeker")
@@ -37,4 +41,40 @@ public class JobSeekerController {
         }
     }
 
+    @PutMapping("/update/qualifications")
+    public void updateQualifications(@RequestBody List<Qualification> qualifications) {
+        try {
+            jobSeekerService.updateQualifications(qualifications);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/experiences")
+    public void updateExperiences(@RequestBody List<PastExperience> experiences) {
+        try {
+            jobSeekerService.updateExperiences(experiences);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid input parameters");
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/intro")
+    public ResponseEntity<String> updateIntro(@RequestBody String intro) {
+        try {
+            return new ResponseEntity<>(jobSeekerService.updateIntro(intro), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (Exception e) {
+            System.out.println(e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
