@@ -40,7 +40,6 @@ public class JobPostService {
 
 
     public List<JobPostDTO> getAllJobPosts(int page, int size) throws NotFoundException{
-        // return this.mapper.mapToDtos(jobPostRepository.findAll());
         Pageable pageable = PageRequest.of(page, size);
         return this.mapper.mapToDtos(jobPostRepository.getAll(pageable).getContent());
     }

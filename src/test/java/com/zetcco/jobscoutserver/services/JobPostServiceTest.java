@@ -56,6 +56,12 @@ public class JobPostServiceTest {
     }
 
     @Test
+    void testFindAllJobPosts(){
+        List<JobPostDTO> jobPosts = jobPostService.getAllJobPosts(0 , 3);
+        jobPosts.forEach((p)->{System.out.println(p.getTitle());});
+    }
+
+    @Test
     void testFindJobPostByStatus(){
         List<JobPostDTO> jobPost = jobPostService.getJobPostByStatus(JobPostStatus.STATUS_ACTIVE);
         jobPost.forEach((p)->{System.out.println(p.getTitle());});

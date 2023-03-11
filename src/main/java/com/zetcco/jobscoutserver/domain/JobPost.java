@@ -62,9 +62,9 @@ public class JobPost {
     @ManyToOne(fetch = FetchType.EAGER , optional = true)
     private Organization organization;
 
-    public JobPost( Date timestamp, Date dueDate, String title, String description, JobPostType type,
-            Boolean urgent, JobPostStatus status, JobCreator jobCreator, Category category , Organization organization) {
-        //this.id = id;
+    public JobPost( Long id, Date timestamp, Date dueDate, String title, String description, JobPostType type,
+            Boolean urgent, JobPostStatus status, Category category, JobCreator jobCreator, Organization organization) {
+        this.id = id;
         this.timestamp = timestamp;
         this.dueDate = dueDate;
         this.title = title;
@@ -72,8 +72,8 @@ public class JobPost {
         this.type = type;
         this.urgent = urgent;
         this.status = status;
-        this.jobCreator = jobCreator;
         this.category = category;
+        this.jobCreator = jobCreator;
         this.organization = organization;
     }
 }
