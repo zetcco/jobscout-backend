@@ -1,7 +1,5 @@
 package com.zetcco.jobscoutserver.domain.support.EducationalQualification;
 
-import com.zetcco.jobscoutserver.domain.JobSeeker;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
