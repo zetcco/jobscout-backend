@@ -1,7 +1,5 @@
 package com.zetcco.jobscoutserver.domain.support;
 
-import java.util.List;
-
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
@@ -25,8 +23,12 @@ public class Address {
     private String country;
 
     public String toString() {
-        List<String> values = List.of(number, street, town, city, province, country);
-        String address = values.stream().reduce("", (addr, comp) -> addr + (StringUtils.isBlank(comp) ? "" : comp + ", "));
-        return address.substring(0, address.length() - 2);
+        String addressStr = (StringUtils.isBlank(number) ? "" : number + ", ") +
+                            (StringUtils.isBlank(street) ? "" : street + ", ") +
+                            (StringUtils.isBlank(town) ? "" : town + ", ") +
+                            (StringUtils.isBlank(city) ? "" : city + ", ") +
+                            (StringUtils.isBlank(province) ? "" : province + ", ") +
+                            (StringUtils.isBlank(country) ? "" : country);
+        return addressStr;
     }
 }

@@ -7,16 +7,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestClientException;
 
+import com.zetcco.jobscoutserver.services.support.CVService;
+
 @SpringBootTest
-public class JobSeekerServiceTest {
+public class CVServiceTest {
 
     @Autowired
-    JobSeekerService jobSeekerService;
+    CVService cvService;
 
     @Test
     void testGenerateCV() {
         try {
-            jobSeekerService.generateCV(117L, 1L);
+            cvService.generateCV(117L, 1L);
         } catch (RestClientException e) {
             e.printStackTrace();
         } catch (URISyntaxException e) {
