@@ -38,8 +38,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/{jobPostId}")
-    public ResponseEntity<JobPostDTO> getJobPostById(@PathVariable Long jobPostId){
+    @GetMapping("/jobPostId")
+    public ResponseEntity<JobPostDTO> getJobPostById(@RequestParam("val") Long jobPostId){
         try{
             return new ResponseEntity<JobPostDTO>(jobPostService.getJobPostById(jobPostId) , HttpStatus.OK);
         } catch(NotFoundException e){
@@ -49,8 +49,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/{jobCreatorId}")
-    public ResponseEntity<List<JobPostDTO>> getJobPostByJobCreatorId(@PathVariable Long jobCreatorId){
+    @GetMapping("/jobCreatorId")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByJobCreatorId(@RequestParam("val") Long jobCreatorId){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByJobCreatorId(jobCreatorId) , HttpStatus.OK);
         }catch(NotFoundException e){
@@ -60,8 +60,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/{organizationId}")
-    public ResponseEntity<List<JobPostDTO>> getJobPostByOrganizationId(@PathVariable Long organizationId){
+    @GetMapping("/organizationId")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByOrganizationId(@RequestParam("val") Long organizationId){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByOrganizationId(organizationId) , HttpStatus.OK);
         }catch(NotFoundException e){
@@ -71,8 +71,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/{categoryId}")
-    public ResponseEntity<List<JobPostDTO>> getJobPostByCategoryId(@PathVariable Long categoryId){
+    @GetMapping("/categoryId")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByCategoryId(@RequestParam("val") Long categoryId){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByCategoryId(categoryId) , HttpStatus.OK);
         }catch(NotFoundException e){
