@@ -22,9 +22,6 @@ public class Qualification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne
-    private JobSeeker jobSeeker;
 
     private String startYear;
     private String endYear;

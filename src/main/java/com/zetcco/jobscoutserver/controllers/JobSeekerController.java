@@ -96,6 +96,7 @@ public class JobSeekerController {
     public ResponseEntity<String> updateIntro(@RequestBody String intro) {
         try {
             // jobSeekerService.updateIntro(intro);
+            System.out.println(intro);
             return new ResponseEntity<>(jobSeekerService.updateIntro(intro), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");

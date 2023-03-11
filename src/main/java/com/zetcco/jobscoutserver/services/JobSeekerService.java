@@ -73,9 +73,9 @@ public class JobSeekerService {
                                                     .email(jobSeeker.getEmail())
                                                     .contact(jobSeeker.getContact())
                                                     .photo(userMapper.getProfilePictureLink(jobSeeker))
-                                                    .educationalQualifications(null)
-                                                    .pastExperience(null)
-                                                    .intro("Test intro")
+                                                    .educationalQualifications(jobSeeker.getQualifications())
+                                                    .pastExperiences(jobSeeker.getPastExperiences())
+                                                    .intro(jobSeeker.getIntro())
                                                     .skills(jobSeeker.getSkills())
                                                     .build();
         RestTemplate restTemplate = new RestTemplate();
@@ -86,8 +86,8 @@ public class JobSeekerService {
 
     public List<Qualification> updateQualifications(List<Qualification> qualifications) throws NotFoundException {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
-        for (Qualification qualification : qualifications) 
-            qualification.setJobSeeker(jobSeeker);
+        // for (Qualification qualification : qualifications) 
+        //     qualification.setJobSeeker(jobSeeker);
         qualifications = qualificationService.saveQualifications(qualifications);
         jobSeeker.setQualifications(qualifications);
         jobSeeker = jobSeekerRepository.save(jobSeeker);

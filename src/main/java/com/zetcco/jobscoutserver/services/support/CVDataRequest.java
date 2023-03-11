@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
+import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,11 +28,9 @@ public class CVDataRequest implements Serializable {
     String email;
     String intro;
 
-    // TODO: Make Educational Qualifications here
-    String educationalQualifications;
+    List<Qualification> educationalQualifications;
 
-    // TODO: Make Educational Qualifications here
-    String pastExperience;
+    List<PastExperience> pastExperiences;
 
     List<Skill> skills;
 
