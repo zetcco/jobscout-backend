@@ -86,7 +86,7 @@ public class JobPostServiceTest {
 
       @Test
       void testSearchJobPostsByNameFTS(){
-        List<JobPostDTO> jobPost = jobPostService.getJobPostByNameFTS("full time", 0, 1);
-        jobPost.forEach((p)->{System.out.println(p.getTitle());});
+        List<JobPostDTO> jobPost = jobPostService.getJobPostByNameFTS("Senior", 0, 1);
+        jobPost.forEach((p)->{System.out.println(p.getDescription());});
       }
  }
