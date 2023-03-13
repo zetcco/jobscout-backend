@@ -1,18 +1,26 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
+import com.zetcco.jobscoutserver.domain.messaging.Message;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.ConversationRepository;
+import com.zetcco.jobscoutserver.repositories.MessageRepository;
 import com.zetcco.jobscoutserver.services.mappers.ConversationMapper;
+import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
+import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
@@ -30,6 +38,12 @@ public class ConversationService {
 
     @Autowired
     private RTCService rtcService;
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
+    private MessageMapper messageMapper;
 
     // TODO: Remove duplicates
     public ConversationDTO createConversation(List<Long> participantIds) throws NotFoundException, JsonProcessingException {
@@ -60,7 +74,16 @@ public class ConversationService {
     public List<ConversationDTO> getConversations() {
         User user = userService.getAuthUser();
         List<Conversation> conversations = conversationRepository.findByParticipantsId(user.getId());
-        return conversationMapper.mapToDtos(conversations);
+        List<ConversationDTO> conversationDTOs = new ArrayList<>();
+        for (Conversation conversation : conversations) {
+            ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
+            PageRequest page = PageRequest.of(0, 1);
+            List<Message> messages = messageRepository.findByConversationId(conversation.getId(), page, Sort.by(Direction.DESC, "timestamp")).getContent();
+            List<MessageDTO> messageDTOs = messageMapper.mapToDtos(messages);
+            conversationDTO.setMessages(messageDTOs);
+            conversationDTOs.add(conversationDTO);
+        }
+        return conversationDTOs;
     }
 
 
