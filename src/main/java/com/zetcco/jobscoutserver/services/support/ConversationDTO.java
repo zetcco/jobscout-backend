@@ -1,8 +1,7 @@
 package com.zetcco.jobscoutserver.services.support;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.zetcco.jobscoutserver.domain.messaging.Message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +18,11 @@ public class ConversationDTO {
     private String name;
     private String picture;
     private List<ProfileDTO> participants;
-    private List<Message> messages;
+    
+    @Builder.Default
+    private int page = 0;
+
+    @Builder.Default
+    private List<MessageDTO> messages = new ArrayList<MessageDTO>();
 
 }
