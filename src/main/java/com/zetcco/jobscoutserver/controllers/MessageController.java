@@ -28,6 +28,7 @@ import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.services.ConversationService;
 import com.zetcco.jobscoutserver.services.MessageService;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
+import com.zetcco.jobscoutserver.services.support.DeleteMessageDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.StorageService;
@@ -105,6 +106,10 @@ public class MessageController {
                     break;
                 case "TYPING":
                     messagingService.sendTyping(conversationId, payload.getSenderId());
+                    break;
+                case "DELETE":
+                    DeleteMessageDTO messageDTO = objectMapper.readValue(payload.getData(), DeleteMessageDTO.class);
+                    messagingService.sendDelete(conversationId, payload.getSenderId(), messageDTO);
                     break;
                 default:
                     break;

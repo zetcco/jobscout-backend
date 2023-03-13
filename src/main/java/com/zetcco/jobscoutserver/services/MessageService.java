@@ -16,6 +16,7 @@ import com.zetcco.jobscoutserver.domain.messaging.Message;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.MessageRepository;
 import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
+import com.zetcco.jobscoutserver.services.support.DeleteMessageDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.TypingDTO;
@@ -81,6 +82,19 @@ public class MessageService {
             for (User participant : conversation.getParticipants()) 
                 if (participant.getId() != senderId)
                     rtcService.sendToUser(participant.getId(), "/messaging/private", "TYPING", typingDTO);
+        }
+        
+    }
+
+    public void sendDelete(Long conversationId, Long senderId, DeleteMessageDTO messageDto) throws JsonProcessingException {
+        Conversation conversation = conversationService.getConversation(conversationId);
+        List<User> participants = conversation.getParticipants();
+        User sender = userService.getUser(senderId);
+        messageRepository.deleteById(messageDto.getMessageId());
+        if (participants.contains(sender)) {
+            DeleteMessageDTO deleteMessageDTO = new DeleteMessageDTO(conversationId, messageDto.getMessageId());
+            for (User participant : conversation.getParticipants()) 
+                rtcService.sendToUser(participant.getId(), "/messaging/private", "DELETE", deleteMessageDTO);
         }
         
     }
