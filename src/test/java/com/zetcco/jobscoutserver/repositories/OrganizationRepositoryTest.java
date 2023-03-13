@@ -127,4 +127,25 @@ public class OrganizationRepositoryTest {
 
     }
 
+    @Test
+    public void getJobCreatorRequest() {
+        Organization organization = organizationRepository.findById(1L).orElseThrow();
+        List<JobCreator> requests = organization.getJobCreatorRequests();
+        List<JobCreator> jobCreators = organization.getJobCreators();
+        JobCreator requestee = jobCreatorRepository.findById(5L).orElseThrow();
+
+        if (requests.contains(requestee)) {
+            jobCreators.add(requestee);
+            requests.remove(requestee);
+            requestee.setOrganization(organization);
+            organization.setJobCreatorRequests(requests);
+            organization.setJobCreators(jobCreators);
+            organizationRepository.save(organization);
+            jobCreatorRepository.save(requestee);
+        } else {
+            throw new EntityNotFoundException();
+        }
+
+    }
+
 }
