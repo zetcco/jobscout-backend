@@ -25,4 +25,6 @@ public class ConversationDTO {
     @Builder.Default
     private List<MessageDTO> messages = new ArrayList<MessageDTO>();
 
+    private Boolean read;
+
 }

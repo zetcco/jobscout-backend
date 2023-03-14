@@ -59,6 +59,7 @@ public class ConversationService {
         
         conversation = conversationRepository.save(conversation);
         ConversationDTO newConversationDTO = conversationMapper.mapToDto(conversation);
+        newConversationDTO.setRead(false);
         for (Long userId : participantIds) 
             rtcService.sendToUser(userId, "/messaging/private", "CONVERSATION", newConversationDTO);
             // simpMessagingTemplate.convertAndSend("/messaging/private/" + userId, newConversationDTO);
@@ -76,7 +77,9 @@ public class ConversationService {
         List<Conversation> conversations = conversationRepository.findByParticipantsId(user.getId());
         List<ConversationDTO> conversationDTOs = new ArrayList<>();
         for (Conversation conversation : conversations) {
+            Boolean read = conversation.getSeenUsers().contains(user);
             ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
+            conversationDTO.setRead(read);
             PageRequest page = PageRequest.of(0, 1);
             List<Message> messages = messageRepository.findByConversationId(conversation.getId(), page, Sort.by(Direction.DESC, "timestamp")).getContent();
             List<MessageDTO> messageDTOs = messageMapper.mapToDtos(messages);
@@ -97,6 +100,19 @@ public class ConversationService {
             ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
             for (ProfileDTO participantId : conversationDTO.getParticipants()) 
                 rtcService.sendToUser(participantId.getId(), "/messaging/private", "CONVERSATION_UPDATE", conversationDTO);
+        } else {
+            throw new AccessDeniedException("You do not have permission to do this action");
+        }
+    }
+
+    public void markAsRead(Long conversationId) throws AccessDeniedException {
+        User user = userService.getAuthUser();
+        Conversation conversation = this.getConversation(conversationId);
+        if (conversation.getParticipants().contains(user)) {
+            List<User> seenUsers = conversation.getSeenUsers();
+            seenUsers.add(user);
+            conversation.setSeenUsers(seenUsers);
+            conversationRepository.save(conversation);
         } else {
             throw new AccessDeniedException("You do not have permission to do this action");
         }

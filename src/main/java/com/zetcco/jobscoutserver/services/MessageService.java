@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
 import com.zetcco.jobscoutserver.domain.messaging.Message;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.repositories.ConversationRepository;
 import com.zetcco.jobscoutserver.repositories.MessageRepository;
 import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
 import com.zetcco.jobscoutserver.services.support.DeleteMessageDTO;
@@ -39,6 +40,9 @@ public class MessageService {
     @Autowired
     private RTCService rtcService;
 
+    @Autowired
+    private ConversationRepository conversationRepository;
+
     public List<MessageDTO> getMessages(Long conversation_id, int pageNo, int pageSize) throws NotFoundException {
         Conversation conversation = conversationService.getConversation(conversation_id);
         User requester = userService.getAuthUser();
@@ -56,13 +60,15 @@ public class MessageService {
     public void sendMessage(Long conversation_id, MessageDTO message) throws JsonProcessingException {
         Conversation conversation = conversationService.getConversation(conversation_id);
         List<User> participants = conversation.getParticipants();
-        if (participants.contains(userService.getUser(message.getSenderId()))) {
+        User sender = userService.getUser(message.getSenderId());
+        if (participants.contains(sender)) {
+            conversation.setSeenUsers(List.of(sender));
+            conversationRepository.save(conversation);
             Message newMessage = Message.builder()
                                     .content(message.getContent())
                                     .sender(User.builder().id(message.getSenderId()).build())
                                     .conversation(Conversation.builder().id(conversation_id).build())
                                     .timestamp(new Date())
-                                    .seenUsers(new ArrayList<User>())
                                     .build();
             newMessage = messageRepository.save(newMessage);
             MessageDTO newMessageDTO = messageMapper.mapToDto(newMessage);
