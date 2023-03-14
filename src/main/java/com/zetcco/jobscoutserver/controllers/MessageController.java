@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -28,6 +29,7 @@ import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.services.ConversationService;
 import com.zetcco.jobscoutserver.services.MessageService;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
+import com.zetcco.jobscoutserver.services.support.DeleteMessageDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.StorageService;
@@ -94,6 +96,18 @@ public class MessageController {
         }
     }
 
+    @PutMapping(path = "/conversation/{conversationId}/read")
+    public ResponseEntity<String> markAsRead(@PathVariable Long conversationId) {
+        try {
+            conversationService.markAsRead(conversationId);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @MessageMapping("/messaging/{conversationId}")
     public void sendMessage(@DestinationVariable Long conversationId, Message<RTCSignal> signal) {
         try {
@@ -105,6 +119,10 @@ public class MessageController {
                     break;
                 case "TYPING":
                     messagingService.sendTyping(conversationId, payload.getSenderId());
+                    break;
+                case "DELETE":
+                    DeleteMessageDTO messageDTO = objectMapper.readValue(payload.getData(), DeleteMessageDTO.class);
+                    messagingService.sendDelete(conversationId, payload.getSenderId(), messageDTO);
                     break;
                 default:
                     break;

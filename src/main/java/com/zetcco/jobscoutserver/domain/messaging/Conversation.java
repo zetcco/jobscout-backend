@@ -33,4 +33,7 @@ public class Conversation {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<User> participants;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    private List<User> seenUsers;
+
 }
