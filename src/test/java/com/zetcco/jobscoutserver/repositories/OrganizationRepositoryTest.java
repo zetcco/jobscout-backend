@@ -128,7 +128,7 @@ public class OrganizationRepositoryTest {
     }
 
     @Test
-    public void getJobCreatorRequest() {
+    public void acceptOrganizationRequest() {
         Organization organization = organizationRepository.findById(1L).orElseThrow();
         List<JobCreator> requests = organization.getJobCreatorRequests();
         List<JobCreator> jobCreators = organization.getJobCreators();
