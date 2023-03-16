@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.services;
 
 import java.util.List;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -27,6 +28,7 @@ public class JobPostService {
 
     public JobPostDTO addNewJobPost(JobPostDTO jobPostDTO) throws NotFoundException{
         JobPost jobPost = mapper.mapToEntity(jobPostDTO);
+        jobPost.setTimestamp(new Date());
         return this.mapper.mapToDto(jobPostRepository.save(jobPost));
     }
 
