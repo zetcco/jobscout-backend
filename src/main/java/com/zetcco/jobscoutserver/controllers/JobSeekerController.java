@@ -20,6 +20,7 @@ import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualifi
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.JobSeeker.JobSeekerAbout;
 
 @RestController
 @RequestMapping("/job-seeker")
@@ -46,6 +47,15 @@ public class JobSeekerController {
     public ResponseEntity<List<Qualification>> getQualifications(@PathVariable Long jobSeekerId) {
         try {
             return new ResponseEntity<List<Qualification>>(jobSeekerService.getQualificationsById(jobSeekerId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("{jobSeekerId}/about")
+    public ResponseEntity<JobSeekerAbout> getAbout(@PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<JobSeekerAbout>(jobSeekerService.getAbout(jobSeekerId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

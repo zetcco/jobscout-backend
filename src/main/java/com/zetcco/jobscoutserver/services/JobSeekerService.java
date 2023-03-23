@@ -10,13 +10,15 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
-import com.zetcco.jobscoutserver.services.support.PastExperience.PastExperienceService;
-import com.zetcco.jobscoutserver.services.support.Qualification.QualificationService;
+import com.zetcco.jobscoutserver.services.support.JobSeeker.JobSeekerAbout;
+import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
+import com.zetcco.jobscoutserver.services.support.JobSeeker.Qualification.QualificationService;
 
 import jakarta.transaction.Transactional;
 
@@ -89,5 +91,18 @@ public class JobSeekerService {
         JobSeeker jobSeeker = this.getJobSeeker(id);
         List<Qualification> qualifications = jobSeeker.getQualifications();
         return qualifications;
+    }
+
+    @Transactional
+    public JobSeekerAbout getAbout(Long id) throws NotFoundException {
+        JobSeeker jobSeeker = this.getJobSeeker(id);
+        String selfIntro = jobSeeker.getIntro();
+        String contact = jobSeeker.getContact();
+        String email = ((User)jobSeeker).getEmail();
+        return new JobSeekerAbout(
+            email,
+            contact,
+            selfIntro
+        );
     }
 }

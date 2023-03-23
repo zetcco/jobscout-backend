@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Degree;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Institute;
-import com.zetcco.jobscoutserver.services.support.Qualification.QualificationService;
+import com.zetcco.jobscoutserver.services.support.JobSeeker.Qualification.QualificationService;
 
 @Controller
 @RequestMapping("/qualifications")
