@@ -13,8 +13,10 @@ import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
+import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
+import com.zetcco.jobscoutserver.services.mappers.PastExperienceMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.JobSeekerAbout;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
@@ -42,6 +44,9 @@ public class JobSeekerService {
 
     @Autowired
     private PastExperienceService pastExperienceService;
+
+    @Autowired
+    private PastExperienceMapper pastExperienceMapper;
 
     public List<Skill> updateCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
         Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
@@ -91,6 +96,13 @@ public class JobSeekerService {
         JobSeeker jobSeeker = this.getJobSeeker(id);
         List<Qualification> qualifications = jobSeeker.getQualifications();
         return qualifications;
+    }
+
+    @Transactional
+    public List<PastExperienceDTO> getPastExperience(Long id) throws NotFoundException {
+        JobSeeker jobSeeker = this.getJobSeeker(id);
+        List<PastExperience> pastExperiences = jobSeeker.getPastExperiences();
+        return pastExperienceMapper.mapToDtos(pastExperiences);
     }
 
     @Transactional

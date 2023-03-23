@@ -18,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
+import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.JobSeekerAbout;
@@ -47,6 +48,15 @@ public class JobSeekerController {
     public ResponseEntity<List<Qualification>> getQualifications(@PathVariable Long jobSeekerId) {
         try {
             return new ResponseEntity<List<Qualification>>(jobSeekerService.getQualificationsById(jobSeekerId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("{jobSeekerId}/experiences")
+    public ResponseEntity<List<PastExperienceDTO>> getPastExperiences(@PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<List<PastExperienceDTO>>(jobSeekerService.getPastExperience(jobSeekerId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
