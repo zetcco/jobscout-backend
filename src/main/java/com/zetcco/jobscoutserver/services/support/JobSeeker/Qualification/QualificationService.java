@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutserver.services.support.Qualification;
+package com.zetcco.jobscoutserver.services.support.JobSeeker.Qualification;
 
 import java.util.List;
 
