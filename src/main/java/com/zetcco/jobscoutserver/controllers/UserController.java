@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
+import com.zetcco.jobscoutserver.services.support.ContactDetails;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
@@ -40,6 +41,11 @@ public class UserController {
     public ResponseEntity<ProfileDTO> getProfile(@PathVariable Long profileId) {
         // TODO: Change this to use UserMapper
         return new ResponseEntity<ProfileDTO>(userService.getUserProfileDTO(profileId), HttpStatus.OK);
+    }
+
+    @GetMapping("/{profileId}/contacts")
+    public ResponseEntity<ContactDetails> getContacts(@PathVariable Long profileId) {
+        return new ResponseEntity<ContactDetails>(userService.getContacts(profileId), HttpStatus.OK);
     }
     
     // TODO: Set proper HttpStatus codes for exceptions
