@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,15 @@ public class JobSeekerController {
                     HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("{jobSeekerId}/qualifications")
+    public ResponseEntity<List<Qualification>> getQualifications(@PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<List<Qualification>>(jobSeekerService.getQualificationsById(jobSeekerId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 

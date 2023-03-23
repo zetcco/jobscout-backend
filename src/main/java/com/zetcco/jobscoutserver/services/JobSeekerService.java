@@ -18,6 +18,8 @@ import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.PastExperience.PastExperienceService;
 import com.zetcco.jobscoutserver.services.support.Qualification.QualificationService;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class JobSeekerService {
 
@@ -80,5 +82,12 @@ public class JobSeekerService {
 
     public JobSeeker getJobSeeker(Long id) {
         return jobSeekerRepository.findById(id).orElseThrow(() -> new NotFoundException("Job Seeker with specified ID not found"));
+    }
+
+    @Transactional
+    public List<Qualification> getQualificationsById(Long id) throws NotFoundException {
+        JobSeeker jobSeeker = this.getJobSeeker(id);
+        List<Qualification> qualifications = jobSeeker.getQualifications();
+        return qualifications;
     }
 }

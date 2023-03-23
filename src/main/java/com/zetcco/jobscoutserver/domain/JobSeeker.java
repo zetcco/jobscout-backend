@@ -66,12 +66,12 @@ public class JobSeeker extends User {
     @ManyToOne
     private Category category;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Skill> skills;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Qualification> qualifications;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<PastExperience> pastExperiences;
 }
