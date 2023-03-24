@@ -71,9 +71,9 @@ public class JobSeekerController {
     }
 
     @PutMapping("/update/qualifications")
-    public void updateQualifications(@RequestBody List<Qualification> qualifications) {
+    public ResponseEntity<List<Qualification>> updateQualifications(@RequestBody List<Qualification> qualifications) {
         try {
-            jobSeekerService.updateQualifications(qualifications);
+            return new ResponseEntity<List<Qualification>>(jobSeekerService.updateQualifications(qualifications), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         } catch (Exception e) {
