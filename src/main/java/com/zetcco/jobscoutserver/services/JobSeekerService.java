@@ -69,12 +69,12 @@ public class JobSeekerService {
         return jobSeeker.getQualifications();
     }
 
-    public List<PastExperience> updateExperiences(List<PastExperience> pastExperiences) throws NotFoundException, DataIntegrityViolationException {
+    public List<PastExperienceDTO> updateExperiences(List<PastExperience> pastExperiences) throws NotFoundException, DataIntegrityViolationException {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
         pastExperiences = pastExperienceService.savePastExperiences(pastExperiences);
         jobSeeker.setPastExperiences(pastExperiences);
         jobSeeker = jobSeekerRepository.save(jobSeeker);
-        return jobSeeker.getPastExperiences();
+        return pastExperienceMapper.mapToDtos(jobSeeker.getPastExperiences());
     }
 
     public String updateIntro(String intro) throws NotFoundException {

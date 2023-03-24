@@ -82,9 +82,9 @@ public class JobSeekerController {
     }
 
     @PutMapping("/update/experiences")
-    public void updateExperiences(@RequestBody List<PastExperience> experiences) {
+    public ResponseEntity<List<PastExperienceDTO>> updateExperiences(@RequestBody List<PastExperience> experiences) {
         try {
-            jobSeekerService.updateExperiences(experiences);
+            return new ResponseEntity<List<PastExperienceDTO>>(jobSeekerService.updateExperiences(experiences), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
         } catch (DataIntegrityViolationException e) {
