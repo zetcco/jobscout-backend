@@ -1,7 +1,6 @@
 package com.zetcco.jobscoutserver.controllers;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -15,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
+import com.zetcco.jobscoutserver.domain.support.dto.CategorySkillSetDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
@@ -29,15 +29,24 @@ public class JobSeekerController {
     @Autowired
     private JobSeekerService jobSeekerService;
 
-    @PutMapping("/update/skills/{categoryId}")
-    public ResponseEntity<List<Skill>> updateJobSeekerSkillsAndCategory(@PathVariable Long categoryId,
-            @RequestBody Map<String, List<Long>> request) {
+    // @PutMapping("/update/skills/{categoryId}")
+    // public ResponseEntity<List<Skill>> updateJobSeekerSkillsAndCategory(@PathVariable Long categoryId,
+    //         @RequestBody Map<String, List<Long>> request) {
 
+    //     try {
+    //         List<Long> participantIds = request.get("ids");
+    //         return new ResponseEntity<List<Skill>>(
+    //                 jobSeekerService.updateCategoryAndSkillListById(categoryId, participantIds),
+    //                 HttpStatus.OK);
+    //     } catch (Exception e) {
+    //         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+    //     }
+    // }
+
+    @PutMapping("/update/skills")
+    public ResponseEntity<List<CategorySkillSetDTO>> updateJobSeekerSkillsAndCategory(@RequestBody List<CategorySkillSet> categorySkillSet) {
         try {
-            List<Long> participantIds = request.get("ids");
-            return new ResponseEntity<List<Skill>>(
-                    jobSeekerService.updateCategoryAndSkillListById(categoryId, participantIds),
-                    HttpStatus.OK);
+            return new ResponseEntity<List<CategorySkillSetDTO>>( jobSeekerService.updateCategorySkillSet(categorySkillSet), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

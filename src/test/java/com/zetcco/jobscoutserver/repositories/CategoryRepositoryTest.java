@@ -9,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.zetcco.jobscoutserver.domain.Category;
 
+import jakarta.transaction.Transactional;
+
 @SpringBootTest
 public class CategoryRepositoryTest {
     @Autowired
@@ -57,9 +59,14 @@ public class CategoryRepositoryTest {
     }
 
     @Test
+    @Transactional
     public void getCategoryById(){
-            Category category = categoryRepository.findById(2L).orElseThrow();
+            Category category = categoryRepository.findById(9L).orElseThrow();
+            System.out.println(category.getId());
             System.out.println(category.getName());
+            System.out.println(category.getDescription());
+            System.out.println(category.getSkillCount());
+            System.out.println(category.getSkills());
     }
     
 }

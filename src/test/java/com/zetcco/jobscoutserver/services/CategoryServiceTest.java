@@ -12,6 +12,8 @@ import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.SkillsRepository;
 
+import jakarta.transaction.Transactional;
+
 @SpringBootTest
 public class CategoryServiceTest {
     @Autowired
@@ -89,8 +91,10 @@ public class CategoryServiceTest {
     }
 
     @Test
+    @Transactional
     void testGetById() {
-        System.out.print(categoryService.getCategoryById(2L).getName());
+        Category category = categoryService.getCategoryEntityById(9L);
+        System.out.println(category);
     }
 
     @Test

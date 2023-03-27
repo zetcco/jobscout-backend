@@ -7,14 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
+import com.zetcco.jobscoutserver.domain.support.dto.CategorySkillSetDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
-import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
+import com.zetcco.jobscoutserver.repositories.support.CategorySkillSetRepository;
+import com.zetcco.jobscoutserver.services.mappers.CategorySkillSetMapper;
 import com.zetcco.jobscoutserver.services.mappers.PastExperienceMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
@@ -26,7 +28,7 @@ import jakarta.transaction.Transactional;
 public class JobSeekerService {
 
     @Autowired
-    private CategoryRepository categoryRepository;
+    private CategorySkillSetRepository categorySkillSetRepository;
 
     @Autowired
     private SkillService skillService;
@@ -46,17 +48,34 @@ public class JobSeekerService {
     @Autowired
     private PastExperienceMapper pastExperienceMapper;
 
-    public List<Skill> updateCategoryAndSkillListById(Long categortId, List<Long> skillId) throws NotFoundException {
-        Category categoryObj = categoryRepository.findById(categortId).orElseThrow();
-        List<Skill> skillObj = new ArrayList<>();
-        for (Long id : skillId) {
-            skillObj.add(skillService.getSkillsById(id));
+    @Autowired
+    private CategoryService categoryService;
+
+    @Autowired
+    private CategorySkillSetMapper categorySkillSetMapper;
+
+    @Transactional
+    public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
+        for (CategorySkillSet categorySkillSet : categorySkillSets) {
+            categorySkillSet.setCategory(categoryService.getCategoryEntityById(categorySkillSet.getCategory().getId()));
+            List<Skill> skills = categorySkillSet.getSkills();
+            List<Skill> newSkills = new ArrayList<>();
+            for (int index = 0; index < skills.size(); index++) {
+                Skill skill = skills.get(index);
+                if (skill.getId() == null) skill = skillService.addSkills(skill);
+                else skill = skillService.getSkillsById(skill.getId());
+                newSkills.add(skill);
+            }
+            categorySkillSet.setSkills(newSkills);
         }
-        JobSeeker jobSeekerObj = jobSeekerRepository.findById(userService.getUser().getId()).orElseThrow();
-        jobSeekerObj.setCategory(categoryObj);
-        jobSeekerObj.setSkills(skillObj);
-        jobSeekerRepository.save(jobSeekerObj);
-        return skillObj;
+        List<CategorySkillSet> existingSet = jobSeeker.getCategorySkillSets();
+        categorySkillSets = categorySkillSetRepository.saveAll(categorySkillSets);
+        jobSeeker.setCategorySkillSets(categorySkillSets);
+        jobSeeker = jobSeekerRepository.save(jobSeeker);
+        if (existingSet != null)
+            categorySkillSetRepository.deleteAll(existingSet);
+        return categorySkillSetMapper.mapToDtos(categorySkillSets);
     }
 
     public List<Qualification> updateQualifications(List<Qualification> qualifications) throws NotFoundException {

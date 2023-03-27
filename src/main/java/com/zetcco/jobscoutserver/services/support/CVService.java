@@ -36,7 +36,7 @@ public class CVService {
                                                     .educationalQualifications(jobSeeker.getQualifications())
                                                     .pastExperiences(jobSeeker.getPastExperiences())
                                                     .intro(jobSeeker.getIntro())
-                                                    .skills(jobSeeker.getSkills())
+                                                    // .skills(jobSeeker.getSkills())
                                                     .build();
         RestTemplate restTemplate = new RestTemplate();
         URI url = new URI("http://localhost:8081/cv/generate");

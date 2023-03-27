@@ -6,20 +6,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Organization;
+import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.Address;
+import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.NameTitle;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Degree;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Institute;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.JobTitle;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
+import com.zetcco.jobscoutserver.repositories.support.CategorySkillSetRepository;
 import com.zetcco.jobscoutserver.repositories.support.PastExperience.JobTitleRepository;
 import com.zetcco.jobscoutserver.repositories.support.PastExperience.PastExperienceRepository;
 import com.zetcco.jobscoutserver.repositories.support.Qualification.DegreeRepository;
 import com.zetcco.jobscoutserver.repositories.support.Qualification.InstituteRepository;
 import com.zetcco.jobscoutserver.repositories.support.Qualification.QualificationRepository;
+
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class JobSeekerRepositoryTest {
@@ -44,6 +50,12 @@ public class JobSeekerRepositoryTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private CategorySkillSetRepository categorySkillSetRepository;
+
+    @Autowired
+    private SkillsRepository skillsRepository;
 
     @Test
     void getJobSeeker() {
@@ -109,6 +121,66 @@ public class JobSeekerRepositoryTest {
         jobSeeker.setTitle(NameTitle.MR);
         jobSeeker.setFirstName("Indrajith");
         jobSeeker.setLastName("Madhumal");
+        jobSeekerRepository.save(jobSeeker);
+    }
+
+    @Test
+    @Transactional
+    public void updateCategorySkillSet() {
+        /* 
+         * Input: [
+         *          {
+         *              categoryId: 2,
+         *              skillIds: [ 
+         *                          { id: 1, name: "whatev" },
+         *                          { id: 2, name: "whatev" },
+         *                       ]
+         *          },
+         *          {
+         *              categoryId: 4,
+         *              skillIds: [ 
+         *                          { id: 1, name: "whatev" },
+         *                          { id: 2, name: "whatev" },
+         *                       ]
+         *          },
+         *          {
+         *              categoryId: 4,
+         *              skillIds: [ 
+         *                          { id: null, name: "New Skill" },
+         *                       ]
+         *          },
+         *        ]
+         */
+
+         List<CategorySkillSet> categorySkillSets = List.of(
+            CategorySkillSet.builder().category(
+                    Category.builder().id(8L).build()
+                ).skills(
+                    List.of(
+                        Skill.builder().id(6L).build(),
+                        Skill.builder().id(7L).build()
+                    )
+                ).build(),
+            CategorySkillSet.builder().category(
+                    Category.builder().id(8L).build()
+                ).skills(
+                    List.of(
+                        Skill.builder().id(9L).build(),
+                        Skill.builder().id(10L).build(),
+                        Skill.builder().name("NGINIX").description("Server load balancing").build()
+                    )
+                ).build()
+        );
+        JobSeeker jobSeeker = jobSeekerRepository.findById(115L).orElseThrow();
+        for (CategorySkillSet categorySkillSet : categorySkillSets) {
+            for (Skill skill : categorySkillSet.getSkills()) {
+                if (skill.getId() == null) {
+                    skill = skillsRepository.save(skill);
+                }
+            }
+        }
+        categorySkillSets = categorySkillSetRepository.saveAll(categorySkillSets);
+        jobSeeker.setCategorySkillSets(categorySkillSets);
         jobSeekerRepository.save(jobSeeker);
     }
 }

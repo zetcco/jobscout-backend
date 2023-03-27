@@ -52,6 +52,11 @@ public class CategoryService {
             return this.mapper.mapToDtos(categoryRepository.findByNameContainingIgnoreCase(name));
     }
 
+    public Category getCategoryEntityById(Long Id) throws NotFoundException {
+            Category category = categoryRepository.findById(Id).orElseThrow(() -> new NotFoundException("Category Not Found!"));        
+            return category;
+    }
+
     public CategoryDTO getCategoryById(Long Id) throws NotFoundException {
             Category category = categoryRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
