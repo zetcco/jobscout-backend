@@ -31,7 +31,7 @@ public class RecommendationRepositoryTest {
     
     @Test
     public void saveRecommendation() {
-        User responder = userRepository.findById(7L).orElseThrow();
+        User responder = userRepository.findById(5L).orElseThrow();
         // User requester = userRepository.findById(2L).orElseThrow();
 
         Recommendation recommendation = Recommendation.builder()
@@ -50,7 +50,7 @@ public class RecommendationRepositoryTest {
     @Test
     public void addRecommendationRequest() {
         JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(10L).orElseThrow();
 
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
         if(recommendationRequest.contains(requester))
@@ -60,27 +60,29 @@ public class RecommendationRepositoryTest {
         jobCreatorRepository.save(responder);
     }
 
-    @Test
+       @Test
     public void addRecommendation() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(4L).orElseThrow();
 
-        List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
-        if(recommendationRequest.contains(requester)) {
-            List<Recommendation> requestRecommendationList = requester.getRecommendation();
-            Recommendation recommendation = Recommendation.builder()
-                                                .content("Highly-recommended")
-                                                .responder(responder)
-                                                .build();
-            recommendation = recommendationRepository.save(recommendation);
+        List<JobSeeker> requestRecommendation = responder.getRecommendationRequests();
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        
+        if(requestRecommendation.contains(requester)) {
+                Recommendation recommendation = Recommendation.builder()
+                                                    .content("Highly-recommended")
+                                                    .responder(responder)
+                                                    .build();
+                recommendation = recommendationRepository.save(recommendation);
 
-            requestRecommendationList.add(recommendation);
-            requester.setRecommendation(requestRecommendationList);
-            jobSeekerRepository.save(requester);
+                requestRecommendationList.add(recommendation);
+                requester.setRecommendation(requestRecommendationList);
+                jobSeekerRepository.save(requester);
 
-            recommendationRequest.remove(requester);
-            responder.setRecommendationRequests(recommendationRequest);
-            jobCreatorRepository.save(responder);
+                requestRecommendation.remove(requester);
+                responder.setRecommendationRequests(requestRecommendation);
+                jobCreatorRepository.save(responder);
+
 
         }else{
             throw new NotFoundException("Request not found");
@@ -103,8 +105,16 @@ public class RecommendationRepositoryTest {
 
     @Test
     public void deleteRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(1L).orElseThrow();
-        recommendationRepository.delete(recommendation);
+        Recommendation recommendation = recommendationRepository.findById(17L).orElseThrow();
+        
+        JobSeeker requester = jobSeekerRepository.findById(10L).orElseThrow();
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+
+        requestRecommendationList.remove(recommendation);
+        requester.setRecommendation(requestRecommendationList);
+        jobSeekerRepository.save(requester);
+
+        recommendationRepository.delete(recommendation); 
 
     }
 
