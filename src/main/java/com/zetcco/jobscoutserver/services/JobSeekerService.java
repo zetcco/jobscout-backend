@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
@@ -58,12 +59,18 @@ public class JobSeekerService {
     public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
         for (CategorySkillSet categorySkillSet : categorySkillSets) {
-            categorySkillSet.setCategory(categoryService.getCategoryEntityById(categorySkillSet.getCategory().getId()));
+            Category category = categoryService.getCategoryEntityById(categorySkillSet.getCategory().getId());
+            categorySkillSet.setCategory(category);
             List<Skill> skills = categorySkillSet.getSkills();
             List<Skill> newSkills = new ArrayList<>();
             for (int index = 0; index < skills.size(); index++) {
                 Skill skill = skills.get(index);
-                if (skill.getId() == null) skill = skillService.addSkills(skill);
+                if (skill.getId() == null) {
+                    skill = skillService.addSkills(skill);
+                    List<Skill> categorySkills = category.getSkills();
+                    categorySkills.add(skill);
+                    categoryService.updateCategory(category);
+                }
                 else skill = skillService.getSkillsById(skill.getId());
                 newSkills.add(skill);
             }

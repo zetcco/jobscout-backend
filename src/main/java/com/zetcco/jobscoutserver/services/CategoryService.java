@@ -68,4 +68,8 @@ public class CategoryService {
                 .orElseThrow(() -> new NotFoundException("Category Not Found"));
         return category.getSkills();
     }
+
+    public Category updateCategory(Category category) {
+        return categoryRepository.save(category);
+    }
 }
