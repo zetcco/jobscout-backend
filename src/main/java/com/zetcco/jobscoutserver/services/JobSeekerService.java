@@ -17,6 +17,7 @@ import com.zetcco.jobscoutserver.domain.support.dto.CategorySkillSetDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.support.CategorySkillSetRepository;
+import com.zetcco.jobscoutserver.repositories.support.PastExperience.JobTitleRepository;
 import com.zetcco.jobscoutserver.services.mappers.CategorySkillSetMapper;
 import com.zetcco.jobscoutserver.services.mappers.PastExperienceMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
@@ -54,6 +55,9 @@ public class JobSeekerService {
 
     @Autowired
     private CategorySkillSetMapper categorySkillSetMapper;
+
+    @Autowired
+    private JobTitleRepository jobTitleRepository;
 
     @Transactional
     public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
@@ -97,6 +101,9 @@ public class JobSeekerService {
 
     public List<PastExperienceDTO> updateExperiences(List<PastExperience> pastExperiences) throws NotFoundException, DataIntegrityViolationException {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
+        for (PastExperience pastExperience : pastExperiences) 
+            if (pastExperience.getJobTitle().getId() == null)
+                pastExperience.setJobTitle(jobTitleRepository.save(pastExperience.getJobTitle()));
         pastExperiences = pastExperienceService.savePastExperiences(pastExperiences);
         jobSeeker.setPastExperiences(pastExperiences);
         jobSeeker = jobSeekerRepository.save(jobSeeker);
