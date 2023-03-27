@@ -10,7 +10,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
@@ -18,7 +17,11 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
+import com.zetcco.jobscoutserver.services.mappers.RecommendationMapper;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class RecommendationService {
@@ -32,10 +35,10 @@ public class RecommendationService {
     private JobSeekerRepository jobSeekerRepository;
 
     @Autowired
-    private UserService userService;
+    public ModelMapper modelMapper;
 
     @Autowired
-    public ModelMapper modelMapper;
+    public RecommendationMapper mapper;
 
     private TypeMap<Recommendation, RecommendationDTO> propertyMapper;
 
@@ -44,56 +47,91 @@ public class RecommendationService {
         this.propertyMapper = modelMapper.createTypeMap(Recommendation.class, RecommendationDTO.class);
     }
 
-    public ProfileDTO addRecommendationRequest(Long responderId) {
-        Long requester = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        return addRecommendationRequest(responderId, requester);
+    public RecommendationDTO addRecommendationRequest(RecommendationDTO recommendationDTO) throws NotFoundException{
+        // Long requesterId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Long requesterId = recommendationDTO.getRequester().getId();
+        Long responderId = recommendationDTO.getResponder().getId();
+        // System.out.println(addRecommendationRequest(responderId, requesterId));
+        return this.addRecommendationRequest(responderId, requesterId);
     }
 
-    private ProfileDTO addRecommendationRequest(Long responderId, Long requesterId) {
+    RecommendationDTO addRecommendationRequest(Long responderId, Long requesterId) {
         JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
-
-        responder.getRecommendationRequests().contains(requester);
-        List<JobSeeker> requestRecommendation = responder.getRecommendationRequests();
-        if (!recommendationRepository.existsById(responderId))
-            throw new DataIntegrityViolationException("Request already exitsts");
-        requestRecommendation.add(requester);
-        responder.setRecommendationRequests(requestRecommendation);
-        jobCreatorRepository.save(responder);
-        return userService.getUser(responderId);
-    }
-
-    public RecommendationDTO addRecommendation(RecommendationDTO recommendationDTO) {
-        JobCreator responder = jobCreatorRepository.findById(recommendationDTO.getResponder().getId()).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(recommendationDTO.getRequester().getId()).orElseThrow();
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
 
-        if(! recommendationRepository.existsById(recommendationDTO.getRecommendationId()))
+        if(recommendationRequest.contains(requester))
             throw new DataIntegrityViolationException("Request already exitsts");
-        
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+
         recommendationRequest.add(requester);
-        requester.setRecommendation(requestRecommendationList);
-        requester = jobSeekerRepository.save(requester);
-        
-        recommendationRequest.remove(requester);
-        requester.setRecommendation(requestRecommendationList);
+        responder.setRecommendationRequests(recommendationRequest);
         jobCreatorRepository.save(responder);
-        
-        for(JobSeeker checkRecommendationRequest : recommendationRequest) {
-            requestRecommendationList.remove(checkRecommendationRequest);
-        }
 
         return null;
     }
 
-    public void updateRecommendation(Recommendation recommendation) {
-        recommendation.setContent(recommendation.getContent());
-        recommendationRepository.save(recommendation);
+    @Transactional
+    public RecommendationDTO addRecommendation(RecommendationDTO recommendationDTO) {
+        JobCreator responder = jobCreatorRepository.findById(recommendationDTO.getResponder().getId()).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(recommendationDTO.getRequester().getId()).orElseThrow();
+        
+        List<JobSeeker> requesterList = responder.getRecommendationRequests();
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+
+        if(requesterList.contains(requester)) {
+            Recommendation recommendation = Recommendation.builder()
+                                                    .content(recommendationDTO.getContent())
+                                                    .responder(responder)
+                                                    .build();
+            recommendation = recommendationRepository.save(recommendation);
+
+            requestRecommendationList.add(recommendation);
+            requester.setRecommendation(requestRecommendationList);
+            jobSeekerRepository.save(requester);
+
+            requesterList.remove(requester);
+            responder.setRecommendationRequests(requesterList);
+            jobCreatorRepository.save(responder);
+
+            return null;
+        }
+        else {
+            throw new NotFoundException("No request found");
+        }
     }
 
-    public void deleteRecommendation(Recommendation recommendation) {
-        recommendationRepository.delete(recommendation);
+    public RecommendationDTO updateRecommendation(RecommendationDTO nwRecommendationDTO) {
+        Recommendation updatedRecommendation = recommendationRepository.findById(nwRecommendationDTO.getRecommendationId()).orElseThrow();
+        
+        if(recommendationRepository.existsById(nwRecommendationDTO.getRecommendationId())) {
+            updatedRecommendation.setContent(nwRecommendationDTO.getContent());
+            recommendationRepository.save(updatedRecommendation);
+ 
+        }
+        else {
+             addRecommendation(nwRecommendationDTO);
+
+            // updatedRecommendation.builder()
+            //                         .content(nwRecommendationDTO.getContent())
+            //                         .responder(nwRecommendationDTO.getResponder())
+            //                         .build();
+            // recommendationRepository.save(updatedRecommendation);
+
+            // throw new NotFoundException("Not found recommendation");
+        }
+        return null;
     }
+
+    public void deleteRecommendation(Long recommendationId, Long requesterId) {
+        Recommendation recommendationDelete = recommendationRepository.findById(recommendationId).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+
+        requestRecommendationList.remove(recommendationDelete);
+        requester.setRecommendation(requestRecommendationList);
+        jobSeekerRepository.save(requester);
+
+        recommendationRepository.delete(recommendationDelete);
+    }   
 
 }

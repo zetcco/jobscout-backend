@@ -3,6 +3,8 @@ package com.zetcco.jobscoutserver.services;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,9 +15,9 @@ import com.zetcco.jobscoutserver.domain.Recommendation;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
+import com.zetcco.jobscoutserver.services.mappers.RecommendationMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
-
-import jakarta.transaction.Transactional;
+import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 
 @SpringBootTest
 public class RecommendationServiceTest {
@@ -28,10 +30,22 @@ public class RecommendationServiceTest {
     @Autowired
     private JobSeekerRepository jobSeekerRepository;
 
+    @Autowired
+    private RecommendationService recommendationService;
+
+    @Autowired
+    public ModelMapper modelMapper;
+
+    @Autowired
+    public RecommendationMapper mapper;
+
+    private TypeMap< Recommendation, RecommendationDTO > propertyMapper;
+    
+
 
     @Test
     void testAddRecommendationRequest() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
 
         List<JobSeeker> requestRecommendation = responder.getRecommendationRequests();
@@ -45,27 +59,30 @@ public class RecommendationServiceTest {
     }
 
     @Test
-    @Transactional
     void testAddRecommendation() {
         JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(10L).orElseThrow();
         
-        List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
-        if(recommendationRequest.contains(requester)) {
-            List<Recommendation> requestRecommendationList = requester.getRecommendation();
-            Recommendation recommendation = Recommendation.builder()
+        List<JobSeeker> requesterList = responder.getRecommendationRequests();
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        
+        if(requesterList.contains(requester)) {
+            Recommendation nwRecommendation = Recommendation.builder()
                                                     .content("Recommended")
                                                     .responder(responder)
                                                     .build();
-            recommendation = recommendationRepository.save(recommendation);
-            
-            requestRecommendationList.add(recommendation);
+            nwRecommendation = recommendationRepository.save(nwRecommendation);
+            System.out.println(nwRecommendation);
+
+            requestRecommendationList.add(nwRecommendation);
             requester.setRecommendation(requestRecommendationList);
             jobSeekerRepository.save(requester);
+            // System.out.println(jobSeekerRepository.save(requester));
 
-            recommendationRequest.remove(requester);
-            responder.setRecommendationRequests(recommendationRequest);
+            requesterList.remove(requester);
+            responder.setRecommendationRequests(requesterList);
             jobCreatorRepository.save(responder);
+            // System.out.println(jobCreatorRepository.save(responder));
         }else{
             throw new NotFoundException("Request not found");
         }
@@ -73,15 +90,29 @@ public class RecommendationServiceTest {
 
     @Test
     void testUpdateRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(2L).orElseThrow();
-        recommendation.setContent("very recommended");
-        recommendationRepository.save(recommendation);
+        Recommendation nwRecommendation = recommendationRepository.findById(18L).orElseThrow();
+        if(recommendationRepository.existsById(18L)) {
+            nwRecommendation.setContent("Recommended");
+            recommendationRepository.save(nwRecommendation);
+        }
+        else {
+            throw new NotFoundException("Recommendation Not Found");
+        }
     }
 
     @Test
     void testDeleteRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(2L).orElseThrow();
-        recommendationRepository.delete(recommendation);
+        Recommendation recommendation = recommendationRepository.findById(21L).orElseThrow();
+        
+        JobSeeker requester = jobSeekerRepository.findById(9L).orElseThrow();
+        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+
+        requestRecommendationList.remove(recommendation);
+        requester.setRecommendation(requestRecommendationList);
+        jobSeekerRepository.save(requester);
+
+        recommendationRepository.delete(recommendation); 
+
     }
 
 }
