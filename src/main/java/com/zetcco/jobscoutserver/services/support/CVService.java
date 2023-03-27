@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
+import com.zetcco.jobscoutserver.services.mappers.CategorySkillSetMapper;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 
 @Service
@@ -21,6 +22,9 @@ public class CVService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CategorySkillSetMapper categorySkillSetMapper;
     
     public Resource generateCV(Long profileId, Long templateId) throws RestClientException, URISyntaxException {
         JobSeeker jobSeeker = jobSeekerService.getJobSeeker(profileId);
@@ -36,7 +40,7 @@ public class CVService {
                                                     .educationalQualifications(jobSeeker.getQualifications())
                                                     .pastExperiences(jobSeeker.getPastExperiences())
                                                     .intro(jobSeeker.getIntro())
-                                                    // .skills(jobSeeker.getSkills())
+                                                    .categorySkillList(categorySkillSetMapper.mapToDtos(jobSeeker.getCategorySkillSets()))
                                                     .build();
         RestTemplate restTemplate = new RestTemplate();
         URI url = new URI("http://localhost:8081/cv/generate");
