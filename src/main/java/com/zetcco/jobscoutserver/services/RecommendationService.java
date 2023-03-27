@@ -7,13 +7,11 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
-import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
