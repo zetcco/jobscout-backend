@@ -79,6 +79,15 @@ public class JobSeekerController {
         }
     }
 
+    @GetMapping("{jobSeekerId}/skillset")
+    public ResponseEntity<List<CategorySkillSetDTO>> getSkillSet(@PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<List<CategorySkillSetDTO>>(jobSeekerService.getCategorySkillLists(jobSeekerId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
     @PutMapping("/update/qualifications")
     public ResponseEntity<List<Qualification>> updateQualifications(@RequestBody List<Qualification> qualifications) {
         try {

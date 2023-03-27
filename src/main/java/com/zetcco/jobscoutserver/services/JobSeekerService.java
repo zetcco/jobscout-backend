@@ -123,6 +123,13 @@ public class JobSeekerService {
     }
 
     @Transactional
+    public List<CategorySkillSetDTO> getCategorySkillLists(Long id) throws NotFoundException {
+        JobSeeker jobSeeker = this.getJobSeeker(id);
+        List<CategorySkillSet> skillSet = jobSeeker.getCategorySkillSets();
+        return categorySkillSetMapper.mapToDtos(skillSet);
+    }
+
+    @Transactional
     public String getIntro(Long id) throws NotFoundException {
         JobSeeker jobSeeker = this.getJobSeeker(id);
         return jobSeeker.getIntro();
