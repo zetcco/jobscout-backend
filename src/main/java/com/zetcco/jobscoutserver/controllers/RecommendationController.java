@@ -1,7 +1,6 @@
 package com.zetcco.jobscoutserver.controllers;
 
 
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.zetcco.jobscoutserver.controllers.support.ProfileDTO;
-import com.zetcco.jobscoutserver.domain.Recommendation;
-import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
 import com.zetcco.jobscoutserver.services.RecommendationService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
@@ -30,24 +26,23 @@ public class RecommendationController {
     @Autowired
     private RecommendationService recommendationService;
 
-    @Autowired
-    private RecommendationRepository recommendationRepository;
 
-   @PostMapping("/{jobCreatorId}")
-    public ResponseEntity<ProfileDTO> addRecommendationRequest(@RequestBody Map<String, Long> responder) {
+   @PostMapping("/request")
+    public ResponseEntity<RecommendationDTO> addRecommendationRequest(@RequestBody RecommendationDTO recommendationDTO) {
         try{
-            Long responderId = responder.get("id");
-            return new  ResponseEntity<ProfileDTO>(recommendationService.addRecommendationRequest(responderId), HttpStatus.OK);
+            
+            return new  ResponseEntity<RecommendationDTO>(recommendationService.addRecommendationRequest(recommendationDTO), HttpStatus.OK);
         } catch(DataIntegrityViolationException e) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }catch(NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }catch(Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
-    @PostMapping("/")
+    @PostMapping("/add")
     public ResponseEntity<RecommendationDTO> addRecommendation(@RequestBody RecommendationDTO recommendationDTO) {
         try{
             return new ResponseEntity<RecommendationDTO>(recommendationService.addRecommendation(recommendationDTO) , HttpStatus.OK);
@@ -57,15 +52,25 @@ public class RecommendationController {
     } 
 
     
-    @PutMapping("/update/{recommendationId}")
-    private void updateRecommendation(@PathVariable Recommendation recommendation) {
-        recommendationRepository.save(recommendation);
+    @PutMapping("/update")
+    public ResponseEntity<RecommendationDTO> updateRecommendation(@RequestBody RecommendationDTO nwRecommendationDTO) {
+        try{
+            return new ResponseEntity<RecommendationDTO>(recommendationService.updateRecommendation(nwRecommendationDTO) , HttpStatus.OK);
+        } catch(Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 
-    @DeleteMapping("/delete/{recommendationId}")
-    private void deleteRecommendation(@PathVariable("recommendationId") Long recommendationId) {
-        recommendationRepository.deleteById(recommendationId);
+    @DeleteMapping("/delete/{recommendationId}/{requesterId}")
+    private void deleteRecommendation(@PathVariable Long recommendationId, @PathVariable Long requesterId) {
+        try {
+            recommendationService.deleteRecommendation(recommendationId, requesterId);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     
