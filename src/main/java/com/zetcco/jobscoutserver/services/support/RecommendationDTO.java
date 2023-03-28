@@ -1,7 +1,5 @@
 package com.zetcco.jobscoutserver.services.support;
 
-import com.zetcco.jobscoutserver.domain.support.User;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,11 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class RecommendationDTO {
 
-    private Long recommendationId;
+    private Long id;
     private String content;
-    private User requester;
-    private User responder;
-
-    
+    private ProfileDTO requester;
+    private ProfileDTO responder;
 
 }

@@ -1,6 +1,5 @@
 package com.zetcco.jobscoutserver.services.mappers;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,13 +10,15 @@ import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 public class RecommendationMapper {
 
     @Autowired
-    private ModelMapper modelMapper;
+    private UserMapper userMapper;
 
     public RecommendationDTO mapToDTO(Recommendation recommendation) {
-        return this.modelMapper.map(recommendation, RecommendationDTO.class);
+        return new RecommendationDTO(
+            recommendation.getReccomendationId(), 
+            recommendation.getContent(),
+            null,
+            userMapper.mapToDto(recommendation.getResponder())
+        );
     }
 
-    public Recommendation mapToEntity(Recommendation recommendation) {
-        return this.modelMapper.map(recommendation, Recommendation.class);
-    }
 }

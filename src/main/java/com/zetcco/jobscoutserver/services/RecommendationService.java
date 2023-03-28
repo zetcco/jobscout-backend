@@ -2,10 +2,11 @@ package com.zetcco.jobscoutserver.services;
 
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.JobCreator;
@@ -15,7 +16,9 @@ import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.RecommendationRepository;
 import com.zetcco.jobscoutserver.services.mappers.RecommendationMapper;
+import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 
 import jakarta.transaction.Transactional;
@@ -32,20 +35,15 @@ public class RecommendationService {
     private JobSeekerRepository jobSeekerRepository;
 
     @Autowired
-    public ModelMapper modelMapper;
+    private UserService userService;
 
     @Autowired
-    public RecommendationMapper mapper;
+    private RecommendationMapper recommendationMapper;
 
-    public RecommendationDTO addRecommendationRequest(RecommendationDTO recommendationDTO) throws NotFoundException{
-        // Long requesterId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
-        Long requesterId = recommendationDTO.getRequester().getId();
-        Long responderId = recommendationDTO.getResponder().getId();
-        // System.out.println(addRecommendationRequest(responderId, requesterId));
-        return this.addRecommendationRequest(responderId, requesterId);
-    }
+    @Autowired
+    private UserMapper userMapper;
 
-    RecommendationDTO addRecommendationRequest(Long responderId, Long requesterId) {
+    public void addRecommendationRequest(Long responderId, Long requesterId) {
         JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
         List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
@@ -56,52 +54,72 @@ public class RecommendationService {
         recommendationRequest.add(requester);
         responder.setRecommendationRequests(recommendationRequest);
         jobCreatorRepository.save(responder);
+    }
 
-        return null;
+    public void addRecommendationRequest(Long responderId) {
+        Long requesterId = userService.getAuthUser().getId();
+        this.addRecommendationRequest(responderId, requesterId);
     }
 
     @Transactional
-    public RecommendationDTO addRecommendation(RecommendationDTO recommendationDTO) {
-        JobCreator responder = jobCreatorRepository.findById(recommendationDTO.getResponder().getId()).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(recommendationDTO.getRequester().getId()).orElseThrow();
-        
-        List<JobSeeker> requesterList = responder.getRecommendationRequests();
-        List<Recommendation> requestRecommendationList = requester.getRecommendations();
+    public RecommendationDTO addRecommendation(Long responderId, Long requesterId, String content) throws NotFoundException {
+        try {
+            JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
+            JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
+            
+            List<JobSeeker> requesterList = responder.getRecommendationRequests();
+            List<Recommendation> recommendationsList = requester.getRecommendations();
 
-        if(requesterList.contains(requester)) {
-            Recommendation recommendation = Recommendation.builder()
-                                                    .content(recommendationDTO.getContent())
-                                                    .responder(responder)
-                                                    .build();
-            recommendation = recommendationRepository.save(recommendation);
+            if(requesterList.contains(requester)) {
+                Recommendation recommendation = Recommendation.builder()
+                                                        .content(content)
+                                                        .responder(responder)
+                                                        .build();
+                recommendation = recommendationRepository.save(recommendation);
 
-            requestRecommendationList.add(recommendation);
-            requester.setRecommendations(requestRecommendationList);
-            jobSeekerRepository.save(requester);
+                recommendationsList.add(recommendation);
+                requester.setRecommendations(recommendationsList);
+                jobSeekerRepository.save(requester);
 
-            requesterList.remove(requester);
-            responder.setRecommendationRequests(requesterList);
-            jobCreatorRepository.save(responder);
+                requesterList.remove(requester);
+                responder.setRecommendationRequests(requesterList);
+                jobCreatorRepository.save(responder);
 
-            return null;
-        }
-        else {
-            throw new NotFoundException("No request found");
+                return recommendationMapper.mapToDTO(recommendation);
+            }
+            else {
+                throw new NotFoundException("No request found");
+            }
+        } catch (NoSuchElementException e) {
+            throw new NotFoundException("User not found");
         }
     }
 
-    public RecommendationDTO updateRecommendation(RecommendationDTO nwRecommendationDTO) {
-        Recommendation updatedRecommendation = recommendationRepository.findById(nwRecommendationDTO.getRecommendationId()).orElseThrow();
+    public RecommendationDTO addRecommendation(RecommendationDTO recommendationDTO) throws NotFoundException {
+        Long responderId = userService.getAuthUser().getId();
+        return this.addRecommendation(
+            responderId,
+            recommendationDTO.getRequester().getId(),
+            recommendationDTO.getContent()
+        );
+    }
+
+    public RecommendationDTO updateRecommendation(RecommendationDTO nwRecommendationDTO, Long creatorId) throws AccessDeniedException, NotFoundException {
+        Recommendation recommendation = recommendationRepository.findById(nwRecommendationDTO.getId()).orElseThrow(() -> new NotFoundException("Recommendation not found"));
         
-        if(recommendationRepository.existsById(nwRecommendationDTO.getRecommendationId())) {
-            updatedRecommendation.setContent(nwRecommendationDTO.getContent());
-            recommendationRepository.save(updatedRecommendation);
- 
+        if(recommendation.getResponder().getId() == creatorId) {
+            recommendation.setContent(nwRecommendationDTO.getContent());
+            recommendation = recommendationRepository.save(recommendation);
         }
-        else {
-             addRecommendation(nwRecommendationDTO);
-        }
-        return null;
+        else 
+            throw new AccessDeniedException("You do not have permission to perform this action");
+
+        return recommendationMapper.mapToDTO(recommendation);
+    }
+
+    public RecommendationDTO updateRecommendationByCreator(RecommendationDTO newRecommendationDTO) throws AccessDeniedException, NotFoundException {
+        Long creatorId = userService.getAuthUser().getId();
+        return this.updateRecommendation(newRecommendationDTO, creatorId);
     }
 
     public void deleteRecommendation(Long recommendationId, Long requesterId) {
@@ -114,6 +132,31 @@ public class RecommendationService {
         jobSeekerRepository.save(requester);
 
         recommendationRepository.delete(recommendationDelete);
+    }
+
+    public List<ProfileDTO> getRequestsByJobCreator(Long responderId) {
+        JobCreator jobCreator = (JobCreator)userService.getUser(responderId);
+        return userMapper.mapToDtos(jobCreator.getRecommendationRequests());
     }   
 
+    public List<ProfileDTO> getRequests() {
+        Long jobCreatorId = userService.getAuthUser().getId();
+        return this.getRequestsByJobCreator(jobCreatorId);
+    }
+
+    public Boolean checkRecommendationRequestByCreator(Long jobCreatorId, Long jobSeekerId) {
+        try {
+            JobCreator jobCreator = (JobCreator)userService.getUser(jobCreatorId);
+            JobSeeker jobSeeker = (JobSeeker)userService.getUser(jobSeekerId);
+            List<JobSeeker> requests = jobCreator.getRecommendationRequests();
+            return requests.contains(jobSeeker);
+        } catch (ClassCastException e) {
+            throw new NotFoundException("User not found");
+        }
+    }
+
+    public Boolean checkRecommendationRequestByCreator(Long jobCreatorId) throws NotFoundException {
+        Long jobSeekerId = userService.getAuthUser().getId();
+        return this.checkRecommendationRequestByCreator(jobCreatorId, jobSeekerId);
+    }
 }
