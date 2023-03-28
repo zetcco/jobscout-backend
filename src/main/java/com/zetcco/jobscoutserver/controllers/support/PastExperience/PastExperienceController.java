@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.zetcco.jobscoutserver.domain.support.PastExperience.JobTitle;
-import com.zetcco.jobscoutserver.services.support.PastExperience.PastExperienceService;
+import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
 
 @Controller
 @RequestMapping("/experience")

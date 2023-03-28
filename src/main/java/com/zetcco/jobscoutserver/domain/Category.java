@@ -28,13 +28,17 @@ public class Category {
 
     private String description;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Skill> skills;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<JobSeeker> jobSeekers;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<JobPost> jobPosts;
+
+    public int getSkillCount() {
+        return this.skills.size();
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.zetcco.jobscoutserver.services.support.PastExperience;
+package com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience;
 
 import java.util.List;
 

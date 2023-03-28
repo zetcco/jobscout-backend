@@ -5,8 +5,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutserver.domain.JobSeeker;
+import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
+import com.zetcco.jobscoutserver.services.support.ContactDetails;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
@@ -36,6 +39,18 @@ public class UserService {
     public ProfileDTO getUserProfileDTO(Long profileId) {
         User user = userRepository.findById(profileId).orElseThrow(() -> new NotFoundException("User not found"));
         return this.getUser(user);
+    }
+
+    public ContactDetails getContacts(Long profileId) {
+        User user = userRepository.findById(profileId).orElseThrow(() -> new NotFoundException("User not found"));
+        ContactDetails contactDetails = new ContactDetails();
+        contactDetails.setRole(user.getRole());
+        contactDetails.setEmail(user.getEmail());
+        if (user.getRole() == Role.ROLE_ORGANIZATION)
+            contactDetails.setAddress(user.getAddress().toString());
+        if (user.getRole() == Role.ROLE_JOB_SEEKER)
+            contactDetails.setPhone(((JobSeeker)user).getContact());
+        return contactDetails;
     }
 
     public ProfileDTO getUser() {

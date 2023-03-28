@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zetcco.jobscoutserver.domain.support.Address;
+import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.Gender;
 import com.zetcco.jobscoutserver.domain.support.NameTitle;
 import com.zetcco.jobscoutserver.domain.support.Role;
@@ -17,7 +18,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -63,15 +63,12 @@ public class JobSeeker extends User {
     @Column(columnDefinition = "TEXT")
     private String intro;
 
-    @ManyToOne
-    private Category category;
+    @OneToMany
+    private List<CategorySkillSet> categorySkillSets;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Skill> skills;
-
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<Qualification> qualifications;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     private List<PastExperience> pastExperiences;
 }

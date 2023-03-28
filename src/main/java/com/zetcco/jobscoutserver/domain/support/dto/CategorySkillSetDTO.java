@@ -1,19 +1,19 @@
 package com.zetcco.jobscoutserver.domain.support.dto;
 
+import java.util.List;
+
+import com.zetcco.jobscoutserver.domain.Skill;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class CategoryDTO {
+public class CategorySkillSetDTO {
     
-    private Long id;
-    private String name;
-    private String description;
+    private CategoryDTO category;
+    private List<Skill> skills;
 
 }
