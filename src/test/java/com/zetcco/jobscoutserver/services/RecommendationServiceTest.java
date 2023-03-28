@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -39,14 +38,10 @@ public class RecommendationServiceTest {
     @Autowired
     public RecommendationMapper mapper;
 
-    private TypeMap< Recommendation, RecommendationDTO > propertyMapper;
-    
-
-
     @Test
     void testAddRecommendationRequest() {
-        JobCreator responder = jobCreatorRepository.findById(7L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(6L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(128L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(117L).orElseThrow();
 
         List<JobSeeker> requestRecommendation = responder.getRecommendationRequests();
         if (!requestRecommendation.contains(requester)) {
@@ -60,8 +55,8 @@ public class RecommendationServiceTest {
 
     @Test
     void testAddRecommendation() {
-        JobCreator responder = jobCreatorRepository.findById(5L).orElseThrow();
-        JobSeeker requester = jobSeekerRepository.findById(10L).orElseThrow();
+        JobCreator responder = jobCreatorRepository.findById(128L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(117L).orElseThrow();
         
         List<JobSeeker> requesterList = responder.getRecommendationRequests();
         List<Recommendation> requestRecommendationList = requester.getRecommendation();
@@ -90,9 +85,9 @@ public class RecommendationServiceTest {
 
     @Test
     void testUpdateRecommendation() {
-        Recommendation nwRecommendation = recommendationRepository.findById(18L).orElseThrow();
-        if(recommendationRepository.existsById(18L)) {
-            nwRecommendation.setContent("Recommended");
+        Recommendation nwRecommendation = recommendationRepository.findById(1L).orElseThrow();
+        if(recommendationRepository.existsById(1L)) {
+            nwRecommendation.setContent("Updated Recommended");
             recommendationRepository.save(nwRecommendation);
         }
         else {
@@ -102,9 +97,9 @@ public class RecommendationServiceTest {
 
     @Test
     void testDeleteRecommendation() {
-        Recommendation recommendation = recommendationRepository.findById(21L).orElseThrow();
+        Recommendation recommendation = recommendationRepository.findById(1L).orElseThrow();
         
-        JobSeeker requester = jobSeekerRepository.findById(9L).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(117L).orElseThrow();
         List<Recommendation> requestRecommendationList = requester.getRecommendation();
 
         requestRecommendationList.remove(recommendation);

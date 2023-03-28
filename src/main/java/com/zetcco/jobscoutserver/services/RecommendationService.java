@@ -4,7 +4,6 @@ package com.zetcco.jobscoutserver.services;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -37,13 +36,6 @@ public class RecommendationService {
 
     @Autowired
     public RecommendationMapper mapper;
-
-    private TypeMap<Recommendation, RecommendationDTO> propertyMapper;
-
-    @Autowired
-    public void setModelMapper(ModelMapper modelMapper) {
-        this.propertyMapper = modelMapper.createTypeMap(Recommendation.class, RecommendationDTO.class);
-    }
 
     public RecommendationDTO addRecommendationRequest(RecommendationDTO recommendationDTO) throws NotFoundException{
         // Long requesterId = ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
@@ -108,14 +100,6 @@ public class RecommendationService {
         }
         else {
              addRecommendation(nwRecommendationDTO);
-
-            // updatedRecommendation.builder()
-            //                         .content(nwRecommendationDTO.getContent())
-            //                         .responder(nwRecommendationDTO.getResponder())
-            //                         .build();
-            // recommendationRepository.save(updatedRecommendation);
-
-            // throw new NotFoundException("Not found recommendation");
         }
         return null;
     }
