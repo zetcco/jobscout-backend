@@ -66,7 +66,7 @@ public class RecommendationService {
         JobSeeker requester = jobSeekerRepository.findById(recommendationDTO.getRequester().getId()).orElseThrow();
         
         List<JobSeeker> requesterList = responder.getRecommendationRequests();
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        List<Recommendation> requestRecommendationList = requester.getRecommendations();
 
         if(requesterList.contains(requester)) {
             Recommendation recommendation = Recommendation.builder()
@@ -76,7 +76,7 @@ public class RecommendationService {
             recommendation = recommendationRepository.save(recommendation);
 
             requestRecommendationList.add(recommendation);
-            requester.setRecommendation(requestRecommendationList);
+            requester.setRecommendations(requestRecommendationList);
             jobSeekerRepository.save(requester);
 
             requesterList.remove(requester);
@@ -107,10 +107,10 @@ public class RecommendationService {
     public void deleteRecommendation(Long recommendationId, Long requesterId) {
         Recommendation recommendationDelete = recommendationRepository.findById(recommendationId).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        List<Recommendation> requestRecommendationList = requester.getRecommendations();
 
         requestRecommendationList.remove(recommendationDelete);
-        requester.setRecommendation(requestRecommendationList);
+        requester.setRecommendations(requestRecommendationList);
         jobSeekerRepository.save(requester);
 
         recommendationRepository.delete(recommendationDelete);

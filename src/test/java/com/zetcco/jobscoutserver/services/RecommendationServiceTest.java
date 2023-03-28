@@ -59,7 +59,7 @@ public class RecommendationServiceTest {
         JobSeeker requester = jobSeekerRepository.findById(117L).orElseThrow();
         
         List<JobSeeker> requesterList = responder.getRecommendationRequests();
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        List<Recommendation> requestRecommendationList = requester.getRecommendations();
         
         if(requesterList.contains(requester)) {
             Recommendation nwRecommendation = Recommendation.builder()
@@ -70,7 +70,7 @@ public class RecommendationServiceTest {
             System.out.println(nwRecommendation);
 
             requestRecommendationList.add(nwRecommendation);
-            requester.setRecommendation(requestRecommendationList);
+            requester.setRecommendations(requestRecommendationList);
             jobSeekerRepository.save(requester);
             // System.out.println(jobSeekerRepository.save(requester));
 
@@ -100,10 +100,10 @@ public class RecommendationServiceTest {
         Recommendation recommendation = recommendationRepository.findById(1L).orElseThrow();
         
         JobSeeker requester = jobSeekerRepository.findById(117L).orElseThrow();
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        List<Recommendation> requestRecommendationList = requester.getRecommendations();
 
         requestRecommendationList.remove(recommendation);
-        requester.setRecommendation(requestRecommendationList);
+        requester.setRecommendations(requestRecommendationList);
         jobSeekerRepository.save(requester);
 
         recommendationRepository.delete(recommendation); 

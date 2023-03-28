@@ -66,7 +66,7 @@ public class RecommendationRepositoryTest {
         JobSeeker requester = jobSeekerRepository.findById(132L).orElseThrow();
 
         List<JobSeeker> requestRecommendation = responder.getRecommendationRequests();
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        List<Recommendation> requestRecommendationList = requester.getRecommendations();
         
         if(requestRecommendation.contains(requester)) {
                 Recommendation recommendation = Recommendation.builder()
@@ -76,7 +76,7 @@ public class RecommendationRepositoryTest {
                 recommendation = recommendationRepository.save(recommendation);
 
                 requestRecommendationList.add(recommendation);
-                requester.setRecommendation(requestRecommendationList);
+                requester.setRecommendations(requestRecommendationList);
                 jobSeekerRepository.save(requester);
 
                 requestRecommendation.remove(requester);
@@ -108,10 +108,10 @@ public class RecommendationRepositoryTest {
         Recommendation recommendation = recommendationRepository.findById(17L).orElseThrow();
         
         JobSeeker requester = jobSeekerRepository.findById(10L).orElseThrow();
-        List<Recommendation> requestRecommendationList = requester.getRecommendation();
+        List<Recommendation> requestRecommendationList = requester.getRecommendations();
 
         requestRecommendationList.remove(recommendation);
-        requester.setRecommendation(requestRecommendationList);
+        requester.setRecommendations(requestRecommendationList);
         jobSeekerRepository.save(requester);
 
         recommendationRepository.delete(recommendation); 
