@@ -84,7 +84,6 @@ public class RecommendationController {
         }
     } 
 
-    
     @PutMapping("/update")
     @PreAuthorize("hasRole('JOB_CREATOR')")
     public ResponseEntity<RecommendationDTO> updateRecommendation(@RequestBody RecommendationDTO nwRecommendationDTO) {
