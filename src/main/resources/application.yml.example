@@ -1,0 +1,22 @@
+spring:
+    datasource: 
+        url: jdbc:postgresql://localhost:5432/<YOUR_DB>
+        username: <POSTGRES_USERNAME>
+        password: <POSTGRES_PASSWORD>
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        database: postgresql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+    error:
+        include-message: always
+    url: <YOUR_LOCAL_IP>
+services:
+    cv_service: <CV_SERVICE_IP>
+    judge0_service:
+        url: <JUDGE0_IP>
+        headers:
+            RAPID_API_KEY: <RAPID_API_KEY>
