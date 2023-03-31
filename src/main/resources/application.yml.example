@@ -20,3 +20,4 @@ services:
         url: <JUDGE0_IP>
         headers:
             RAPID_API_KEY: <RAPID_API_KEY>
+            RAPID_API_HOST: <RAPID_API_HOSTNAME>
