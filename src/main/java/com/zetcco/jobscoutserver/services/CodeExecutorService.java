@@ -2,7 +2,6 @@ package com.zetcco.jobscoutserver.services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ public class CodeExecutorService {
 
     private WebClient client;
 
-    @Autowired
     public CodeExecutorService( @Value("${services.judge0_service.url}") String CLIENT_URL,
                                 @Value("${services.judge0_service.headers.RAPID_API_KEY}") String API_KEY,
                                 @Value("${services.judge0_service.headers.RAPID_API_HOST}") String API_HOST) {
