@@ -24,7 +24,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.enableSimpleBroker(
             "/user/",       // Subscription Endpoint: /user/<userid>/<service>
             "/all/notify",         // Subscription Endpoint: /all/<channel>/<service>
-            "/room/",
+            "/meeting/",
             "/messaging/"
         );
         registry.setUserDestinationPrefix("/user");

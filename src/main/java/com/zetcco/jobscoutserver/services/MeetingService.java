@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class MeetingService {
     private UserService userService;
 
     @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
+    private RTCService rtcService;
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
     public MeetingDTO hostMeeting(MeetingDTO meetingDTO) {
@@ -66,14 +65,12 @@ public class MeetingService {
         return meetingDTO;
     }
 
-    public void sentToRoom(Long roomId, RTCSignal rtcSignal) {
-        System.out.println("----------came here 1--------------");
-        simpMessagingTemplate.convertAndSend("/room/" + roomId, rtcSignal);
+    public void sendToMeeting(String meetingId, RTCSignal rtcSignal) {
+        rtcService.sendToDestination("/meeting/" + meetingId, rtcSignal);
     }
 
-    public void sentToRoomUser(Long roomId, Long userId, RTCSignal rtcSignal) {
-        System.out.println("----------came here 2--------------");
-        simpMessagingTemplate.convertAndSend("/room/" + roomId + "/" + userId, rtcSignal);
+    public void sendToMeeting(String meetingId, Long userId, RTCSignal rtcSignal) {
+        rtcService.sendToDestination("/meeting/" + meetingId + "/" + userId.toString(), rtcSignal);
     }
 
 }
