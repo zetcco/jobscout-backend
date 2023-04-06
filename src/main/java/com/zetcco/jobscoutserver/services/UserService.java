@@ -1,5 +1,8 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -8,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.domain.support.Socials.SocialPlatform;
+import com.zetcco.jobscoutserver.domain.support.Socials.SocialProfile;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
 import com.zetcco.jobscoutserver.services.support.ContactDetails;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
@@ -64,6 +69,45 @@ public class UserService {
 
     protected User getAuthUser() {
         return ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+    }
+
+    public List<SocialProfile> getSocialLinks(Long userId) {
+        return this.getSocialLinks(this.getUser(userId));
+    }
+
+    public List<SocialProfile> getSocialLinks(User user) {
+
+        List<String> socials = user.getSocialLinks();
+        List<SocialProfile> socialProfiles = new ArrayList<>();
+
+        for (String link : socials) {
+            String host = link.replaceAll("http(s)?://|www\\.|/.*", "");
+            String domainName = host.startsWith("www.") ? host.substring(4) : host;
+            SocialPlatform platform;
+            switch ( domainName ) {
+                case "github.com":
+                    platform = SocialPlatform.SOCIAL_GITHUB;
+                    break;
+                case "facebook.com":
+                    platform = SocialPlatform.SOCIAL_FACEBOOK;
+                    break;
+                case "linkedin.com":
+                    platform = SocialPlatform.SOCIAL_LINKEDIN;
+                    break;
+                default:
+                    platform = SocialPlatform.SOCIAL_OTHER;
+            }
+            socialProfiles.add(new SocialProfile(platform, link));
+        }
+
+        return socialProfiles;
+    }
+
+    public List<SocialProfile> setSocialLinks(List<String> socials) {
+        User user = getAuthUser();
+        user.setSocialLinks(socials);
+        userRepository.save(user);
+        return this.getSocialLinks(user.getId());
     }
 
     protected User getUser(Long userId) throws NotFoundException {
