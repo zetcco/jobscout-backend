@@ -21,13 +21,17 @@ public class RTCService {
         // simpMessagingTemplate.convertAndSendToUser(signal.getRecieverId().toString(), "/call", signal);
     }
 
-    public void sendToUser(Long senderId, String destination, String type, Object payload) throws JsonProcessingException {
+    public void sendToDestination(Long senderId, String destination, String type, Object payload) throws JsonProcessingException {
         RTCSignal signal = new RTCSignal(senderId, type, objectMapper.writeValueAsString(payload));
-        simpMessagingTemplate.convertAndSend(destination + "/" + senderId.toString(), signal);
+        simpMessagingTemplate.convertAndSend(destination, signal);
     }
 
-    public void sendToUser(Long senderId, String destination, String type) throws JsonProcessingException {
+    public void sendToDestination(Long senderId, String destination, String type) throws JsonProcessingException {
         RTCSignal signal = new RTCSignal(senderId, type, objectMapper.writeValueAsString(null));
-        simpMessagingTemplate.convertAndSend(destination + "/" + senderId.toString(), signal);
+        simpMessagingTemplate.convertAndSend(destination, signal);
+    }
+
+    public void sendToDestination(String destination, RTCSignal signal) {
+        simpMessagingTemplate.convertAndSend(destination, signal);
     }
 }
