@@ -123,7 +123,10 @@ public class User implements UserDetails {
     }
 
     public void setSocialLinks(List<String> links) {
-        this.socialLinks = String.join(",", links);
+        if (links.size() == 0)
+            this.socialLinks = null;
+        else
+            this.socialLinks = String.join(",", links);
     }
 
     public List<String> getSocialLinks() {
