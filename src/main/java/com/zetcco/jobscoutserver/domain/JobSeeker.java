@@ -45,6 +45,8 @@ public class JobSeeker extends User {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    private String introVideo;
+
     public JobSeeker(String email, String password, Address address) {
         super(email, password, Role.ROLE_JOB_SEEKER, address);
     }

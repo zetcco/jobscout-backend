@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.core.env.Environment;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +16,7 @@ import com.zetcco.jobscoutserver.repositories.UserRepository;
 import com.zetcco.jobscoutserver.services.support.ContactDetails;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.StorageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +26,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
-    private final Environment environment;
+    private final StorageService storageService;
 
     // @TODO : Add exception handling here
     public User loadUserByEmail(String email) {
@@ -116,9 +116,7 @@ public class UserService {
 
     private ProfileDTO mapUser(User user) {
         ProfileDTO profile = modelMapper.map(user, ProfileDTO.class);
-        final String PROFILE_RESOURCE_URL = environment.getProperty("server.url") + "/media/file/";
-        if (PROFILE_RESOURCE_URL != null && profile.getDisplayPicture() != null)
-            profile.setDisplayPicture(PROFILE_RESOURCE_URL.concat(profile.getDisplayPicture()));
+        profile.setDisplayPicture(storageService.getResourceURL(user.getDisplayPicture()));
         return profile;
     }
 }
