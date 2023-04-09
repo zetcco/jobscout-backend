@@ -64,7 +64,7 @@ public class JobPostService {
             throw new NotFoundException("Such a job post not found! - job creator id: " + jobCreatorId);
         return this.mapper.mapToDtos(jobPosts);
     }
-
+    
 
     public List<JobPostDTO> getJobPostsByOrganizationId(Long organizationId) throws NotFoundException{
         List<JobPost> jobPosts = new ArrayList<JobPost>();

@@ -20,6 +20,7 @@ import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.services.JobPostService;
+import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Controller
@@ -28,6 +29,9 @@ public class JobPostController {
 
     @Autowired
     private JobPostService jobPostService;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<JobPostDTO>> getAllJobPosts(@RequestParam("page") int page, @RequestParam("size") int size){
@@ -53,6 +57,17 @@ public class JobPostController {
     public ResponseEntity<List<JobPostDTO>> getJobPostByJobCreatorId(@RequestParam("val") Long jobCreatorId){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByJobCreatorId(jobCreatorId) , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<List<JobPostDTO>> getJobPostCountByJobCreatorId(){
+        try{
+            return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByJobCreatorId(userService.getUser().getId()) , HttpStatus.OK);
         }catch(NotFoundException e){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
         }catch(Exception e){

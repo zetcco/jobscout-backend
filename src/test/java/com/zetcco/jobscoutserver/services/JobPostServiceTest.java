@@ -69,7 +69,7 @@ public class JobPostServiceTest {
 
     @Test
     void testFindJobPostByJobCreatorId(){
-        List<JobPostDTO> jobPost = jobPostService.getJobPostsByJobCreatorId(2L);
+        List<JobPostDTO> jobPost = jobPostService.getJobPostsByJobCreatorId(4L);
         jobPost.forEach((p)->{System.out.println(p.getTitle());});
     }
 
@@ -94,5 +94,10 @@ public class JobPostServiceTest {
       void testSearchJobPostsByNameFTS(){
         List<JobPostDTO> jobPost = jobPostService.getJobPostByNameFTS("Senior", 0, 1);
         jobPost.forEach((p)->{System.out.println(p.getDescription());});
+      }
+
+      @Test
+      void testGetJobPostCountByJobCreatorId(){
+        System.out.println(jobPostService.getJobPostsByJobCreatorId(4L).size());
       }
  }
