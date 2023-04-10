@@ -67,4 +67,14 @@ public class OrganizationController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @GetMapping("/accept-request")
+    public ResponseEntity<List<ProfileDTO>> fetchOrganizationRequest() {
+        try {
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.fetchOrganizationRequest(null, null),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }
