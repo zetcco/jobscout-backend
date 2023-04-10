@@ -36,4 +36,9 @@ public class OrganizationServiceTest {
 
     }
 
+    @Test
+    void testfetchOrganizationsRequest() {
+        System.out.println(organizationService.fetchOrganizationRequest(4L, 13L));
+
+    }
 }
