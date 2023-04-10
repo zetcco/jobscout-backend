@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +34,9 @@ public class OrganizationService {
 
     @Autowired
     private OrganizationRepository organizationRepository;
+
+    @Autowired
+    private JobCreatorRepository jobCreatorRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -48,7 +53,7 @@ public class OrganizationService {
         List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page)
                 .getContent();
         List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
-        for (Organization organization : organizations) 
+        for (Organization organization : organizations)
             profiles.add(userService.getUserProfileDTO(organization.getId()));
         return profiles;
     }
@@ -108,6 +113,25 @@ public class OrganizationService {
         for (JobCreator jobCreator : jRequest)
             profiles.add(modelMapper.map(jobCreator, ProfileDTO.class));
         return profiles;
+    }
+
+    public List<ProfileDTO> fetchOrganizationRequest(Long organizationId, Long jobCreatorId) {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+        List<JobCreator> requestList = organization.getJobCreatorRequests();
+        List<JobCreator> jobCreators = organization.getJobCreators();
+        JobCreator requestee = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
+
+        if (requestList.contains(requestee)) {
+            jobCreators.add(requestee);
+            requestee.setOrganization(organization);
+            organization.setJobCreatorRequests(jobCreators);
+            organization.setJobCreators(jobCreators);
+            organizationRepository.save(organization);
+            jobCreatorRepository.save(requestee);
+
+        } else {
+            throw new EntityExistsException();
+        }
     }
 
     Organization save(Organization organization) {
