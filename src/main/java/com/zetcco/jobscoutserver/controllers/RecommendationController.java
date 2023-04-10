@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,6 +58,24 @@ public class RecommendationController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @DeleteMapping("/deleterequest")
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    public ResponseEntity<Void> deleteRecommendationRequest(@RequestBody Map<String, Long> deleteRequest) {
+        try{
+            Long requesterId = deleteRequest.get("requesterId");
+            recommendationService.deleteRecommendationRequest(requesterId);
+            return new ResponseEntity<Void>(HttpStatus.OK);
+        } catch(DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }catch(NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }catch(Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
 
     @GetMapping("/check-request/{jobCreatorId}")
     @PreAuthorize("hasRole('JOB_SEEKER')")

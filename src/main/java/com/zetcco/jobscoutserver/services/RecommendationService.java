@@ -122,6 +122,28 @@ public class RecommendationService {
         return this.updateRecommendation(newRecommendationDTO, creatorId);
     }
 
+
+    public void deleteRecommendationRequest(Long responderId, Long requesterId) {
+        JobCreator responder = jobCreatorRepository.findById(responderId).orElseThrow();
+        JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
+        List<JobSeeker> recommendationRequest = responder.getRecommendationRequests();
+
+        if(recommendationRequest.contains(requester)) {
+            recommendationRequest.remove(requester);
+            responder.setRecommendationRequests(recommendationRequest);
+            jobCreatorRepository.save(responder);
+        } else {
+            throw new DataIntegrityViolationException("Request not exitsts");
+        }
+
+        
+    }
+
+    public void deleteRecommendationRequest(Long requesterId) {
+        Long responderId = userService.getAuthUser().getId();
+        this.deleteRecommendationRequest(responderId, requesterId);
+    }
+
     public void deleteRecommendation(Long recommendationId, Long requesterId) {
         Recommendation recommendationDelete = recommendationRepository.findById(recommendationId).orElseThrow();
         JobSeeker requester = jobSeekerRepository.findById(requesterId).orElseThrow();
