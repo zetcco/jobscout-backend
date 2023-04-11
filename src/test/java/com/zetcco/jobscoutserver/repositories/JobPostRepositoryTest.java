@@ -18,6 +18,8 @@ import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.services.UserService;
 
+import jakarta.transaction.Transactional;
+
 @SpringBootTest
 public class JobPostRepositoryTest {
     @Autowired
@@ -38,9 +40,9 @@ public class JobPostRepositoryTest {
     @Test
     public void testSaveJobPost() throws Exception{
 
-        JobCreator jobCreator = jobCreatorRepository.findById(4L).orElseThrow();
-        Category category = categoryRepository.findById(5L).orElseThrow();
-        Organization organization = organizationRepository.findById(5L).orElseThrow();
+        JobCreator jobCreator = jobCreatorRepository.findById(73L).orElseThrow();
+        Category category = categoryRepository.findById(3L).orElseThrow();
+        Organization organization = organizationRepository.findById(68L).orElseThrow();
 
         Date date =  new Date(); 
         JobPost jobPost = JobPost.builder()
@@ -151,13 +153,21 @@ public class JobPostRepositoryTest {
         for (JobPost jobpost : posts) System.out.println(jobpost.getDescription());
     }
 
+    @Transactional
+    @Test
+    void testGetJobPostCount() {
+        JobCreator jobCreator = jobCreatorRepository.findById(109L).orElseThrow();
+        List<JobPost> jobPosts = jobCreator.getJobPost();
+        System.out.println(jobPosts);
+        System.out.println(jobPostRepository.countByJobCreatorId(109L));
+    }
 
     @Test
     void testSaveMultipleJobPosts(){
-        JobCreator jobCreator = jobCreatorRepository.findById(4L).orElseThrow();
-        Category category = categoryRepository.findById(5L).orElseThrow();
-        Organization organization = organizationRepository.findById(5L).orElseThrow();
-        Date date =  new Date(); 
+        // JobCreator jobCreator = jobCreatorRepository.findById(4L).orElseThrow();
+        // Category category = categoryRepository.findById(5L).orElseThrow();
+        // Organization organization = organizationRepository.findById(5L).orElseThrow();
+        // Date date =  new Date(); 
 
         // List<JobPost> jobPosts = List.of(
         //     new JobPost(

@@ -61,4 +61,16 @@ public class JobCreatorService {
     protected JobCreator save(JobCreator jobCreator) {
         return jobCreatorRepository.save(jobCreator);
     }
+
+    public void deleteOrganizationRequest(Long organizationId) {
+        Organization organization = organizationService.getOrganizationById(organizationId);
+
+        JobCreator jobCreator = this.getJobCreatorById(userService.getUser().getId());
+        List<JobCreator> jobCreators = organization.getJobCreatorRequests();
+        jobCreators.remove(jobCreator);
+
+        organization.setJobCreatorRequests(jobCreators);
+
+        organizationService.save(organization);
+    }
 }

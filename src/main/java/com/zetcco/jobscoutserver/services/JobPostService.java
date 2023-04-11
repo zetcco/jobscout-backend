@@ -10,13 +10,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobPost;
+import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
+import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.repositories.JobPostRepository;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class JobPostService {
@@ -26,10 +32,38 @@ public class JobPostService {
     @Autowired
     private JobPostMapper mapper;
 
+    @Autowired
+    private JobCreatorService jobCreatorService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private OrganizationService organizationService;
+
+    @Transactional
     public JobPostDTO addNewJobPost(JobPostDTO jobPostDTO) throws NotFoundException{
         JobPost jobPost = mapper.mapToEntity(jobPostDTO);
+        JobCreator jobCreator = jobCreatorService.getJobCreatorById(userService.getUser().getId());
+        Organization organization = jobCreator.getOrganization();
+        jobPost.setJobCreator(jobCreator);
+        jobPost.setOrganization(organization);
         jobPost.setTimestamp(new Date());
-        return this.mapper.mapToDto(jobPostRepository.save(jobPost));
+        JobPost newJobPost = jobPostRepository.save(jobPost);
+
+        if (organization != null) {
+            List<JobPost> orgPosts = organization.getJobPost();
+            orgPosts.add(newJobPost);
+            organization.setJobPost(orgPosts);
+            organizationService.save(organization);
+        }
+
+        List<JobPost> jobPosts = jobCreator.getJobPost();
+        jobPosts.add(newJobPost);
+        jobCreator.setJobPost(jobPosts);
+        jobCreatorService.save(jobCreator);
+
+        return this.mapper.mapToDto(newJobPost);
     }
 
 
@@ -106,8 +140,21 @@ public class JobPostService {
 
     public void deleteJobPostById(Long Id) throws NotFoundException{
         if(!jobPostRepository.existsById(Id))
-                throw new NotFoundException("Job Post Not Found!" + Id);
-            jobPostRepository.deleteById(Id);
+            throw new NotFoundException("Job Post Not Found!" + Id);
+        JobPost jobPost = jobPostRepository.findById(Id).orElseThrow();
+        JobCreator jobCreator = jobPost.getJobCreator();
+        Organization organization = jobPost.getOrganization();
+        if (organization != null) {
+            List<JobPost> orgJobPosts = organization.getJobPost();
+            orgJobPosts.remove(jobPost);
+            organization.setJobPost(orgJobPosts);
+            organizationService.save(organization);
+        }
+        List<JobPost> jobPosts = jobCreator.getJobPost();
+        jobPosts.remove(jobPost);
+        jobCreator.setJobPost(jobPosts);
+        jobCreatorService.save(jobCreator);
+        jobPostRepository.deleteById(Id);
     }
 
     public List<JobPostDTO> getJobPostByNameFTS(String desc , int pageCount, int pageSize) throws NotFoundException{
@@ -121,5 +168,23 @@ public class JobPostService {
         if(profiles.isEmpty() == true)
             throw new NotFoundException("Job Post Not Found!");
         return profiles;    
+    }
+
+    public Long getJobPostCount() throws NotFoundException {
+        ProfileDTO user = userService.getUser();
+        if (user.getRole() == Role.ROLE_JOB_CREATOR)
+            return this.getJobPostCountByJobCreatorId(user.getId());
+        else if (user.getRole() == Role.ROLE_ORGANIZATION)
+            return this.getJobPostCountByOrganizationId(user.getId());
+        else
+            throw new NotFoundException("User not found");
+    }
+
+    private Long getJobPostCountByJobCreatorId(Long id) {
+        return jobPostRepository.countByJobCreatorId(id);
+    }
+
+    private Long getJobPostCountByOrganizationId(Long id) {
+        return jobPostRepository.countByOrganizationId(id);
     }
 }

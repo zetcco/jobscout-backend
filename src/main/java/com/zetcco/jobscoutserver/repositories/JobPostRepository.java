@@ -56,4 +56,8 @@ public interface JobPostRepository extends JpaRepository<JobPost, Long> {
             nativeQuery = true)
     public Page<JobPost> findJobPostByNameFTS(@Param("keyword") String keyword, Pageable page);
 
+    public Long countByJobCreatorId(Long id);
+
+    public Long countByOrganizationId(Long id);
+
 }

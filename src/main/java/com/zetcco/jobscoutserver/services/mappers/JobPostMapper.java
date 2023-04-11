@@ -38,7 +38,7 @@ public class JobPostMapper {
 
     public JobPostDTO mapToDto(JobPost jobPost) {
         ProfileDTO jobCreator = userService.getUser(jobPost.getJobCreator().getId());
-        ProfileDTO organization = organizationService.getOrganizationDtoById(jobPost.getOrganization().getId());
+        ProfileDTO organization = jobPost.getOrganization() != null ? organizationService.getOrganizationDtoById(jobPost.getOrganization().getId()) : null;
         JobPostDTO jobPostDTO = JobPostDTO.builder()
                                             .Id(jobPost.getId())
                                             .category(jobPost.getCategory())
