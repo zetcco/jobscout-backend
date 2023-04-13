@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.domain.questionary;
 
+import java.util.Arrays;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -21,7 +22,25 @@ public class Question {
     private Long id;
 
     private String question;
-    private List<Answer> answers;
-    private Answer correctAnswer;
+    private String answers;
+    private int correctAnswer;
+
+    public Question(String question, List<String> answers, int correctAnswer) {
+        this.question = question;
+        this.correctAnswer = correctAnswer;
+        setAnswers(answers);
+    }
+
+    public List<String> getAnswers() {
+        return Arrays.asList(answers.split(","));
+    }
+
+    public void setAnswers(List<String> answers) {
+        this.answers = String.join(",", answers);
+    }
+
+    public boolean checkAnswer(int answerIndex) {
+        return this.correctAnswer == answerIndex;
+    }
     
 }
