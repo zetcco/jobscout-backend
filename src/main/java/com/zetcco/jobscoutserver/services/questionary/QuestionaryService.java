@@ -23,12 +23,12 @@ public class QuestionaryService {
     private QuestionService questionService;
 
     public Questionary createQuestionary(QuestionaryForm data) {
-        return this.createQuestionary(data.getName(), data.getBadge(), data.getDescription(), data.getQuestions());
+        return this.createQuestionary(data.getName(), data.getBadge(), data.getDescription(), data.getTimePerQuestion(), data.getAttemptCount(), data.getQuestions());
     }
 
-    public Questionary createQuestionary(String name, String badge, String description, List<Question> questions) {
+    public Questionary createQuestionary(String name, String badge, String description, Integer timePerQuestion, Integer attemptCount, List<Question> questions) {
         questions = questionService.saveAll(questions);
-        Questionary questionary = new Questionary(null, name, badge, description, questions);
+        Questionary questionary = new Questionary(null, name, badge, description, timePerQuestion, attemptCount, questions);
         return questionaryRepository.save(questionary);
     }
 
@@ -52,7 +52,7 @@ public class QuestionaryService {
     }
 
     public List<Questionary> getQuestionaries() {
-        return questionaryRepository.findAll();
+        return questionaryRepository.getAll();
     }
 
 }

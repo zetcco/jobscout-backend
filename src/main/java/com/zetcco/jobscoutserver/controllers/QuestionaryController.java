@@ -26,6 +26,15 @@ public class QuestionaryController {
     @Autowired
     private QuestionaryService questionaryService;
 
+    @GetMapping
+    public ResponseEntity<List<Questionary>> getQuestionaries() {
+        try {
+            return new ResponseEntity<List<Questionary>>(questionaryService.getQuestionaries(), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
     @PostMapping("/create")
     public ResponseEntity<Questionary> createQuesionary(@RequestBody QuestionaryForm data) {
         try {

@@ -17,6 +17,8 @@ public class QuestionaryForm {
     private String name;
     private String badge;
     private String description;
+    private Integer timePerQuestion;
+    private Integer attemptCount;
 
     @OneToMany
     private List<Question> questions;
