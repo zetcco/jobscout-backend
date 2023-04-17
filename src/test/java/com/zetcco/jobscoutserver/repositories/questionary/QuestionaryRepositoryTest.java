@@ -26,11 +26,11 @@ public class QuestionaryRepositoryTest {
         Question q1 = questionRepository.findById(1L).orElseThrow();
         Question q2 = questionRepository.findById(2L).orElseThrow();
 
-        Questionary questionary = new Questionary(null, "Basic Programming", null, null, List.of(q1, q2));
+        // Questionary questionary = new Questionary(null, "Basic Programming", null, null, List.of(q1, q2));
 
-        questionary = questionaryRepository.save(questionary);
+        // questionary = questionaryRepository.save(questionary);
 
-        System.out.println(questionary);
+        // System.out.println(questionary);
 
     }
 
