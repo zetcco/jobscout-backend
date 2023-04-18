@@ -61,7 +61,7 @@ public class ConversationService {
         ConversationDTO newConversationDTO = conversationMapper.mapToDto(conversation);
         newConversationDTO.setRead(false);
         for (Long userId : participantIds) 
-            rtcService.sendToUser(userId, "/messaging/private", "CONVERSATION", newConversationDTO);
+            rtcService.sendToDestination(userId, "/messaging/private/" + userId, "CONVERSATION", newConversationDTO);
             // simpMessagingTemplate.convertAndSend("/messaging/private/" + userId, newConversationDTO);
 
 
@@ -98,8 +98,8 @@ public class ConversationService {
             conversation.setPicture(fileName);
             conversation = conversationRepository.save(conversation);
             ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
-            for (ProfileDTO participantId : conversationDTO.getParticipants()) 
-                rtcService.sendToUser(participantId.getId(), "/messaging/private", "CONVERSATION_UPDATE", conversationDTO);
+            for (ProfileDTO participant : conversationDTO.getParticipants()) 
+                rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId(), "CONVERSATION_UPDATE", conversationDTO);
         } else {
             throw new AccessDeniedException("You do not have permission to do this action");
         }

@@ -21,6 +21,7 @@ import com.zetcco.jobscoutserver.repositories.support.PastExperience.JobTitleRep
 import com.zetcco.jobscoutserver.services.mappers.CategorySkillSetMapper;
 import com.zetcco.jobscoutserver.services.mappers.PastExperienceMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.StorageService;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.Qualification.QualificationService;
 
@@ -59,6 +60,9 @@ public class JobSeekerService {
     @Autowired
     private JobTitleRepository jobTitleRepository;
 
+    @Autowired
+    private StorageService storageService;
+
     @Transactional
     public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
@@ -91,8 +95,6 @@ public class JobSeekerService {
 
     public List<Qualification> updateQualifications(List<Qualification> qualifications) throws NotFoundException {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
-        // for (Qualification qualification : qualifications) 
-        //     qualification.setJobSeeker(jobSeeker);
         qualifications = qualificationService.saveQualifications(qualifications);
         jobSeeker.setQualifications(qualifications);
         jobSeeker = jobSeekerRepository.save(jobSeeker);
@@ -112,10 +114,21 @@ public class JobSeekerService {
 
     public String updateIntro(String intro) throws NotFoundException {
         JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
-        System.out.println(jobSeeker.getIntro());
         jobSeeker.setIntro(intro);
         jobSeeker = jobSeekerRepository.save(jobSeeker);
         return jobSeeker.getIntro();
+    }
+
+    public String updateIntroVideo(String filename) throws NotFoundException {
+        JobSeeker jobSeeker = jobSeekerRepository.findById(userService.getAuthUser().getId()).orElseThrow(() -> new NotFoundException("Job Seeker Not found"));
+        jobSeeker.setIntroVideo(filename);
+        jobSeeker = jobSeekerRepository.save(jobSeeker);
+        return storageService.getResourceURL(jobSeeker.getIntroVideo());
+    }
+
+    public String getIntroVideo(Long id) throws NotFoundException {
+        JobSeeker jobSeeker = this.getJobSeeker(id);
+        return storageService.getResourceURL(jobSeeker.getIntroVideo());
     }
 
     public JobSeeker getJobSeeker(Long id) {
