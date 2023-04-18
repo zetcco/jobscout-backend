@@ -35,6 +35,7 @@ public class Question {
         return Arrays.asList(answers.split(","));
     }
 
+    // TODO: Use something else other than comma to seperate questions
     public void setAnswers(List<String> answers) {
         this.answers = String.join(",", answers);
     }
