@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.lang.Nullable;
@@ -20,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 public class StorageServiceImpl implements StorageService {
 
     private final Path root = Paths.get("uploads");
+
+    @Value("${server.url}")
+    private String SERVER_URL;
 
     @Override
     public void init() {
@@ -84,6 +88,12 @@ public class StorageServiceImpl implements StorageService {
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(root.toFile());
         
+    }
+
+    public String getResourceURL(String filename) {
+        if (filename == null)
+            return null;
+        return SERVER_URL + "/media/file/" + filename;
     }
     
 }

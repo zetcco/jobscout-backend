@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.domain.support;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,6 +64,8 @@ public class User implements UserDetails {
 
     private String displayPicture;
 
+    private String socialLinks;
+
     protected User(String email, String password, Role role, Address address) {
         this.email = email;
         this.password = password;
@@ -117,6 +120,19 @@ public class User implements UserDetails {
             return ((JobCreator)this).getFirstName();
         else
             return null;
+    }
+
+    public void setSocialLinks(List<String> links) {
+        if (links.size() == 0)
+            this.socialLinks = null;
+        else
+            this.socialLinks = String.join(",", links);
+    }
+
+    public List<String> getSocialLinks() {
+        if (this.socialLinks == null)
+            return List.of();
+        return Arrays.asList(this.socialLinks.split(","));
     }
 
     @Override
