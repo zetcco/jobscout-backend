@@ -1,0 +1,23 @@
+spring:
+    datasource: 
+        url: jdbc:postgresql://localhost:5432/authentication
+        username: postgres
+        password: root
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        database: postgresql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+    error:
+        include-message: always
+    url: http://192.168.8.100:8080
+services:
+    cv_service: http://localhost:8081
+    judge0_service:
+        url: https://judge0-ce.p.rapidapi.com
+        headers:
+            RAPID_API_KEY: 89b4760b13msh0955e4284528c8ep1ba489jsnf4bd47bb13b2
+            RAPID_API_HOST: judge0-ce.p.rapidapi.com
