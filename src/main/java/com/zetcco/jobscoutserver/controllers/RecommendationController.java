@@ -66,9 +66,7 @@ public class RecommendationController {
             Long requesterId = deleteRequest.get("requesterId");
             recommendationService.deleteRecommendationRequest(requesterId);
             return new ResponseEntity<Void>(HttpStatus.OK);
-        } catch(DataIntegrityViolationException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
-        }catch(NotFoundException e) {
+        } catch(NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }catch(Exception e) {
             e.printStackTrace();

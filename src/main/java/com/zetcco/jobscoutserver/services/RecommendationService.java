@@ -133,7 +133,7 @@ public class RecommendationService {
             responder.setRecommendationRequests(recommendationRequest);
             jobCreatorRepository.save(responder);
         } else {
-            throw new DataIntegrityViolationException("Request not exitsts");
+            throw new NotFoundException("Request not exitsts");
         }
 
         
