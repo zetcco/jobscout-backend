@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.controllers;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Map;
 
@@ -59,7 +60,20 @@ public class QuestionaryController {
     public ResponseEntity<Float> checkMarks(@PathVariable Long questionaryId, @RequestBody Map<String, List<Integer>> data) {
         try {
             List<Integer> answers = data.get("answers");
-            return new ResponseEntity<Float>(questionaryService.getMarks(questionaryId, answers), HttpStatus.OK);
+            return new ResponseEntity<Float>(questionaryService.submitAnswers(questionaryId, answers), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{questionaryId}/remaining-attempts")
+    public ResponseEntity<Integer> isEligible(@PathVariable Long questionaryId) {
+        try {
+            return new ResponseEntity<Integer>(questionaryService.getRemainingAttempts(questionaryId), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

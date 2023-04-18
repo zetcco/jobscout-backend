@@ -14,8 +14,8 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 public class QuestionaryRepositoryTest {
 
-    @Autowired
-    private QuestionRepository questionRepository;
+    // @Autowired
+    // private QuestionRepository questionRepository;
 
     @Autowired
     private QuestionaryRepository questionaryRepository;
@@ -23,8 +23,8 @@ public class QuestionaryRepositoryTest {
     @Test
     public void testCreateQuestionary() {
 
-        Question q1 = questionRepository.findById(1L).orElseThrow();
-        Question q2 = questionRepository.findById(2L).orElseThrow();
+        // Question q1 = questionRepository.findById(1L).orElseThrow();
+        // Question q2 = questionRepository.findById(2L).orElseThrow();
 
         // Questionary questionary = new Questionary(null, "Basic Programming", null, null, List.of(q1, q2));
 

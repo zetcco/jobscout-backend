@@ -39,4 +39,13 @@ public class Questionary {
         this.attemptCount = attemptCount;
     }
     
+    public Float getMarks(List<Integer> answers) {
+        int marks = 0;
+        for (int i = 0 ; i < answers.size() ; i++ )  
+            if (questions.get(i).checkAnswer(answers.get(i)))
+                marks++;
+
+        return ((float)marks/questions.size())*100;
+    }
+    
 }
