@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.zetcco.jobscoutserver.controllers.support.QuestionaryForm;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
@@ -16,6 +17,7 @@ import com.zetcco.jobscoutserver.repositories.questionary.QuestionaryRepository;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.StorageService;
 
 import jakarta.transaction.Transactional;
 
@@ -37,8 +39,22 @@ public class QuestionaryService {
     @Autowired
     private UserService userService;
 
-    public Questionary createQuestionary(QuestionaryForm data) {
-        return this.createQuestionary(data.getName(), data.getBadge(), data.getDescription(), data.getTimePerQuestion(), data.getAttemptCount(), data.getQuestions());
+    @Autowired
+    private StorageService storageService;
+
+    public Questionary createQuestionary(QuestionaryForm data, MultipartFile file) {
+        if (file != null) {
+            String fileName = storageService.store(file);
+            data.setBadge(fileName);
+        }
+        return this.createQuestionary(
+            data.getName(),
+            data.getBadge(),
+            data.getDescription(),
+            data.getTimePerQuestion(),
+            data.getAttemptCount(),
+            data.getQuestions()
+        );
     }
 
     public Questionary createQuestionary(String name, String badge, String description, Integer timePerQuestion, Integer attemptCount, List<Question> questions) {
@@ -90,6 +106,15 @@ public class QuestionaryService {
         Questionary questionary = this.getQuestionaryById(questionaryId);
         QuestionaryAttempt attempt = questionaryAttemptRepository.findByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
         return questionary.getAttemptCount() - (attempt != null ? attempt.getAttempts() : 0);
+    }
+
+    @Transactional
+    public void deleteQuestionary(Long questionaryId) throws NotFoundException {
+        Questionary questionary = this.getQuestionaryById(questionaryId);
+        List<Long> questions = questionary.getQuestions().stream().map( question -> question.getId() ).toList();
+
+        questionaryRepository.delete(questionary);
+        questionService.deleteAllById(questions);
     }
 
 }

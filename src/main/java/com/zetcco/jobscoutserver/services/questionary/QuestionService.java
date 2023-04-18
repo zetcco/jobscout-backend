@@ -26,4 +26,12 @@ public class QuestionService {
     public List<Question> saveAll(List<Question> question) {
         return questionRepository.saveAll(question);
     }
+
+    public void deleteAll(List<Question> questions) {
+        questionRepository.deleteAll(questions);
+    }
+
+    public void deleteAllById(List<Long> questions) {
+        questionRepository.deleteAllById(questions);
+    }
 }
