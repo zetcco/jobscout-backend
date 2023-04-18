@@ -12,10 +12,13 @@ import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.questionary.Question;
 import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttempt;
+import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttemptDTO;
+import com.zetcco.jobscoutserver.domain.questionary.QuestionaryDTO;
 import com.zetcco.jobscoutserver.repositories.questionary.QuestionaryAttemptRepository;
 import com.zetcco.jobscoutserver.repositories.questionary.QuestionaryRepository;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.UserService;
+import com.zetcco.jobscoutserver.services.mappers.questionary.QuestionaryMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
@@ -42,22 +45,25 @@ public class QuestionaryService {
     @Autowired
     private StorageService storageService;
 
-    public Questionary createQuestionary(QuestionaryForm data, MultipartFile file) {
+    @Autowired
+    private QuestionaryMapper questionaryMapper;
+
+    public QuestionaryDTO createQuestionary(QuestionaryForm data, MultipartFile file) {
         if (file != null) {
             String fileName = storageService.store(file);
             data.setBadge(fileName);
         }
-        return this.createQuestionary(
+        return questionaryMapper.mapQuestionaryToDto(this.createQuestionary(
             data.getName(),
             data.getBadge(),
             data.getDescription(),
             data.getTimePerQuestion(),
             data.getAttemptCount(),
             data.getQuestions()
-        );
+        ));
     }
 
-    public Questionary createQuestionary(String name, String badge, String description, Integer timePerQuestion, Integer attemptCount, List<Question> questions) {
+    private Questionary createQuestionary(String name, String badge, String description, Integer timePerQuestion, Integer attemptCount, List<Question> questions) {
         questions = questionService.saveAll(questions);
         Questionary questionary = new Questionary(null, name, badge, description, timePerQuestion, attemptCount, questions);
         return questionaryRepository.save(questionary);
@@ -90,12 +96,16 @@ public class QuestionaryService {
         return score;
     }
 
-    public Questionary getQuestionaryById(Long id) throws NotFoundException {
+    public QuestionaryDTO getQuestionaryDTOById(Long id) throws NotFoundException {
+        return questionaryMapper.mapQuestionaryToDto(this.getQuestionaryById(id));
+    }
+
+    private Questionary getQuestionaryById(Long id) throws NotFoundException {
         return questionaryRepository.findById(id).orElseThrow(() -> new NotFoundException("Questionary not found"));
     }
 
-    public List<Questionary> getQuestionaries() {
-        return questionaryRepository.getAll();
+    public List<QuestionaryDTO> getQuestionaries() {
+        return questionaryMapper.mapQuestionariesToDTOs(questionaryRepository.getAll());
     }
 
     public Integer getRemainingAttempts(Long questionaryId) {
@@ -115,6 +125,29 @@ public class QuestionaryService {
 
         questionaryRepository.delete(questionary);
         questionService.deleteAllById(questions);
+    }
+
+    public Boolean setResultsPublic(Long jobSeekerId, Long questionaryId, Boolean value) {
+        QuestionaryAttempt attempt = questionaryAttemptRepository.findByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
+        attempt.setIsPublic(value);
+        attempt = questionaryAttemptRepository.save(attempt);
+        return attempt.getIsPublic();
+    }
+
+    public Boolean setResultsPublic(Long questionaryId, Boolean value) {
+        Long jobSeekerId = userService.getUser().getId();
+        return this.setResultsPublic(jobSeekerId, questionaryId, value);
+    }
+
+    public List<QuestionaryAttemptDTO> getPublicAttemptsByJobSeekerId(Long jobSeekerId) throws AccessDeniedException {
+        List<QuestionaryAttempt> questionaryAttempts;
+
+        if (userService.getUser().getId() != jobSeekerId )
+            questionaryAttempts = questionaryAttemptRepository.findByJobSeekerIdAndIsPublic(jobSeekerId, true);
+        else 
+            questionaryAttempts = questionaryAttemptRepository.findByJobSeekerId(jobSeekerId);
+
+        return questionaryMapper.mapAttemptsToDTOs(questionaryAttempts);
     }
 
 }

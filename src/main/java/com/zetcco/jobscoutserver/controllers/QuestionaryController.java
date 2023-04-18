@@ -8,19 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.controllers.support.QuestionaryForm;
-import com.zetcco.jobscoutserver.domain.questionary.Questionary;
+import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttemptDTO;
+import com.zetcco.jobscoutserver.domain.questionary.QuestionaryDTO;
 import com.zetcco.jobscoutserver.services.questionary.QuestionaryService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
@@ -32,28 +36,28 @@ public class QuestionaryController {
     private QuestionaryService questionaryService;
 
     @GetMapping
-    public ResponseEntity<List<Questionary>> getQuestionaries() {
+    public ResponseEntity<List<QuestionaryDTO>> getQuestionaries() {
         try {
-            return new ResponseEntity<List<Questionary>>(questionaryService.getQuestionaries(), HttpStatus.OK);
+            return new ResponseEntity<List<QuestionaryDTO>>(questionaryService.getQuestionaries(), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @PostMapping(path = "/create", consumes = { MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<Questionary> createQuesionary(@RequestPart QuestionaryForm data, @RequestPart(required = false) MultipartFile file) {
+    public ResponseEntity<QuestionaryDTO> createQuesionary(@RequestPart QuestionaryForm data, @RequestPart(required = false) MultipartFile file) {
         try {
             System.out.println(file);
-            return new ResponseEntity<Questionary>(questionaryService.createQuestionary(data, file), HttpStatus.OK);
+            return new ResponseEntity<QuestionaryDTO>(questionaryService.createQuestionary(data, file), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @GetMapping("/{questionaryId}")
-    public ResponseEntity<Questionary> getQuestionary(@PathVariable Long questionaryId) {
+    public ResponseEntity<QuestionaryDTO> getQuestionary(@PathVariable Long questionaryId) {
         try {
-            return new ResponseEntity<Questionary>(questionaryService.getQuestionaryById(questionaryId), HttpStatus.OK);
+            return new ResponseEntity<QuestionaryDTO>(questionaryService.getQuestionaryDTOById(questionaryId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
@@ -91,6 +95,26 @@ public class QuestionaryController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/attempts")
+    public ResponseEntity<List<QuestionaryAttemptDTO>>  getPublicQuestionaryAttempts(@RequestParam Long jobSeekerId) {
+        try {
+            return new ResponseEntity<List<QuestionaryAttemptDTO>>(questionaryService.getPublicAttemptsByJobSeekerId(jobSeekerId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('JOB_SEEKER')")
+    @PutMapping("/attempts/{questionaryId}/set-privacy")
+    public ResponseEntity<Boolean> setPrivacy(@PathVariable Long questionaryId, @RequestBody Map<String, Boolean> reqMap) {
+        try {
+            Boolean value = reqMap.get("privacy");
+            return new ResponseEntity<Boolean>(questionaryService.setResultsPublic(questionaryId, value), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
