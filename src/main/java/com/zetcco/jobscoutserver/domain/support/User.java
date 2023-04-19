@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.domain.support;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -63,6 +64,8 @@ public class User implements UserDetails {
 
     private String displayPicture;
 
+    private String socialLinks;
+
     protected User(String email, String password, Role role, Address address) {
         this.email = email;
         this.password = password;
@@ -100,11 +103,61 @@ public class User implements UserDetails {
         if (this instanceof Organization)
             return ((Organization)this).getCompanyName();
         else if (this instanceof JobSeeker)
+            return ((JobSeeker)this).getFirstName() + " " + ((JobSeeker)this).getLastName();
+        else if (this instanceof JobCreator)
+            return ((JobCreator)this).getFirstName() + " " + ((JobCreator)this).getLastName();
+        else
+            return null;
+    }
+
+    // TODO: Find a better way to get the Name from the parent class, this adds a lot of dependancy
+    public String getFirstName() {
+        if (this instanceof Organization)
+            return ((Organization)this).getCompanyName();
+        else if (this instanceof JobSeeker)
             return ((JobSeeker)this).getFirstName();
         else if (this instanceof JobCreator)
             return ((JobCreator)this).getFirstName();
         else
             return null;
+    }
+
+    public void setSocialLinks(List<String> links) {
+        if (links.size() == 0)
+            this.socialLinks = null;
+        else
+            this.socialLinks = String.join(",", links);
+    }
+
+    public List<String> getSocialLinks() {
+        if (this.socialLinks == null)
+            return List.of();
+        return Arrays.asList(this.socialLinks.split(","));
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User other = (User) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
     }
 
 }
