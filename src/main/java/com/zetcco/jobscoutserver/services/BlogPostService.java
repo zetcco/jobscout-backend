@@ -17,6 +17,9 @@ public class BlogPostService {
     @Autowired
     private BlogPostRepository blogPostRepository;
 
+    @Autowired
+    private UserService userService;
+
     public List<BlogPost> getBlogPosts(int pageNo, int pageSize) {
         Pageable page = PageRequest.of(pageNo, pageSize);
         return blogPostRepository.findAll(page).getContent();
@@ -42,10 +45,11 @@ public class BlogPostService {
         return blogPostRepository.save(blogPost);
     }
 
-    public BlogPost saveBlogPost(String content, Date date) {
+    public BlogPost saveBlogPost(String content) {
         BlogPost blogPost = new BlogPost();
         blogPost.setContent(content);
-        blogPost.setTimeStamp(date);
+        blogPost.setTimeStamp(new Date());
+        // blogPost.setUser(userService.get);
 
         System.out.println("\n\n--------------------------------------------------------------\n\n");
         System.out.println(blogPost);

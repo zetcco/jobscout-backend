@@ -24,7 +24,8 @@ public class BlogPostController {
     private BlogPostService blogPostService;
 
     @GetMapping
-    public ResponseEntity<List<BlogPost>> getBlogPosts(@RequestParam("page") int page, @RequestParam("size") int size) {
+    public ResponseEntity<List<BlogPost>> getBlogPosts(@RequestParam("pageno") int page,
+            @RequestParam("size") int size) {
         try {
             return new ResponseEntity<List<BlogPost>>(blogPostService.getBlogPosts(page, size), HttpStatus.OK);
         } catch (Exception e) {
@@ -67,9 +68,9 @@ public class BlogPostController {
     }
 
     @GetMapping("/add")
-    public ResponseEntity<BlogPost> saveBlogPost(String content, Date date) {
+    public ResponseEntity<BlogPost> saveBlogPost(String content) {
         try {
-            return new ResponseEntity<BlogPost>(blogPostService.saveBlogPost(content, date), HttpStatus.OK);
+            return new ResponseEntity<BlogPost>(blogPostService.saveBlogPost(content), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
