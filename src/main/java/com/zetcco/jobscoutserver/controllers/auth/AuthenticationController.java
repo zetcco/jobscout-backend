@@ -95,9 +95,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register/admin")
-    public ResponseEntity<ProfileDTO> register(@RequestBody Map<String, String> body) {
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody Map<String, String> body) {
         try {
-            return new ResponseEntity<ProfileDTO>(adminService.save(body.get("email"), body.get("password")), HttpStatus.OK);
+            return new ResponseEntity<AuthenticationResponse>(adminService.save(body.get("email"), body.get("password")), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
