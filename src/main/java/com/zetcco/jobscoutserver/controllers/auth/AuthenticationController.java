@@ -1,4 +1,5 @@
 package com.zetcco.jobscoutserver.controllers.auth;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,9 @@ import com.zetcco.jobscoutserver.controllers.auth.support.JobCreatorRegistration
 import com.zetcco.jobscoutserver.controllers.auth.support.JobSeekerRegistrationRequest;
 import com.zetcco.jobscoutserver.controllers.auth.support.LoginRequest;
 import com.zetcco.jobscoutserver.controllers.auth.support.OrganizationRegisterRequest;
+import com.zetcco.jobscoutserver.services.AdminService;
 import com.zetcco.jobscoutserver.services.auth.AuthenticationService;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
 import lombok.RequiredArgsConstructor;
@@ -36,6 +39,9 @@ public class AuthenticationController {
 
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private AdminService adminService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request) {
@@ -85,6 +91,15 @@ public class AuthenticationController {
         } catch (Exception e) {
             System.out.println(e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server Error");
+        }
+    }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<ProfileDTO> register(@RequestBody Map<String, String> body) {
+        try {
+            return new ResponseEntity<ProfileDTO>(adminService.save(body.get("email"), body.get("password")), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }
