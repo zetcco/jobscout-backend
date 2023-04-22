@@ -1,10 +1,12 @@
 package com.zetcco.jobscoutserver.services;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,17 +36,23 @@ public class BlogPostService {
     @Autowired
     private UserMapper userMapper;
 
-    public List<BlogPost> getBlogPosts(int pageNo, int pageSize) {
-        Pageable page = PageRequest.of(pageNo, pageSize);
-        blogPostRepository.findAll(page).getContent();
+    public List<BlogPostDTO> getBlogPosts(int pageNo, int pageSize) {
+        try {
+            Pageable page = PageRequest.of(pageNo, pageSize);
+            Page<BlogPost> blogPostPage = blogPostRepository.findAll(page);
+            List<BlogPost> blogPost = blogPostPage.getContent();
+            return this.mapToDTOList(blogPost);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to retrieve blog posts", ex);
+        }
     }
 
-    public BlogPost getBlogPost(Long id) {
+    public BlogPostDTO getBlogPost(Long id) {
         BlogPost blogPost = blogPostRepository.findById(id).orElseThrow();
         System.out.println("\n\n--------------------------------------------------------------\n\n");
         System.out.println(blogPost);
         System.out.println("\n\n--------------------------------------------------------------\n\n");
-        return blogPost;
+        return this.mapToDto(blogPost);
     }
 
     @Transactional
@@ -63,7 +71,7 @@ public class BlogPostService {
     }
 
     @Transactional
-    public BlogPostDTO updateBlogPost(BlogPostDTO blogPostDTO) throws AccessDeniedException {
+    public BlogPostDTO updateBlogPost(BlogPostDTO blogPostDTO) throws AccessDeniedException, NotFoundException {
         BlogPost blogPost = blogPostRepository.findById(blogPostDTO.getId())
                 .orElseThrow(() -> new NotFoundException("Blog post not found"));
         if (userService.getAuthUser().getId() != blogPost.getUser().getId())
@@ -75,7 +83,7 @@ public class BlogPostService {
     }
 
     @Transactional
-    public BlogPostDTO deleteBlogPost(BlogPostDTO blogPostDTO) throws AccessDeniedException {
+    public BlogPostDTO deleteBlogPost(BlogPostDTO blogPostDTO) throws AccessDeniedException , NotFoundException {
         BlogPost blogPost = blogPostRepository.findById(blogPostDTO.getId())
                 .orElseThrow(() -> new NotFoundException("Blog post not found"));
         if (userService.getAuthUser().getId() != blogPost.getUser().getId())
@@ -90,6 +98,22 @@ public class BlogPostService {
                 blogPost.getId(),
                 userMapper.mapToDto(blogPost.getUser()), blogPost.getTimeStamp(), blogPost.getContent());
         return blogPostDTO;
+    }
+
+    // private BlogPostDTO mapToDto(BlogPost blogPost) {
+    // BlogPostDTO blogPostDTO = new BlogPostDTO(
+    // blogPost.getId(),
+    // userMapper.mapToDto(blogPost.getUser()), blogPost.getTimeStamp(),
+    // blogPost.getContent());
+    // return blogPostDTO;
+    // }
+
+    private List<BlogPostDTO> mapToDTOList(List<BlogPost> blogPosts) {
+        List<BlogPostDTO> blogPostDTOs = new ArrayList<>();
+        for (BlogPost blogPost : blogPosts) {
+            blogPostDTOs.add(mapToDto(blogPost));
+        }
+        return blogPostDTOs;
     }
 
 }
