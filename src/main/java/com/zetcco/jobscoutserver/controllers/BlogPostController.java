@@ -1,10 +1,9 @@
 package com.zetcco.jobscoutserver.controllers;
 
 import java.nio.file.AccessDeniedException;
-import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.zetcco.jobscoutserver.domain.BlogPost;
 import com.zetcco.jobscoutserver.services.BlogPostService;
 import com.zetcco.jobscoutserver.services.support.BlogPostDTO;
+import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
 @Controller
 @RequestMapping("/posts")
@@ -31,10 +30,10 @@ public class BlogPostController {
     private BlogPostService blogPostService;
 
     @GetMapping
-    public ResponseEntity<List<BlogPost>> getBlogPosts(@RequestParam("pageno") int page,
+    public ResponseEntity<List<BlogPostDTO>> getBlogPosts(@RequestParam("pageno") int page,
             @RequestParam("size") int size) {
         try {
-            return new ResponseEntity<List<BlogPost>>(blogPostService.getBlogPosts(page, size), HttpStatus.OK);
+            return new ResponseEntity<List<BlogPostDTO>>(blogPostService.getBlogPosts(page, size), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
@@ -42,14 +41,17 @@ public class BlogPostController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<BlogPost> getBlogPost(@PathVariable Long postId) {
+    public ResponseEntity<BlogPostDTO> getBlogPost(@PathVariable Long postId) {
         try {
-            BlogPost blogPost = blogPostService.getBlogPost(postId);
-            return new ResponseEntity<BlogPost>(blogPost, HttpStatus.OK);
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            BlogPostDTO blogPostDTO = blogPostService.getBlogPost(postId);
+            return new ResponseEntity<>(blogPostDTO, HttpStatus.OK);
+        } catch (NoSuchElementException ex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Blog post not found", ex);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to retrieve blog post", ex);
         }
     }
+
 
     @PutMapping("/update")
     public ResponseEntity<BlogPostDTO> updateBlogPost(@RequestBody BlogPostDTO newBlogPostDTO) {
@@ -57,27 +59,21 @@ public class BlogPostController {
             return new ResponseEntity<BlogPostDTO>(blogPostService.updateBlogPost(newBlogPostDTO), HttpStatus.OK);
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
     }
 
-    // @DeleteMapping("/delete")
-    // public ResponseEntity<BlogPostDTO> deleteBlogPost(@RequestBody Map<String,Long> deleteBlogPost)
-    //     try{
-    //         return new ResponseEntity<>(blogPostService.deleteBlogPost(deleteBlogPost), HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-    //     }
-
-    // }
-
     @DeleteMapping("/delete")
     public ResponseEntity<BlogPostDTO> deleteBlogPost(@RequestBody BlogPostDTO deleteBlogPostDTO)
     {
-        try{
+        try {
             return new ResponseEntity<>(blogPostService.deleteBlogPost(deleteBlogPostDTO), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
