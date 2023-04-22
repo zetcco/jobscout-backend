@@ -60,4 +60,8 @@ public interface JobPostRepository extends JpaRepository<JobPost, Long> {
 
     public Long countByOrganizationId(Long id);
 
+    public Long countByJobCreatorIdAndStatus(Long id , JobPostStatus status);
+
+    public Long countByOrganizationIdAndStatus(Long id , JobPostStatus status);
+
 }
