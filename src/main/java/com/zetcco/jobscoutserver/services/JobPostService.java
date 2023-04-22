@@ -170,6 +170,7 @@ public class JobPostService {
         return profiles;    
     }
 
+
     public Long getJobPostCount() throws NotFoundException {
         ProfileDTO user = userService.getUser();
         if (user.getRole() == Role.ROLE_JOB_CREATOR)
@@ -187,4 +188,44 @@ public class JobPostService {
     private Long getJobPostCountByOrganizationId(Long id) {
         return jobPostRepository.countByOrganizationId(id);
     }
+
+
+    public Long getActivatedJobPostCount() throws NotFoundException{
+        ProfileDTO user = userService.getUser();
+        if (user.getRole() == Role.ROLE_JOB_CREATOR)
+            return this.getJobPostCountByJobCreatorIdAndStatus(user.getId() , JobPostStatus.STATUS_ACTIVE);
+        else if (user.getRole() == Role.ROLE_ORGANIZATION)
+            return this.getJobPostCountByOrganizationIdAndStatus(user.getId() , JobPostStatus.STATUS_ACTIVE);
+        else
+            throw new NotFoundException("User not found");   
+    }
+
+    public Long getDeactivatedJobPostCount() throws NotFoundException{
+        ProfileDTO user = userService.getUser();
+        if (user.getRole() == Role.ROLE_JOB_CREATOR)
+            return this.getJobPostCountByJobCreatorIdAndStatus(user.getId() , JobPostStatus.STATUS_OVER);
+        else if (user.getRole() == Role.ROLE_ORGANIZATION)
+            return this.getJobPostCountByOrganizationIdAndStatus(user.getId() , JobPostStatus.STATUS_OVER);
+        else
+            throw new NotFoundException("User not found");   
+    }
+
+    public Long getHoldedJobPostCount() throws NotFoundException{
+        ProfileDTO user = userService.getUser();
+        if (user.getRole() == Role.ROLE_JOB_CREATOR)
+            return this.getJobPostCountByJobCreatorIdAndStatus(user.getId() , JobPostStatus.STATUS_HOLD);
+        else if (user.getRole() == Role.ROLE_ORGANIZATION)
+            return this.getJobPostCountByOrganizationIdAndStatus(user.getId() , JobPostStatus.STATUS_HOLD);
+        else
+            throw new NotFoundException("User not found");   
+    }
+
+    private Long getJobPostCountByJobCreatorIdAndStatus(Long id , JobPostStatus status){
+        return jobPostRepository.countByJobCreatorIdAndStatus(id, status);
+    }
+
+    private Long getJobPostCountByOrganizationIdAndStatus(Long id , JobPostStatus status){
+        return jobPostRepository.countByOrganizationIdAndStatus(id, status);
+    }
+
 }
