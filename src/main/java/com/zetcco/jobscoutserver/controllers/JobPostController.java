@@ -71,6 +71,39 @@ public class JobPostController {
         }
     }
 
+    @GetMapping("/count/activated")
+    public ResponseEntity<Long> getActivatedJobPostCountByJobCreatorId(){
+        try{
+            return new ResponseEntity<Long>(jobPostService.getActivatedJobPostCount() , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/count/deactivated")
+    public ResponseEntity<Long> getDeactivatedJobPostCountByJobCreatorId(){
+        try{
+            return new ResponseEntity<Long>(jobPostService.getDeactivatedJobPostCount() , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
+    @GetMapping("/count/holded")
+    public ResponseEntity<Long> getHoldedJobPostCountByJobCreatorId(){
+        try{
+            return new ResponseEntity<Long>(jobPostService.getHoldedJobPostCount() , HttpStatus.OK);
+        }catch(NotFoundException e){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND , e.getMessage());
+        }catch(Exception e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
+        }
+    }
+
     @GetMapping("/organizationId")
     public ResponseEntity<List<JobPostDTO>> getJobPostByOrganizationId(@RequestParam("val") Long organizationId){
         try{
@@ -125,23 +158,6 @@ public class JobPostController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }
     }
-
-    // @GetMapping("/filter")
-    // public ResponseEntity<List<JobPostDTO>> getJobPostByStatus(@RequestParam("by") String filterType, @RequestParam("value") ){
-    //     try{
-    //         switch (filterType) {
-    //             case "status":
-    //                 return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByStatus(status) , HttpStatus.OK);
-    //             case "type":
-    //                 return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByType(type) , HttpStatus.OK);
-    //             default:
-    //                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST , "Invalid parameters");
-    //         }
-    //         return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostByStatus(status) , HttpStatus.OK);
-    //     } catch (Exception e){
-    //         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
-    //     }
-    // }
 
     @PostMapping
     public ResponseEntity<JobPostDTO> saveJobPost(@RequestBody JobPostDTO jobPostDTO){
