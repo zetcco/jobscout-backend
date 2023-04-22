@@ -38,11 +38,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse login(LoginRequest request) throws Exception {
-        System.out.println("****************************");
-        System.out.println(request.getEmail());
-        System.out.println(request.getPassword());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        System.out.println("---------------------------");
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(user);
         return AuthenticationResponse.builder().jwtToken(token).build();
