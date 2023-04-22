@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.zetcco.jobscoutserver.domain.BlogPost;
 
+
 @SpringBootTest
 public class BlogPostServiceTest {
 
@@ -48,7 +49,7 @@ public class BlogPostServiceTest {
         System.out.println("\n\n--------------------------------------------------------------\n\n");
         System.out.println(blogPost);
         System.out.println("\n\n--------------------------------------------------------------\n\n");
-        blogPostService.saveBlogPost(blogPost.getContent(), blogPost.getTimeStamp());
+        // blogPostService.saveBlogPost(BlogPost.getContent(), blogPost.getTimeStamp());
         System.out.println(blogPost.getContent());
         System.out.println(blogPost.getTimeStamp());
         System.out.println("\n\n--------------------------------------------------------------\n\n");
@@ -63,7 +64,7 @@ public class BlogPostServiceTest {
         System.out.println("\n\n--------------------------------------------------------------\n\n");
         System.out.println(blogPost);
         System.out.println("\n\n--------------------------------------------------------------\n\n");
-        blogPostService.saveBlogPost(blogPost.getContent(), blogPost.getTimeStamp());
+        // blogPostService.saveBlogPost(blogPost.getContent(), blogPost.getTimeStamp());
     }
 
     @Test
