@@ -14,12 +14,14 @@ import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttempt;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttemptDTO;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryDTO;
+import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.repositories.questionary.QuestionaryAttemptRepository;
 import com.zetcco.jobscoutserver.repositories.questionary.QuestionaryRepository;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.questionary.QuestionaryMapper;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
 import jakarta.transaction.Transactional;
@@ -60,7 +62,7 @@ public class QuestionaryService {
             data.getTimePerQuestion(),
             data.getAttemptCount(),
             data.getQuestions()
-        ));
+        ), true);
     }
 
     private Questionary createQuestionary(String name, String badge, String description, Integer timePerQuestion, Integer attemptCount, List<Question> questions) {
@@ -97,7 +99,11 @@ public class QuestionaryService {
     }
 
     public QuestionaryDTO getQuestionaryDTOById(Long id) throws NotFoundException {
-        return questionaryMapper.mapQuestionaryToDto(this.getQuestionaryById(id));
+        ProfileDTO user = userService.getUser();
+        Boolean showAnswer = false;
+        if (user.getRole() == Role.ROLE_ADMIN)
+            showAnswer = true;
+        return questionaryMapper.mapQuestionaryToDto(this.getQuestionaryById(id), showAnswer);
     }
 
     private Questionary getQuestionaryById(Long id) throws NotFoundException {
