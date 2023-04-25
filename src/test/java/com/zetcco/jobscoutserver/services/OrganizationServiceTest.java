@@ -41,4 +41,14 @@ public class OrganizationServiceTest {
         System.out.println(organizationService.fetchOrganizationRequest(4L, 13L));
 
     }
+
+    @Test
+    void testAcceptJobCreatorRequest() {
+        System.out.println(organizationService.acceptJobCreatorRequest(4L, 13L));
+    }
+
+    @Test
+    void testRejectJobCreatorRequest() {
+        System.out.println(organizationService.rejectJobCreatorRequest(5L, 3L));
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,13 +69,25 @@ public class OrganizationController {
         }
     }
 
-    @GetMapping("/accept-request")
-    public ResponseEntity<List<ProfileDTO>> fetchOrganizationRequest() {
+    @PostMapping("/accept-request")
+    public ResponseEntity<List<ProfileDTO>> acceptJobCreatorRequest() {
         try {
-            return new ResponseEntity<List<ProfileDTO>>(organizationService.fetchOrganizationRequest(null, null),
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.acceptJobCreatorRequest(4L, 13L),
                     HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @DeleteMapping("/rejecet-request")
+    public ResponseEntity<List<ProfileDTO>> rejectJobCreatorRequest() {
+        try {
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.rejectJobCreatorRequest(5L, 3L),
+                    HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+    }
+
 }

@@ -134,6 +134,36 @@ public class OrganizationService {
         }
     }
 
+    public List<ProfileDTO> acceptJobCreatorRequest(long organizationId, long jobCreatorId) {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+        List<JobCreator> requests = organization.getJobCreatorRequests();
+        List<JobCreator> jobcreator = organization.getJobCreators();
+        JobCreator jobeCreatorReq = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
+
+        if (requests.contains(jobeCreatorReq))
+            throw new DataIntegrityViolationException("request alredy exit");
+        requests.add(jobeCreatorReq);
+        organization.setJobCreatorRequests(jobcreator);
+        organizationRepository.save(organization);
+
+    }
+
+    public List<ProfileDTO> rejectJobCreatorRequest(long organizationId, long jobCreatorId) {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+        List<JobCreator> request = organization.getJobCreatorRequests();
+        List<JobCreator> jbcreator = organization.getJobCreators();
+        JobCreator jobCreatorsReq = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
+
+        if (request.contains(jobCreatorsReq)) {
+            request.remove(jobCreatorsReq);
+            organization.setJobCreatorRequests(jbcreator);
+            organizationRepository.save(organization);
+        } else {
+            throw new DataIntegrityViolationException("request alredy exit");
+        }
+
+    }
+
     Organization save(Organization organization) {
         return organizationRepository.save(organization);
     }
