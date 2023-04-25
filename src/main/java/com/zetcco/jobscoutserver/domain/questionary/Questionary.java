@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.domain.questionary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -46,6 +47,13 @@ public class Questionary {
                 marks++;
 
         return ((float)marks/questions.size())*100;
+    }
+
+    public List<Question> getRandomQuestionsFromPool(List<Integer> ids) {
+        List<Question> questions = new ArrayList<>();
+        for (Integer id : ids) 
+            questions.add(this.getQuestions().get(id));
+        return questions;
     }
     
 }

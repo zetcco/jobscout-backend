@@ -13,4 +13,5 @@ public class QuestionDTO {
     private Long id;
     private String question;
     private List<String> answers;
+    private Integer correctAnswer;
 }
