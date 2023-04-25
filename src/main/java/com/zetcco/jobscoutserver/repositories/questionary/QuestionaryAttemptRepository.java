@@ -11,5 +11,5 @@ public interface QuestionaryAttemptRepository extends JpaRepository<QuestionaryA
     QuestionaryAttempt findByJobSeekerIdAndQuestionaryId(Long jobSeekerId, Long questionaryId);
     List<QuestionaryAttempt> findByJobSeekerIdAndIsPublic(Long jobSeekerId, Boolean isPublic);
     List<QuestionaryAttempt> findByJobSeekerId(Long jobSeekerId);
-    
+    void deleteByQuestionaryId(Long questionaryId);
 }

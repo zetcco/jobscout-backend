@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.services.questionary;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,22 @@ public class QuestionService {
 
     public void deleteAllById(List<Long> questions) {
         questionRepository.deleteAllById(questions);
+    }
+
+    public List<Question> updateQuestions(List<Question> questions) {
+        List<Question> updatedQuestions = new ArrayList<>();
+        for (Question question : questions) {
+            Question newQuestion;
+            if (question.getId() != null) {
+                newQuestion = this.getQuestionById(question.getId());
+                newQuestion.setAnswers(question.getAnswers());
+                newQuestion.setCorrectAnswer(question.getCorrectAnswer());
+                newQuestion.setQuestion(question.getQuestion());
+            } else 
+                newQuestion = new Question(question.getQuestion(), question.getAnswers(), question.getCorrectAnswer());
+
+            updatedQuestions.add( questionRepository.save(newQuestion) );
+        }
+        return updatedQuestions;
     }
 }

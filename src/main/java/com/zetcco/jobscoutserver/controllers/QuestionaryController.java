@@ -45,10 +45,18 @@ public class QuestionaryController {
     }
 
     @PostMapping(path = "/create", consumes = { MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<QuestionaryDTO> createQuesionary(@RequestPart QuestionaryForm data, @RequestPart(required = false) MultipartFile file) {
+    public ResponseEntity<QuestionaryDTO> createQuesionary(@RequestPart QuestionaryForm data, @RequestPart(required = true) MultipartFile file) {
         try {
-            System.out.println(file);
             return new ResponseEntity<QuestionaryDTO>(questionaryService.createQuestionary(data, file), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @PutMapping(path = "/{questionaryId}/update", consumes = { MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity<QuestionaryDTO> updateQuesionary(@RequestPart QuestionaryForm data, @RequestPart(required = false) MultipartFile file, @PathVariable Long questionaryId) {
+        try {
+            return new ResponseEntity<QuestionaryDTO>(questionaryService.updateQuestionary(questionaryId, data, file), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }

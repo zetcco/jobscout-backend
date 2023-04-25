@@ -1,7 +1,9 @@
 package com.zetcco.jobscoutserver.services.questionary;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -99,11 +101,26 @@ public class QuestionaryService {
     }
 
     public QuestionaryDTO getQuestionaryDTOById(Long id) throws NotFoundException {
+        Questionary questionary = this.getQuestionaryById(id);
         ProfileDTO user = userService.getUser();
         Boolean showAnswer = false;
-        if (user.getRole() == Role.ROLE_ADMIN)
+        if (user.getRole() == Role.ROLE_ADMIN) {
             showAnswer = true;
-        return questionaryMapper.mapQuestionaryToDto(this.getQuestionaryById(id), showAnswer);
+        } else {
+            List<Question> questions = questionary.getQuestions();
+            List<Integer> randomQuestionIds = new ArrayList<>();
+            Random random_method = new Random();
+            while (randomQuestionIds.size() != 10) {
+                Integer randomId = random_method.nextInt(questions.size());
+                if (!randomQuestionIds.contains(randomId))
+                    randomQuestionIds.add(randomId);
+                else
+                    continue;
+            }
+            questions = questionary.getRandomQuestionsFromPool(randomQuestionIds);
+            questionary.setQuestions(questions);
+        }
+        return questionaryMapper.mapQuestionaryToDto(questionary, showAnswer);
     }
 
     private Questionary getQuestionaryById(Long id) throws NotFoundException {
@@ -126,9 +143,9 @@ public class QuestionaryService {
 
     @Transactional
     public void deleteQuestionary(Long questionaryId) throws NotFoundException {
+        questionaryAttemptRepository.deleteByQuestionaryId(questionaryId);
         Questionary questionary = this.getQuestionaryById(questionaryId);
         List<Long> questions = questionary.getQuestions().stream().map( question -> question.getId() ).toList();
-
         questionaryRepository.delete(questionary);
         questionService.deleteAllById(questions);
     }
@@ -154,6 +171,22 @@ public class QuestionaryService {
             questionaryAttempts = questionaryAttemptRepository.findByJobSeekerId(jobSeekerId);
 
         return questionaryMapper.mapAttemptsToDTOs(questionaryAttempts);
+    }
+
+    public QuestionaryDTO updateQuestionary(Long questionaryId, QuestionaryForm data, MultipartFile file) throws NotFoundException {
+        Questionary questionary = this.getQuestionaryById(questionaryId);
+        if (file != null) {
+            String fileName = storageService.store(file);
+            questionary.setBadge(fileName);
+        }
+        questionary.setName(data.getName());
+        questionary.setDescription(data.getDescription());
+        questionary.setTimePerQuestion(data.getTimePerQuestion());
+        questionary.setAttemptCount(data.getAttemptCount());
+        questionary.setQuestions( questionService.updateQuestions(data.getQuestions()) );
+
+        questionary = questionaryRepository.save(questionary);
+        return questionaryMapper.mapQuestionaryToDto(questionary, false);
     }
 
 }
