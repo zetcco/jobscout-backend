@@ -6,11 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.Notification;
-import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
-import com.zetcco.jobscoutserver.domain.support.NotificationType;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationDTO;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationStatus;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationType;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
-import com.zetcco.jobscoutserver.services.support.NotificationDTO;
 
 @SpringBootTest
 public class NotificationServiceTest {
@@ -33,7 +34,7 @@ public class NotificationServiceTest {
     }
 
     @Test
-    void testSendToUser() {
+    void testSendToUser() throws JsonProcessingException {
         Notification notification = Notification.builder()
                                                 // .user(userRepository.findById(60L).orElseThrow())
                                                 .type(NotificationType.JOIN_REQUEST)

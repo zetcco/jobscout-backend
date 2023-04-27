@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
+import com.zetcco.jobscoutserver.domain.Recommendation;
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
@@ -20,9 +21,11 @@ import com.zetcco.jobscoutserver.repositories.support.CategorySkillSetRepository
 import com.zetcco.jobscoutserver.repositories.support.PastExperience.JobTitleRepository;
 import com.zetcco.jobscoutserver.services.mappers.CategorySkillSetMapper;
 import com.zetcco.jobscoutserver.services.mappers.PastExperienceMapper;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.mappers.RecommendationMapper;
+import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.Qualification.QualificationService;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -58,6 +61,9 @@ public class JobSeekerService {
 
     @Autowired
     private JobTitleRepository jobTitleRepository;
+
+    @Autowired
+    private RecommendationMapper recommendationMapper;
 
     @Transactional
     public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
@@ -147,5 +153,11 @@ public class JobSeekerService {
     public String getIntro(Long id) throws NotFoundException {
         JobSeeker jobSeeker = this.getJobSeeker(id);
         return jobSeeker.getIntro();
+    }
+
+    public List<RecommendationDTO> gerRecommendations(Long jobSeekerId) {
+        JobSeeker jobSeeker = this.getJobSeeker(jobSeekerId);
+        List<Recommendation> recommendations = jobSeeker.getRecommendations();
+        return recommendations.stream().map(rec -> recommendationMapper.mapToDTO(rec)).toList();
     }
 }

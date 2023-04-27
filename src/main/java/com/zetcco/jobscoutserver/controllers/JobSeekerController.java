@@ -20,7 +20,8 @@ import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 import com.zetcco.jobscoutserver.domain.support.dto.CategorySkillSetDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @RestController
 @RequestMapping("/job-seeker")
@@ -83,6 +84,15 @@ public class JobSeekerController {
     public ResponseEntity<List<CategorySkillSetDTO>> getSkillSet(@PathVariable Long jobSeekerId) {
         try {
             return new ResponseEntity<List<CategorySkillSetDTO>>(jobSeekerService.getCategorySkillLists(jobSeekerId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("{jobSeekerId}/recommendations")
+    public ResponseEntity<List<RecommendationDTO>> getRecommendations(@PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<List<RecommendationDTO>>(jobSeekerService.gerRecommendations(jobSeekerId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }

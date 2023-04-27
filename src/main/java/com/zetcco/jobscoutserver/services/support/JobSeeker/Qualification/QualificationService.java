@@ -11,7 +11,7 @@ import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualifi
 import com.zetcco.jobscoutserver.repositories.support.Qualification.DegreeRepository;
 import com.zetcco.jobscoutserver.repositories.support.Qualification.InstituteRepository;
 import com.zetcco.jobscoutserver.repositories.support.Qualification.QualificationRepository;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
 public class QualificationService {
