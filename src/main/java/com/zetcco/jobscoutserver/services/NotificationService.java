@@ -62,7 +62,7 @@ public class NotificationService {
     public void sendToUser(Notification notification) throws JsonProcessingException {
         notification.setTimestamp(new Date());
         notification = this.save(notification);
-        rtcService.sendToUser(notification.getUser().getId(), "/notification", "NOTIFICATION", notificationMapper.mapToDto(notification));
+        rtcService.sendToDestination(null, "/notification/" + notification.getUser().getId(), "NOTIFICATION", notificationMapper.mapToDto(notification));
     }
 
     public void sendToAll(Notification notification) {

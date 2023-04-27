@@ -128,7 +128,7 @@ public class MessageController {
                     break;
             }
         } catch (JsonProcessingException e) {
-            System.out.println(e);
+            e.printStackTrace();
         }
     }
     

@@ -3,9 +3,9 @@ package com.zetcco.jobscoutserver.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -63,15 +63,13 @@ public class MeetingController {
         }
     }
 
-    // TODO: FIX THIS TO USE Message<RTCSignal> !!! URGENT !!!
-    @MessageMapping("/room/{roomId}")
-    public void sendToRoom(@DestinationVariable Long roomId, @Payload RTCSignal rtcSignal) {
-        meetingService.sentToRoom(roomId, rtcSignal);
+    @MessageMapping("/meeting/{meetingId}")
+    public void sendSignal(@DestinationVariable String meetingId, Message<RTCSignal> signal) {
+        meetingService.sendToMeeting(meetingId, signal.getPayload());
     }
 
-    // TODO: FIX THIS TO USE Message<RTCSignal> !!! URGENT !!!
-    @MessageMapping("/room/{roomId}/{userId}")
-    public void sendToRoomUser(@DestinationVariable Long roomId, @DestinationVariable Long userId, @Payload RTCSignal rtcSignal) {
-        meetingService.sentToRoomUser(roomId, userId, rtcSignal);
+    @MessageMapping("/meeting/{meetingId}/{recieverId}")
+    public void sendSignal(@DestinationVariable String meetingId, @DestinationVariable Long recieverId, Message<RTCSignal> signal) {
+        meetingService.sendToMeeting(meetingId, recieverId, signal.getPayload());
     }
 }

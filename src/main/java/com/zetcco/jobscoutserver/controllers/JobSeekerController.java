@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
@@ -22,6 +24,7 @@ import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.StorageService;
 
 @RestController
 @RequestMapping("/job-seeker")
@@ -30,19 +33,8 @@ public class JobSeekerController {
     @Autowired
     private JobSeekerService jobSeekerService;
 
-    // @PutMapping("/update/skills/{categoryId}")
-    // public ResponseEntity<List<Skill>> updateJobSeekerSkillsAndCategory(@PathVariable Long categoryId,
-    //         @RequestBody Map<String, List<Long>> request) {
-
-    //     try {
-    //         List<Long> participantIds = request.get("ids");
-    //         return new ResponseEntity<List<Skill>>(
-    //                 jobSeekerService.updateCategoryAndSkillListById(categoryId, participantIds),
-    //                 HttpStatus.OK);
-    //     } catch (Exception e) {
-    //         throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-    //     }
-    // }
+    @Autowired
+    private StorageService storageService;
 
     @PutMapping("/update/skills")
     public ResponseEntity<List<CategorySkillSetDTO>> updateJobSeekerSkillsAndCategory(@RequestBody List<CategorySkillSet> categorySkillSet) {
@@ -132,6 +124,25 @@ public class JobSeekerController {
         } catch (Exception e) {
             System.out.println(e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PutMapping("/update/intro-video")
+    public ResponseEntity<String> setIntroVideo(@RequestParam("file") MultipartFile file) {
+        try {
+            String filename = storageService.store(file);
+            return new ResponseEntity<String>(jobSeekerService.updateIntroVideo(filename), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("{jobSeekerId}/intro-video")
+    public ResponseEntity<String> getIntroVideo(@PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<String>(jobSeekerService.getIntroVideo(jobSeekerId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 }

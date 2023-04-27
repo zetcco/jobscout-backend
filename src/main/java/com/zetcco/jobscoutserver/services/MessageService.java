@@ -72,7 +72,7 @@ public class MessageService {
             newMessage = messageRepository.save(newMessage);
             MessageDTO newMessageDTO = messageMapper.mapToDto(newMessage);
             for (User participant : conversation.getParticipants()) 
-                rtcService.sendToUser(participant.getId(), "/messaging/private", "MESSAGE", newMessageDTO);
+                rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId().toString(), "MESSAGE", newMessageDTO);
         }
         else
             throw new AccessDeniedException("User " + message.getSenderId() + " do not have permission to Conversation " + conversation_id);
@@ -86,7 +86,7 @@ public class MessageService {
             TypingDTO typingDTO = new TypingDTO(conversationId, sender.getFirstName());
             for (User participant : conversation.getParticipants()) 
                 if (participant.getId() != senderId)
-                    rtcService.sendToUser(participant.getId(), "/messaging/private", "TYPING", typingDTO);
+                    rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId().toString(), "TYPING", typingDTO);
         }
         
     }
@@ -99,7 +99,7 @@ public class MessageService {
         if (participants.contains(sender)) {
             DeleteMessageDTO deleteMessageDTO = new DeleteMessageDTO(conversationId, messageDto.getMessageId());
             for (User participant : conversation.getParticipants()) 
-                rtcService.sendToUser(participant.getId(), "/messaging/private", "DELETE", deleteMessageDTO);
+                rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId().toString(), "DELETE", deleteMessageDTO);
         }
         
     }
