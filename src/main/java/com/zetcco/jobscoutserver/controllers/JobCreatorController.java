@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.services.JobCreatorService;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
 @RequestMapping("/jobcreator")

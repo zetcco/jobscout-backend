@@ -21,8 +21,8 @@ import com.zetcco.jobscoutserver.services.mappers.ConversationMapper;
 import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
 public class ConversationService {

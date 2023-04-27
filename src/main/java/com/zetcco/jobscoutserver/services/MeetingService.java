@@ -13,7 +13,7 @@ import com.zetcco.jobscoutserver.domain.support.MeetingDTO;
 import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.repositories.MeetingRepository;
 import com.zetcco.jobscoutserver.services.mappers.MeetingMapper;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
 public class MeetingService {

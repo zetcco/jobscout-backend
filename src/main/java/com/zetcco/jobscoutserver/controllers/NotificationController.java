@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationDTO;
 import com.zetcco.jobscoutserver.services.NotificationService;
-import com.zetcco.jobscoutserver.services.support.NotificationDTO;
 
 @Controller
 @RequestMapping("/notification")

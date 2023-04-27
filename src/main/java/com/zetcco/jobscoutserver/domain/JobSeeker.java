@@ -73,4 +73,7 @@ public class JobSeeker extends User {
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<PastExperience> pastExperiences;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Recommendation> recommendations;
 }

@@ -26,7 +26,7 @@ public class UserMapper {
         return profile;
     }
 
-    public List<ProfileDTO> mapToDtos(List<User> users) {
+    public List<ProfileDTO> mapToDtos(List<? extends User> users) {
         return users.stream().map( user -> this.mapToDto(user)).collect(Collectors.toList());
     }
 

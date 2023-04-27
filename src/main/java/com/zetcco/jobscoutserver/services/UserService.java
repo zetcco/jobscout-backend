@@ -14,8 +14,8 @@ import com.zetcco.jobscoutserver.domain.support.Socials.SocialPlatform;
 import com.zetcco.jobscoutserver.domain.support.Socials.SocialProfile;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
 import com.zetcco.jobscoutserver.services.support.ContactDetails;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
 import lombok.RequiredArgsConstructor;

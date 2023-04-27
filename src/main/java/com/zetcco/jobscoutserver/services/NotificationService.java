@@ -14,11 +14,15 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.Notification;
-import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
+import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationDTO;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationStatus;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationType;
 import com.zetcco.jobscoutserver.repositories.NotificationRepository;
 import com.zetcco.jobscoutserver.services.auth.AuthenticationService;
-import com.zetcco.jobscoutserver.services.support.NotificationDTO;
+import com.zetcco.jobscoutserver.services.mappers.NotificationMapper;
 
 @Service
 public class NotificationService {
@@ -35,14 +39,30 @@ public class NotificationService {
     private TypeMap<Notification, NotificationDTO> propertyMapper;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
+    private RTCService rtcService;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
+
+    @Autowired
     public void setModelMapper(ModelMapper modelMapper) {
         this.propertyMapper = modelMapper.createTypeMap(Notification.class, NotificationDTO.class);
     }
 
-    public void sendToUser(Notification notification) {
-        notification.setTimestamp(new Date());
+    public void sendToUser(Long userId, String header, String content, NotificationType type) {
+        User user = userService.getUser(userId);
+        Notification notification = new Notification(user, header, content, type);
         notification = this.save(notification);
         simpMessagingTemplate.convertAndSendToUser(notification.getUser().getId().toString(), "/notify", notification);
+    }
+
+    public void sendToUser(Notification notification) throws JsonProcessingException {
+        notification.setTimestamp(new Date());
+        notification = this.save(notification);
+        rtcService.sendToDestination(null, "/notification/" + notification.getUser().getId(), "NOTIFICATION", notificationMapper.mapToDto(notification));
     }
 
     public void sendToAll(Notification notification) {

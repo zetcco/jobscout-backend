@@ -26,7 +26,7 @@ import com.zetcco.jobscoutserver.controllers.support.QuestionaryForm;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttemptDTO;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryDTO;
 import com.zetcco.jobscoutserver.services.questionary.QuestionaryService;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
 @RequestMapping("/questionary")

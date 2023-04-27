@@ -22,9 +22,9 @@ import com.zetcco.jobscoutserver.repositories.questionary.QuestionaryRepository;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.questionary.QuestionaryMapper;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -173,7 +173,7 @@ public class QuestionaryService {
         return questionaryMapper.mapAttemptsToDTOs(questionaryAttempts);
     }
 
-    public QuestionaryDTO updateQuestionary(Long questionaryId, QuestionaryForm data, MultipartFile file) throws NotFoundException {
+    public QuestionaryDTO updateQuestionary(Long questionaryId, QuestionaryForm data, MultipartFile file) throws com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException {
         Questionary questionary = this.getQuestionaryById(questionaryId);
         if (file != null) {
             String fileName = storageService.store(file);
