@@ -128,6 +128,7 @@ public class OrganizationService {
             organization.setJobCreators(jobCreators);
             organizationRepository.save(organization);
             jobCreatorRepository.save(requestee);
+            return null;
 
         } else {
             throw new EntityExistsException();
@@ -141,10 +142,11 @@ public class OrganizationService {
         JobCreator jobeCreatorReq = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
 
         if (requests.contains(jobeCreatorReq))
-            throw new DataIntegrityViolationException("request alredy exit");
-        requests.add(jobeCreatorReq);
+            // throw new DataIntegrityViolationException("request alredy exit");
+            requests.add(jobcreator);
         organization.setJobCreatorRequests(jobcreator);
         organizationRepository.save(organization);
+        return null;
 
     }
 
@@ -158,6 +160,7 @@ public class OrganizationService {
             request.remove(jobCreatorsReq);
             organization.setJobCreatorRequests(jbcreator);
             organizationRepository.save(organization);
+            return null;
         } else {
             throw new DataIntegrityViolationException("request alredy exit");
         }
