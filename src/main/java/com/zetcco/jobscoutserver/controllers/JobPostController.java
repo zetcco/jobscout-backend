@@ -104,8 +104,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/organizationId")
-    public ResponseEntity<List<JobPostDTO>> getJobPostByOrganizationId(@RequestParam("val") Long organizationId){
+    @GetMapping("/organization/{organizationId}")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByOrganizationId(@PathVariable Long organizationId){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByOrganizationId(organizationId) , HttpStatus.OK);
         }catch(NotFoundException e){
@@ -115,8 +115,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/categoryId")
-    public ResponseEntity<List<JobPostDTO>> getJobPostByCategoryId(@RequestParam("val") Long categoryId){
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<List<JobPostDTO>> getJobPostByCategoryId(@PathVariable Long categoryId){
         try{
             return new ResponseEntity<List<JobPostDTO>>(jobPostService.getJobPostsByCategoryId(categoryId) , HttpStatus.OK);
         }catch(NotFoundException e){
