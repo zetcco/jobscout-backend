@@ -1,6 +1,6 @@
 package com.zetcco.jobscoutserver.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.zetcco.jobscoutserver.domain.support.User;
 
@@ -28,7 +28,7 @@ public class Meeting {
     @ManyToOne
     private User hoster;
 
-    private Date timestamp;
+    private LocalDate timestamp;
 
     private String link;
 
