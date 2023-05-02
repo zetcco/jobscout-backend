@@ -123,6 +123,17 @@ public class JobPostService {
         return this.mapper.mapToDtos(jobPosts);
     }
 
+    public List<JobPostDTO> getJobPostByCategoryIdAndSkillIdAndStatusAndType(Long categoryId , Long skillId , JobPostStatus status , JobPostType type) throws NotFoundException{
+        List<JobPost> jobPosts = new ArrayList<JobPost>();
+        for(JobPost jobPost : jobPostRepository.findAll()){
+            if(jobPost.getCategory().getId() == categoryId || jobPost.getStatus() == status || jobPost.getType() == type)
+                jobPosts.add(jobPost);
+        }
+        if(jobPosts.isEmpty() == true)
+                throw new NotFoundException("Such a job post not found!");
+        return this.mapper.mapToDtos(jobPosts);
+    }
+
 
     public List<JobPostDTO> getJobPostByType(JobPostType type) throws NotFoundException{
         List<JobPost> jobPost =  jobPostRepository.findByType(type)
