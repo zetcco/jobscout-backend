@@ -3,6 +3,7 @@ package com.zetcco.jobscoutserver.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,9 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.CategorySpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.DescriptionSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.StatusSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.TypeSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.UrgentSpecification;
 import com.zetcco.jobscoutserver.services.JobPostService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 
@@ -194,4 +201,21 @@ public class JobPostController {
         }
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<JobPostDTO>> searchForJobPost(
+        @RequestParam(value = "type", required = false) List<JobPostType> type,
+        @RequestParam(value = "urgent", required = false) Boolean urgent,
+        @RequestParam(value = "status", required = false) JobPostStatus status,
+        @RequestParam(value = "category", required = false) List<String> categories,
+        @RequestParam(value = "description", required = false) String description
+    ) {
+            Specification<JobPost> spec = Specification.allOf(
+                new TypeSpecification(type),
+                new UrgentSpecification(urgent),
+                new StatusSpecification(status),
+                new CategorySpecification(categories),
+                new DescriptionSpecification(description)
+            );
+            return ResponseEntity.ok(jobPostService.searchForJobPost(spec));
+        }
 }

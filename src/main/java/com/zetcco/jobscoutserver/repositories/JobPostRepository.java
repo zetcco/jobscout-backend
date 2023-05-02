@@ -6,13 +6,14 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
-public interface JobPostRepository extends JpaRepository<JobPost, Long> {
+public interface JobPostRepository extends JpaRepository<JobPost, Long>, JpaSpecificationExecutor<JobPost> {
     
     List<JobPost> findByTitleContainingIgnoreCase(String name);
 
