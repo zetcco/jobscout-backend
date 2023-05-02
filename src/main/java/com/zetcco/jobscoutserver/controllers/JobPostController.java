@@ -3,6 +3,7 @@ package com.zetcco.jobscoutserver.controllers;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -207,7 +208,9 @@ public class JobPostController {
         @RequestParam(value = "urgent", required = false) Boolean urgent,
         @RequestParam(value = "status", required = false) JobPostStatus status,
         @RequestParam(value = "category", required = false) List<String> categories,
-        @RequestParam(value = "description", required = false) String description
+        @RequestParam(value = "description", required = false) String description,
+        @RequestParam(defaultValue = "0") Integer page,
+        @RequestParam(defaultValue = "1") Integer size
     ) {
             Specification<JobPost> spec = Specification.allOf(
                 new TypeSpecification(type),
@@ -216,6 +219,6 @@ public class JobPostController {
                 new CategorySpecification(categories),
                 new DescriptionSpecification(description)
             );
-            return ResponseEntity.ok(jobPostService.searchForJobPost(spec));
+            return ResponseEntity.ok(jobPostService.searchForJobPost(spec, PageRequest.of(page, size)));
         }
 }

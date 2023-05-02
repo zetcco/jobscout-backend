@@ -230,8 +230,8 @@ public class JobPostService {
     }
 
 
-    public List<JobPostDTO> searchForJobPost(Specification<JobPost> jobPostSpec) {
-        return mapper.mapToDtos(jobPostRepository.findAll(jobPostSpec));
+    public List<JobPostDTO> searchForJobPost(Specification<JobPost> jobPostSpec, Pageable pageable) {
+        return mapper.mapToDtos(jobPostRepository.findAll(jobPostSpec, pageable).toList());
     }
 
 }
