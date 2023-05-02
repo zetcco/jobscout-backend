@@ -1,6 +1,6 @@
 package com.zetcco.jobscoutserver.services;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import com.zetcco.jobscoutserver.domain.support.MeetingDTO;
 import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.repositories.MeetingRepository;
 import com.zetcco.jobscoutserver.services.mappers.MeetingMapper;
+import com.zetcco.jobscoutserver.services.support.exceptions.BadRequestException;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
@@ -31,10 +32,11 @@ public class MeetingService {
     private RTCService rtcService;
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
-    public MeetingDTO hostMeeting(MeetingDTO meetingDTO) {
+    public MeetingDTO hostMeeting(MeetingDTO meetingDTO) throws BadRequestException {
+        if (meetingDTO.getTimestamp() == null || meetingDTO.getTimestamp().isBefore(LocalDate.now())) throw new BadRequestException("Invalid date");
         String link = RandomStringUtils.randomAlphanumeric(3) + "-" + RandomStringUtils.randomAlphanumeric(3) + "-" + RandomStringUtils.randomAlphanumeric(3);
         Meeting newMeeting = Meeting.builder()
-                                    .timestamp(meetingDTO.getTimestamp() != null ? meetingDTO.getTimestamp() : new Date())
+                                    .timestamp(meetingDTO.getTimestamp())
                                     .hoster(userService.getAuthUser())
                                     .link(link)
                                     .build();
@@ -52,8 +54,12 @@ public class MeetingService {
             throw new AccessDeniedException("You do not have permission to do that");
     }
 
-    public MeetingDTO getMeetingByLink(String link) {
+    public MeetingDTO getMeetingByLink(String link) throws NotFoundException {
         Meeting meeting = meetingRepository.findByLink(link).orElseThrow(() -> new NotFoundException("Meeting not found"));
+        if (meeting.getTimestamp().isBefore(LocalDate.now())) {
+            endMeetingByLink(link);
+            throw new NotFoundException("Meeting expired");
+        }
         return mapper.mapMeeting(meeting);
     }
 
