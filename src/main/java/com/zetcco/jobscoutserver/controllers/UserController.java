@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.support.Role;
+import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.Socials.SocialProfile;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.NameSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.RoleSpecification;
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ContactDetails;
@@ -90,5 +95,18 @@ public class UserController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProfileDTO>> searchUsers(
+        @RequestParam(value = "name", required = false) String name,
+        @RequestParam(value = "role", required = false) Role role
+    ) {
+        Specification<User> user_specs = Specification.allOf(
+            new NameSpecification(name),
+            new RoleSpecification(role)
+        );
+
+        return new ResponseEntity<List<ProfileDTO>>(userService.searchUsers(user_specs), HttpStatus.OK);
     }
 }
