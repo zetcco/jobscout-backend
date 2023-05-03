@@ -17,6 +17,7 @@ import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
+import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
@@ -41,16 +42,16 @@ public class OrganizationService {
     @Lazy
     private JobCreatorService jobCreatorService;
 
+    @Autowired
+    private UserMapper userMapper;
+
     public List<ProfileDTO> searchOrganizationsByName(String name, int pageCount, int pageSize) {
         if (name.equals(""))
             throw new IllegalArgumentException("Wrong Parameters");
         Pageable page = PageRequest.of(pageCount, pageSize);
         List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page)
                 .getContent();
-        List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
-        for (Organization organization : organizations) 
-            profiles.add(userService.getUserProfileDTO(organization.getId()));
-        return profiles;
+        return userMapper.mapToDtos(organizations);
     }
 
     public List<ProfileDTO> searchOrganizationsByNameFTS(String name, int pageCount, int pageSize) {

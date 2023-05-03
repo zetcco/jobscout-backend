@@ -22,7 +22,7 @@ public class NameSpecification implements Specification<User> {
         if (name == null)
             return builder.isTrue(builder.literal(true));
         else
-            return builder.like(root.get("displayName"), "%"+name+"%");
+            return builder.like(builder.lower(root.get("displayName")), "%"+name.toLowerCase()+"%");
     }
     
 }
