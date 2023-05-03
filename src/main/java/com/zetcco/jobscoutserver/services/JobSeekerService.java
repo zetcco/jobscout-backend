@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Category;
@@ -22,6 +23,8 @@ import com.zetcco.jobscoutserver.repositories.support.PastExperience.JobTitleRep
 import com.zetcco.jobscoutserver.services.mappers.CategorySkillSetMapper;
 import com.zetcco.jobscoutserver.services.mappers.PastExperienceMapper;
 import com.zetcco.jobscoutserver.services.mappers.RecommendationMapper;
+import com.zetcco.jobscoutserver.services.mappers.UserMapper;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 import com.zetcco.jobscoutserver.services.support.JobSeeker.PastExperience.PastExperienceService;
@@ -68,6 +71,9 @@ public class JobSeekerService {
     
     @Autowired
     private StorageService storageService;
+
+    @Autowired
+    private UserMapper userMapper;
 
     @Transactional
     public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
@@ -172,5 +178,9 @@ public class JobSeekerService {
         JobSeeker jobSeeker = this.getJobSeeker(jobSeekerId);
         List<Recommendation> recommendations = jobSeeker.getRecommendations();
         return recommendations.stream().map(rec -> recommendationMapper.mapToDTO(rec)).toList();
+    }
+
+    public List<ProfileDTO> searchForJobSeekers(Specification<JobSeeker> specs) {
+        return userMapper.mapToDtos(jobSeekerRepository.findAll(specs));
     }
 }

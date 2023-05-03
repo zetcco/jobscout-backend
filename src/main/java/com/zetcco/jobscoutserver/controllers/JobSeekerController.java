@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +17,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 import com.zetcco.jobscoutserver.domain.support.dto.CategorySkillSetDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.JobSeeker.InstituteSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.JobSeeker.NameSpecification;
 import com.zetcco.jobscoutserver.services.JobSeekerService;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.RecommendationDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.StorageService;
@@ -143,6 +148,22 @@ public class JobSeekerController {
             return new ResponseEntity<String>(jobSeekerService.getIntroVideo(jobSeekerId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProfileDTO>> search(
+        @RequestParam(required = false, value = "institutes") List<Long> institutes,
+        @RequestParam(required = false, value = "name") String name
+    ) {
+        try {
+            Specification<JobSeeker> specs = Specification.allOf(
+                new InstituteSpecification(institutes),
+                new NameSpecification(name)
+            );
+            return new ResponseEntity<List<ProfileDTO>>(jobSeekerService.searchForJobSeekers(specs), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 }
