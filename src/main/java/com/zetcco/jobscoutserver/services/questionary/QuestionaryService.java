@@ -24,6 +24,7 @@ import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.questionary.QuestionaryMapper;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
+import com.zetcco.jobscoutserver.services.support.exceptions.BadRequestException;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import jakarta.transaction.Transactional;
@@ -187,6 +188,12 @@ public class QuestionaryService {
 
         questionary = questionaryRepository.save(questionary);
         return questionaryMapper.mapQuestionaryToDto(questionary, false);
+    }
+
+    public List<QuestionaryDTO> search(String q) {
+        if (q == null)
+            throw new BadRequestException("Missing parameters.");
+        return questionaryMapper.mapQuestionariesToDTOs(questionaryRepository.findByNameContainingIgnoreCase(q));
     }
 
 }
