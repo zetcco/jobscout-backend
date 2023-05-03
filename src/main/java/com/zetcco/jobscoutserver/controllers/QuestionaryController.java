@@ -26,6 +26,7 @@ import com.zetcco.jobscoutserver.controllers.support.QuestionaryForm;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttemptDTO;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryDTO;
 import com.zetcco.jobscoutserver.services.questionary.QuestionaryService;
+import com.zetcco.jobscoutserver.services.support.exceptions.BadRequestException;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
@@ -125,6 +126,15 @@ public class QuestionaryController {
             return new ResponseEntity<Boolean>(questionaryService.setResultsPublic(questionaryId, value), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<QuestionaryDTO>> searchForQuestionary(@RequestParam String q) {
+        try {
+            return new ResponseEntity<List<QuestionaryDTO>>(questionaryService.search(q), HttpStatus.OK);
+        } catch (BadRequestException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
     
