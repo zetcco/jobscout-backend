@@ -110,7 +110,7 @@ public class UserService {
         return this.getSocialLinks(user.getId());
     }
 
-    protected User getUser(Long userId) throws NotFoundException {
+    public User getUser(Long userId) throws NotFoundException {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
     }
 

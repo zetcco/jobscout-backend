@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,8 +20,8 @@ import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.repositories.JobPostRepository;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -77,7 +78,11 @@ public class JobPostService {
 
     public List<JobPostDTO> getAllJobPosts(int page, int size) throws NotFoundException{
         Pageable pageable = PageRequest.of(page, size);
-        return this.mapper.mapToDtos(jobPostRepository.getAll(pageable).getContent());
+        List<JobPost> jobPosts = jobPostRepository.findAll(pageable).toList();
+        if(jobPosts.isEmpty() == true){
+            throw new NotFoundException("Such job posts not found!");
+        }
+        return this.mapper.mapToDtos(jobPosts);
     }
 
 

@@ -12,6 +12,8 @@ import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
 
+import jakarta.transaction.Transactional;
+
 @SpringBootTest
 public class JobPostServiceTest {
 
@@ -57,7 +59,7 @@ public class JobPostServiceTest {
 
     @Test
     void testFindAllJobPosts(){
-        List<JobPostDTO> jobPosts = jobPostService.getAllJobPosts(0 , 3);
+        List<JobPostDTO> jobPosts = jobPostService.getAllJobPosts(0 , 10);
         jobPosts.forEach((p)->{System.out.println(p.getTitle());});
     }
 
@@ -75,7 +77,7 @@ public class JobPostServiceTest {
 
     @Test
     void testFindJobPostByOrganizationId(){
-        List<JobPostDTO> jobPost = jobPostService.getJobPostsByOrganizationId(2L);
+        List<JobPostDTO> jobPost = jobPostService.getJobPostsByOrganizationId(5L);
         jobPost.forEach((p)->{System.out.println(p.getTitle());});
     }
 
@@ -86,6 +88,7 @@ public class JobPostServiceTest {
     }
   
      @Test
+     @Transactional
       void testDeleteJobPostById(){
         jobPostService.deleteJobPostById(4L);
       }

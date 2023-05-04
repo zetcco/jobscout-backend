@@ -114,9 +114,4 @@ public class OrganizationService {
         return organizationRepository.save(organization);
     }
 
-    public ProfileDTO getOrganizationDtoById(Long organizationId) throws NotFoundException{
-        Organization organization = organizationRepository.findById(organizationId).orElseThrow(() -> new NotFoundException("Organization not found!"));
-        return modelMapper.map(organization , ProfileDTO.class);
-    }
-
 }

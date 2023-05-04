@@ -20,7 +20,7 @@ import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.services.JobPostService;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
 @RequestMapping(value = "/jobpost")
