@@ -26,13 +26,13 @@ public class OrganizationRepositoryTest {
     @Test
     public void saveNewOrganization() {
         Address address = Address.builder()
-                                .number("41")
-                                .street("Street")
-                                .town("Town")
-                                .city("City")
-                                .province("Province")
-                                .country("Country")
-                                .build();
+                .number("41")
+                .street("Street")
+                .town("Town")
+                .city("City")
+                .province("Province")
+                .country("Country")
+                .build();
         Organization organization = new Organization("org@gmail.com", "orgpasswd", address);
         organizationRepository.save(organization);
     }
@@ -57,26 +57,30 @@ public class OrganizationRepositoryTest {
     public void getOrganizationNameByFTS() {
         Pageable page = PageRequest.of(0, 1);
         List<Organization> orgs = organizationRepository.findOrganizationByNameFTS("creative", page).getContent();
-        for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+        for (Organization organization : orgs)
+            System.out.println(organization.getCompanyName());
 
         System.out.println("----------------");
 
         Pageable page2 = PageRequest.of(1, 1);
         orgs = organizationRepository.findOrganizationByNameFTS("creative", page2).getContent();
-        for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+        for (Organization organization : orgs)
+            System.out.println(organization.getCompanyName());
     }
 
     @Test
     public void getOrganizationByName() {
         Pageable page = PageRequest.of(0, 2);
         List<Organization> orgs = organizationRepository.findByCompanyNameContainingIgnoreCase("c", page).getContent();
-        for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+        for (Organization organization : orgs)
+            System.out.println(organization.getCompanyName());
 
         System.out.println("----------------");
 
         Pageable page2 = PageRequest.of(1, 2);
         orgs = organizationRepository.findByCompanyNameContainingIgnoreCase("c", page2).getContent();
-        for (Organization organization : orgs) System.out.println(organization.getCompanyName());
+        for (Organization organization : orgs)
+            System.out.println(organization.getCompanyName());
     }
 
     @Test
@@ -110,4 +114,17 @@ public class OrganizationRepositoryTest {
 
         organizationRepository.save(organization);
     }
+
+    @Test
+    public void getOraganizationRequest() {
+        Organization organization = organizationRepository.findById(1L).orElseThrow();
+        List<JobCreator> orgRequest = organization.getJobCreatorRequests();
+        for (JobCreator jobCreator : orgRequest) {
+            System.out.println(jobCreator.getFirstName());
+            System.out.println(jobCreator.getLastName());
+
+        }
+
+    }
+
 }

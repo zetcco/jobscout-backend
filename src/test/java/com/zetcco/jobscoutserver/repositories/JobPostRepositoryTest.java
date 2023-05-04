@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +21,6 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class JobPostRepositoryTest {
-    @Autowired
-    private JobPostRepository jobPostRepository;
 
     @Autowired
     private JobCreatorRepository jobCreatorRepository;

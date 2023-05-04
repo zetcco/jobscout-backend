@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.repositories.SkillsRepository;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -40,5 +42,9 @@ public class SkillService {
 
     public Skill addSkills(Skill skill) throws DataIntegrityViolationException {
         return skillsRepository.save(skill);
+    }
+
+    public Skill getSkillsById(Long id) {
+        return skillsRepository.findById(id).orElseThrow(() -> new NotFoundException("Skills Not Found"));
     }
 }
