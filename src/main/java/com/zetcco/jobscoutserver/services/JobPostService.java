@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.JobCreator;
@@ -242,6 +243,11 @@ public class JobPostService {
 
     private Long getJobPostCountByOrganizationIdAndStatus(Long id , JobPostStatus status){
         return jobPostRepository.countByOrganizationIdAndStatus(id, status);
+    }
+
+
+    public List<JobPostDTO> searchForJobPost(Specification<JobPost> jobPostSpec, Pageable pageable) {
+        return mapper.mapToDtos(jobPostRepository.findAll(jobPostSpec, pageable).toList());
     }
 
 }
