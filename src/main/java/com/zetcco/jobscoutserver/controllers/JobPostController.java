@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,8 +47,8 @@ public class JobPostController {
         }
     }
 
-    @GetMapping("/jobPostId")
-    public ResponseEntity<JobPostDTO> getJobPostById(@RequestParam("val") Long jobPostId){
+    @GetMapping("/{jobPostId}")
+    public ResponseEntity<JobPostDTO> getJobPostById(@PathVariable Long jobPostId){
         try{
             return new ResponseEntity<JobPostDTO>(jobPostService.getJobPostById(jobPostId) , HttpStatus.OK);
         } catch(NotFoundException e){
@@ -167,6 +168,7 @@ public class JobPostController {
         }
     }
 
+    @PreAuthorize("hasRole('JOB_CREATOR')")
     @PostMapping
     public ResponseEntity<JobPostDTO> saveJobPost(@RequestBody JobPostDTO jobPostDTO){
         try{
@@ -176,6 +178,7 @@ public class JobPostController {
         }
     }
 
+    @PreAuthorize("hasRole('JOB_CREATOR')")
     @PutMapping("/{jobPostId}")
     public ResponseEntity<JobPostDTO> updateJobPost(@PathVariable Long jobPostId , @RequestBody JobPostDTO jobPostDTO){
         try{
@@ -190,6 +193,7 @@ public class JobPostController {
         
     }
 
+    @PreAuthorize("hasRole('JOB_CREATOR')")
     @DeleteMapping("/{jobPostId}")
     public ResponseEntity<String> deleteJobPostById(@PathVariable Long jobPostId){
         try{

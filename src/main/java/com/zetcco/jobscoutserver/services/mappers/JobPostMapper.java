@@ -42,6 +42,7 @@ public class JobPostMapper {
         JobPostDTO jobPostDTO = JobPostDTO.builder()
                                             .Id(jobPost.getId())
                                             .category(jobPost.getCategory())
+                                            .skillList(jobPost.getSkillList())
                                             .title(jobPost.getTitle())
                                             .description(jobPost.getDescription())
                                             .dueDate(jobPost.getDueDate())
