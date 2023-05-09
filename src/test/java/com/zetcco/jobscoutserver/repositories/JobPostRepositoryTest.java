@@ -16,7 +16,6 @@ import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
-import com.zetcco.jobscoutserver.services.UserService;
 
 import jakarta.transaction.Transactional;
 
@@ -31,9 +30,6 @@ public class JobPostRepositoryTest {
 
     @Autowired
     private OrganizationRepository organizationRepository;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private JobPostRepository jobPostRepository;
