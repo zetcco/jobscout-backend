@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,7 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.support.Role;
+import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.Socials.SocialProfile;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.JobSeeker.DegreeSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.CategorySpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.InstituteSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.NameSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.RoleSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.SkillSpecification;
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ContactDetails;
@@ -90,5 +99,26 @@ public class UserController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProfileDTO>> searchUsers(
+        @RequestParam(value = "name", required = false) String name,
+        @RequestParam(value = "role", required = false) Role role,
+        @RequestParam(value = "degrees", required = false) List<Long> degrees,
+        @RequestParam(value = "institutes", required = false) List<Long> institutes,
+        @RequestParam(value = "categories", required = false) List<Long> categories,
+        @RequestParam(value = "skills", required = false) List<Long> skills
+    ) {
+        Specification<User> user_specs = Specification.allOf(
+            new NameSpecification(name),
+            new RoleSpecification(role),
+            new DegreeSpecification(degrees),
+            new InstituteSpecification(institutes),
+            new CategorySpecification(categories),
+            new SkillSpecification(skills)
+        );
+
+        return new ResponseEntity<List<ProfileDTO>>(userService.searchUsers(user_specs), HttpStatus.OK);
     }
 }

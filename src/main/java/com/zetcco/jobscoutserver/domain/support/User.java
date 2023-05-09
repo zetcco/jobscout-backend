@@ -8,10 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.zetcco.jobscoutserver.domain.JobCreator;
-import com.zetcco.jobscoutserver.domain.JobSeeker;
-import com.zetcco.jobscoutserver.domain.Organization;
-
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -66,11 +62,14 @@ public class User implements UserDetails {
 
     private String socialLinks;
 
-    protected User(String email, String password, Role role, Address address) {
+    private String displayName;
+
+    protected User(String email, String password, Role role, Address address, String displayName) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.address = address;
+        this.displayName = displayName;
     }
 
     @Override
@@ -96,30 +95,6 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    // TODO: Find a better way to get the Name from the parent class, this adds a lot of dependancy
-    public String getDisplayName() {
-        if (this instanceof Organization)
-            return ((Organization)this).getCompanyName();
-        else if (this instanceof JobSeeker)
-            return ((JobSeeker)this).getFirstName() + " " + ((JobSeeker)this).getLastName();
-        else if (this instanceof JobCreator)
-            return ((JobCreator)this).getFirstName() + " " + ((JobCreator)this).getLastName();
-        else
-            return null;
-    }
-
-    // TODO: Find a better way to get the Name from the parent class, this adds a lot of dependancy
-    public String getFirstName() {
-        if (this instanceof Organization)
-            return ((Organization)this).getCompanyName();
-        else if (this instanceof JobSeeker)
-            return ((JobSeeker)this).getFirstName();
-        else if (this instanceof JobCreator)
-            return ((JobCreator)this).getFirstName();
-        else
-            return null;
     }
 
     public void setSocialLinks(List<String> links) {

@@ -83,7 +83,7 @@ public class MessageService {
         List<User> participants = conversation.getParticipants();
         User sender = userService.getUser(senderId);
         if (participants.contains(sender)) {
-            TypingDTO typingDTO = new TypingDTO(conversationId, sender.getFirstName());
+            TypingDTO typingDTO = new TypingDTO(conversationId, sender.getDisplayName());
             for (User participant : conversation.getParticipants()) 
                 if (participant.getId() != senderId)
                     rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId().toString(), "TYPING", typingDTO);
