@@ -20,11 +20,11 @@ public class Admin extends User {
     private String lastName;
 
     public Admin(String email, String password) {
-        super(email, password, Role.ROLE_ADMIN, null);
+        super(email, password, Role.ROLE_ADMIN, null, null);
     }
 
     public Admin(String email, String password, String firstName, String lastName, String contact) {
-        super(email, password, Role.ROLE_JOB_SEEKER, null);
+        super(email, password, Role.ROLE_ADMIN, null, firstName + " " + lastName);
         this.firstName = firstName;
         this.lastName = lastName;
     }
