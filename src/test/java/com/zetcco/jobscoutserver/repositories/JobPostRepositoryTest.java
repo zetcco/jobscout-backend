@@ -22,8 +22,6 @@ import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class JobPostRepositoryTest {
-    @Autowired
-    private JobPostRepository jobPostRepository;
 
     @Autowired
     private JobCreatorRepository jobCreatorRepository;
@@ -37,12 +35,15 @@ public class JobPostRepositoryTest {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JobPostRepository jobPostRepository;
+
     @Test
     public void testSaveJobPost() throws Exception{
 
-        JobCreator jobCreator = jobCreatorRepository.findById(73L).orElseThrow();
+        JobCreator jobCreator = jobCreatorRepository.findById(4L).orElseThrow();
         Category category = categoryRepository.findById(3L).orElseThrow();
-        Organization organization = organizationRepository.findById(68L).orElseThrow();
+        Organization organization = organizationRepository.findById(5L).orElseThrow();
 
         Date date =  new Date(); 
         JobPost jobPost = JobPost.builder()
@@ -100,17 +101,6 @@ public class JobPostRepositoryTest {
     }
 
     @Test
-    void testGetPostsCustom() {
-        Pageable page = PageRequest.of(0, 3);
-        List<JobPost> jobPosts = jobPostRepository.getAll(page).getContent();
-        // List<JobPost> jobPosts = jobPostRepository.findAll();
-        for (JobPost jobPost : jobPosts) {
-            if (jobPost.getJobCreator() != null)
-                System.out.println(userService.getUser(jobPost.getJobCreator().getId()));
-        }
-    }
-
-    @Test
     void testGetJobPostByJobCreatorId(){
         List<JobPost> jobPosts = jobPostRepository.findAll();
         for(JobPost jobPost : jobPosts){
@@ -156,15 +146,15 @@ public class JobPostRepositoryTest {
     @Transactional
     @Test
     void testGetJobPostCount() {
-        JobCreator jobCreator = jobCreatorRepository.findById(109L).orElseThrow();
+        JobCreator jobCreator = jobCreatorRepository.findById(4L).orElseThrow();
         List<JobPost> jobPosts = jobCreator.getJobPost();
         System.out.println(jobPosts);
-        System.out.println(jobPostRepository.countByJobCreatorId(109L));
+        System.out.println(jobPostRepository.countByJobCreatorId(4L));
     }
 
     @Test
     void testGetActivatedJobPostCountByUserId(){
-        System.out.println(jobPostRepository.countByJobCreatorIdAndStatus(4L, JobPostStatus.STATUS_ACTIVE));
+        System.out.println(jobPostRepository.countByJobCreatorIdAndStatus(14L, JobPostStatus.STATUS_ACTIVE));
     }
 
     @Test

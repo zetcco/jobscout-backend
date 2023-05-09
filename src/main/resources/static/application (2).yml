@@ -1,0 +1,30 @@
+spring:
+    datasource: 
+        url: jdbc:postgresql://localhost:5432/authentication
+        username: postgres
+        password: root
+        driver-class-name: org.postgresql.Driver
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: true
+        database: postgresql
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+    servlet:
+        multipart:
+            max-file-size: 50MB
+            max-request-size: 50MB
+server:
+    error:
+        include-message: always
+    url: http://192.168.8.100:8080
+services:
+    jwt_service:
+        token_ttl: 30000 # 604800000
+        signing_key: "566D597133743677397A244226452948404D635166546A576E5A723475377821"
+    cv_service: http://localhost:8081
+    judge0_service:
+        url: https://judge0-ce.p.rapidapi.com
+        headers:
+            RAPID_API_KEY: 89b4760b13msh0955e4284528c8ep1ba489jsnf4bd47bb13b2
+            RAPID_API_HOST: judge0-ce.p.rapidapi.com

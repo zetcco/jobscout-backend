@@ -1,9 +1,6 @@
-package com.zetcco.jobscoutserver.services.support;
+package com.zetcco.jobscoutserver.domain.support.Notification;
 
 import java.util.Date;
-
-import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
-import com.zetcco.jobscoutserver.domain.support.NotificationType;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

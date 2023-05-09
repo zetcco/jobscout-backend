@@ -31,6 +31,7 @@ public class SecurityConfig {
             "/address/**",
             "/media/**",
             "/organization/search/**",
+            "/cv/templates/**",
             "/test/notification/**" // TODO: Remove this on deploy
         ).permitAll();
         http.authorizeHttpRequests().requestMatchers("/error").anonymous();

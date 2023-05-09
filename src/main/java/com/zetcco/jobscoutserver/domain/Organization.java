@@ -42,11 +42,6 @@ public class Organization extends User {
     @OneToMany(fetch = FetchType.EAGER)
     private List<JobPost> jobPost;
 
-    public Organization(Long id, String email, Role role, String displayPicture, String companyName) {
-        super(id, email, role, displayPicture);
-        this.companyName = companyName;
-    }
-
     public Organization(String email, String password, Address address) {
         super(email, password, Role.ROLE_ORGANIZATION, address);
     }
