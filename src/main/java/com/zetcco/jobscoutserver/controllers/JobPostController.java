@@ -29,6 +29,7 @@ import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.Sta
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.TypeSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.UrgentSpecification;
 import com.zetcco.jobscoutserver.services.JobPostService;
+import com.zetcco.jobscoutserver.services.support.JobPostForm;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
@@ -170,9 +171,9 @@ public class JobPostController {
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
     @PostMapping
-    public ResponseEntity<JobPostDTO> saveJobPost(@RequestBody JobPostDTO jobPostDTO){
+    public ResponseEntity<JobPostDTO> saveJobPost(@RequestBody JobPostForm jobPostForm){
         try{
-            return new ResponseEntity<JobPostDTO>(jobPostService.addNewJobPost(jobPostDTO) , HttpStatus.OK);
+            return new ResponseEntity<JobPostDTO>(jobPostService.addNewJobPost(jobPostForm) , HttpStatus.OK);
         } catch (Exception e){
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR , e.getMessage());
         }

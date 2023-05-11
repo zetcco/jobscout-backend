@@ -11,6 +11,7 @@ import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
+import com.zetcco.jobscoutserver.services.support.JobPostForm;
 
 import jakarta.transaction.Transactional;
 
@@ -35,7 +36,8 @@ public class JobPostServiceTest {
                                 .urgent(true)
                                 .status(JobPostStatus.STATUS_ACTIVE)
                                 .build();
-        jobPostService.addNewJobPost(this.mapper.mapToDto(jobPost));
+        JobPostForm form = new JobPostForm(this.mapper.mapToDto(jobPost), null);
+        jobPostService.addNewJobPost(form);
     }
 
     @Test

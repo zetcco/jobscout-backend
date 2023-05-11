@@ -2,6 +2,8 @@ package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
 import java.util.List;
+
+import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 
@@ -15,6 +17,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
@@ -52,6 +55,9 @@ public class JobPost {
 
     @ManyToMany
     private List<Skill> skillList;
+
+    @OneToOne
+    private Questionary questionary;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     private JobCreator jobCreator;

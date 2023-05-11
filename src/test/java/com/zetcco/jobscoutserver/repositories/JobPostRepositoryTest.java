@@ -170,6 +170,7 @@ public class JobPostRepositoryTest {
                         true , 
                         JobPostStatus.STATUS_ACTIVE ,
                         null, 
+                        null,
                         jobCreator , 
                         category , 
                         organization
@@ -183,6 +184,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator , 
                         category , 
                         organization
@@ -196,6 +198,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT , 
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -209,6 +212,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -222,6 +226,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -235,6 +240,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -248,6 +254,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -261,6 +268,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -274,6 +282,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization
@@ -287,6 +296,7 @@ public class JobPostRepositoryTest {
                         JobPostType.TYPE_PERMANENT ,
                         true , 
                         JobPostStatus.STATUS_ACTIVE , 
+                        null,
                         null, jobCreator,
                         category,
                         organization

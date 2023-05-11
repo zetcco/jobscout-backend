@@ -8,7 +8,6 @@ import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.Skill;
 
 import lombok.AllArgsConstructor;
@@ -31,9 +30,10 @@ public class JobPostDTO {
     private JobPostType type;
     private Boolean urgent;
     private JobPostStatus status;
-    private Category category;
+    private CategoryDTO category;
     private List<Skill> skillList;
     private ProfileDTO jobCreator;
     private ProfileDTO organization;
+    private Long questionaryId;
     
 }

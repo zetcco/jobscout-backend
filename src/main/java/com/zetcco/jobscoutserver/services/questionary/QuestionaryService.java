@@ -68,6 +68,17 @@ public class QuestionaryService {
         ), true);
     }
 
+    public Questionary createQuestionary(QuestionaryForm data) {
+        return this.createQuestionary(
+            data.getName(),
+            null,
+            data.getDescription(),
+            data.getTimePerQuestion(),
+            data.getAttemptCount(),
+            data.getQuestions()
+        );
+    }
+
     private Questionary createQuestionary(String name, String badge, String description, Integer timePerQuestion, Integer attemptCount, List<Question> questions) {
         questions = questionService.saveAll(questions);
         Questionary questionary = new Questionary(null, name, badge, description, timePerQuestion, attemptCount, questions);
@@ -109,6 +120,8 @@ public class QuestionaryService {
             showAnswer = true;
         } else {
             List<Question> questions = questionary.getQuestions();
+            if (questions.size() < 10)
+                throw new NotFoundException("Questionary error");
             List<Integer> randomQuestionIds = new ArrayList<>();
             Random random_method = new Random();
             while (randomQuestionIds.size() != 10) {

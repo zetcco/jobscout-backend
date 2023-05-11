@@ -14,12 +14,15 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.Organization;
+import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.repositories.JobPostRepository;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
+import com.zetcco.jobscoutserver.services.questionary.QuestionaryService;
+import com.zetcco.jobscoutserver.services.support.JobPostForm;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
@@ -42,9 +45,16 @@ public class JobPostService {
     @Autowired
     private OrganizationService organizationService;
 
+    @Autowired
+    private QuestionaryService questionaryService;
+
     @Transactional
-    public JobPostDTO addNewJobPost(JobPostDTO jobPostDTO) throws NotFoundException{
-        JobPost jobPost = mapper.mapToEntity(jobPostDTO);
+    public JobPostDTO addNewJobPost(JobPostForm jobPostForm) throws NotFoundException{
+        JobPost jobPost = mapper.mapToEntity(jobPostForm.getJobPost());
+        if (jobPostForm.getQuestionary() != null) {
+            Questionary questionary = questionaryService.createQuestionary(jobPostForm.getQuestionary());
+            jobPost.setQuestionary(questionary);
+        }
         JobCreator jobCreator = jobCreatorService.getJobCreatorById(userService.getUser().getId());
         Organization organization = jobCreator.getOrganization();
         jobPost.setJobCreator(jobCreator);
@@ -64,6 +74,8 @@ public class JobPostService {
         jobCreator.setJobPost(jobPosts);
         jobCreatorService.save(jobCreator);
 
+        System.out.println(newJobPost);
+        System.out.println(this.mapper.mapToDto(newJobPost));
         return this.mapper.mapToDto(newJobPost);
     }
 

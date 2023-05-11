@@ -19,6 +19,9 @@ public class JobPostMapper {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private CategoryMapper categoryMapper;
+
     public List<JobPostDTO> mapToDtos(List<JobPost> jobPosts){
         return jobPosts.stream().map(jobPost -> mapToDto(jobPost)).toList(); 
     } 
@@ -34,9 +37,10 @@ public class JobPostMapper {
     public JobPostDTO mapToDto(JobPost jobPost) {
         ProfileDTO jobCreator = userMapper.mapToDto(jobPost.getJobCreator());
         ProfileDTO organization = jobPost.getOrganization() != null ? userMapper.mapToDto(jobPost.getOrganization()) : null;
+        Long questionaryId = jobPost.getQuestionary() != null ? jobPost.getQuestionary().getId() : null;
         JobPostDTO jobPostDTO = JobPostDTO.builder()
                                             .Id(jobPost.getId())
-                                            .category(jobPost.getCategory())
+                                            .category(categoryMapper.mapToDto(jobPost.getCategory()))
                                             .skillList(jobPost.getSkillList())
                                             .title(jobPost.getTitle())
                                             .description(jobPost.getDescription())
@@ -47,6 +51,7 @@ public class JobPostMapper {
                                             .jobCreator(jobCreator)
                                             .organization(organization)
                                             .urgent(jobPost.getUrgent())
+                                            .questionaryId(questionaryId)
                                             .build();
         return jobPostDTO;
     }
