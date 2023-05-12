@@ -90,6 +90,10 @@ public class QuestionaryService {
         return this.submitAnswers(jobSeekerId, questionaryId, answers);
     }
 
+    public QuestionaryAttempt getAttemptByJobSeekerIdAndQuestionaryId(Long jobSeekerId, Long questionaryId) throws NotFoundException {
+        return questionaryAttemptRepository.findByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId).orElseThrow(() -> new NotFoundException("Attempt not found."));
+    }
+
     @Transactional
     public float submitAnswers(Long jobSeekerId, Long questionaryId, List<Integer> answers) throws NotFoundException, AccessDeniedException {
         JobSeeker jobSeeker = jobSeekerService.getJobSeeker(userService.getUser().getId());
@@ -97,7 +101,7 @@ public class QuestionaryService {
 
         Float score = questionary.getMarks(answers);
 
-        QuestionaryAttempt questionaryAttempt = questionaryAttemptRepository.findByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
+        QuestionaryAttempt questionaryAttempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
         if (questionaryAttempt == null) 
             questionaryAttempt = new QuestionaryAttempt(null, questionary, jobSeeker, 1, score, false);
         else if (questionaryAttempt.getAttempts() < questionary.getAttemptCount() ) {
@@ -151,7 +155,7 @@ public class QuestionaryService {
 
     public Integer getRemainingAttempts(Long jobSeekerId, Long questionaryId) {
         Questionary questionary = this.getQuestionaryById(questionaryId);
-        QuestionaryAttempt attempt = questionaryAttemptRepository.findByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
+        QuestionaryAttempt attempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
         return questionary.getAttemptCount() - (attempt != null ? attempt.getAttempts() : 0);
     }
 
@@ -165,7 +169,7 @@ public class QuestionaryService {
     }
 
     public Boolean setResultsPublic(Long jobSeekerId, Long questionaryId, Boolean value) {
-        QuestionaryAttempt attempt = questionaryAttemptRepository.findByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
+        QuestionaryAttempt attempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
         attempt.setIsPublic(value);
         attempt = questionaryAttemptRepository.save(attempt);
         return attempt.getIsPublic();

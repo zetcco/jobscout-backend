@@ -35,5 +35,6 @@ public class JobPostDTO {
     private ProfileDTO jobCreator;
     private ProfileDTO organization;
     private Long questionaryId;
+    private Integer applicationCount;
     
 }

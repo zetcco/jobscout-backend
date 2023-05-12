@@ -173,7 +173,8 @@ public class JobPostRepositoryTest {
                         null,
                         jobCreator , 
                         category , 
-                        organization
+                        organization,
+                        null
                         ), 
 
             new JobPost(
@@ -187,7 +188,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator , 
                         category , 
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -201,7 +203,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -215,7 +218,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ), 
 
             new JobPost(
@@ -229,7 +233,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -243,7 +248,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -257,7 +263,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -271,7 +278,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -285,7 +293,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         ),
 
             new JobPost(
@@ -299,7 +308,8 @@ public class JobPostRepositoryTest {
                         null,
                         null, jobCreator,
                         category,
-                        organization
+                        organization,
+                        null
                         )
             );
             jobPostRepository.saveAll(jobPosts);

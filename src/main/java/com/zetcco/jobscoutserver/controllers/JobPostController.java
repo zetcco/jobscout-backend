@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.controllers;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,11 +27,13 @@ import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.CategorySpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.DescriptionSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.JobCreatorSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.StatusSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.TypeSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.UrgentSpecification;
 import com.zetcco.jobscoutserver.services.JobPostService;
 import com.zetcco.jobscoutserver.services.support.JobPostForm;
+import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
@@ -214,6 +218,7 @@ public class JobPostController {
         @RequestParam(value = "status", required = false) JobPostStatus status,
         @RequestParam(value = "category", required = false) List<String> categories,
         @RequestParam(value = "description", required = false) String description,
+        @RequestParam(value = "jobcreator", required = false) Long jobCreatorId,
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "1") Integer size
     ) {
@@ -222,8 +227,36 @@ public class JobPostController {
                 new UrgentSpecification(urgent),
                 new StatusSpecification(status),
                 new CategorySpecification(categories),
-                new DescriptionSpecification(description)
+                new DescriptionSpecification(description),
+                new JobCreatorSpecification(jobCreatorId)
             );
             return ResponseEntity.ok(jobPostService.searchForJobPost(spec, PageRequest.of(page, size)));
+    }
+
+    @PreAuthorize("hasRole('JOB_SEEKER')")
+    @PatchMapping("/{jobPostId}/apply")
+    public ResponseEntity<?> applyForJobPost(@PathVariable Long jobPostId) {
+        try {
+            jobPostService.applyForJobPost(jobPostId);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    @GetMapping("/{jobPostId}/applications")
+    public ResponseEntity<List<ProfileDTO>> getApplications(@PathVariable Long jobPostId) throws AccessDeniedException {
+        try {
+            return new ResponseEntity<List<ProfileDTO>>(jobPostService.getApplications(jobPostId), HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }

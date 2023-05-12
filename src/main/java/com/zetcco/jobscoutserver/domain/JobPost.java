@@ -68,6 +68,9 @@ public class JobPost {
     @ManyToOne(fetch = FetchType.EAGER , optional = true)
     private Organization organization;
 
+    @ManyToMany
+    private List<JobSeeker> applications;
+
     public JobPost( Long id, Date timestamp, Date dueDate, String title, String description, JobPostType type,
             Boolean urgent, JobPostStatus status, Category category, JobCreator jobCreator, Organization organization) {
         this.id = id;

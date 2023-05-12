@@ -65,4 +65,6 @@ public interface JobPostRepository extends JpaRepository<JobPost, Long>, JpaSpec
 
     public Long countByOrganizationIdAndStatus(Long id , JobPostStatus status);
 
+    List<JobPost> findByJobCreatorId(Long jobCreatorId);
+
 }
