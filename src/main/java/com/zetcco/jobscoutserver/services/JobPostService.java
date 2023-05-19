@@ -293,7 +293,7 @@ public class JobPostService {
         } else {
             Questionary questionary = jobPost.getQuestionary();
             QuestionaryAttempt attempt = questionaryService.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionary.getId());
-            if (Float.compare(attempt.getScore(), 80) < 0) 
+            if (Float.compare(attempt.getScore(), 70) < 0) 
                 throw new AccessDeniedException("Insufficient marks. Cannot apply");
             else
                 jobPost.getApplications().add(jobSeeker);

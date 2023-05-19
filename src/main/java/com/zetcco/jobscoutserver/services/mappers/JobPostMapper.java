@@ -52,7 +52,7 @@ public class JobPostMapper {
                                             .organization(organization)
                                             .urgent(jobPost.getUrgent())
                                             .questionaryId(questionaryId)
-                                            .applicationCount(jobPost.getApplications().size())
+                                            .applicationCount(jobPost.getApplications() == null ? 0 : jobPost.getApplications().size())
                                             .build();
         return jobPostDTO;
     }

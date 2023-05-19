@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.zetcco.jobscoutserver.controllers.support.QuestionaryAnswer;
 import com.zetcco.jobscoutserver.controllers.support.QuestionaryForm;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.questionary.Question;
@@ -85,7 +86,7 @@ public class QuestionaryService {
         return questionaryRepository.save(questionary);
     }
 
-    public float submitAnswers(Long questionaryId, List<Integer> answers) throws NotFoundException, AccessDeniedException {
+    public float submitAnswers(Long questionaryId, List<QuestionaryAnswer> answers) throws NotFoundException, AccessDeniedException {
         Long jobSeekerId = userService.getUser().getId();
         return this.submitAnswers(jobSeekerId, questionaryId, answers);
     }
@@ -95,21 +96,24 @@ public class QuestionaryService {
     }
 
     @Transactional
-    public float submitAnswers(Long jobSeekerId, Long questionaryId, List<Integer> answers) throws NotFoundException, AccessDeniedException {
+    public float submitAnswers(Long jobSeekerId, Long questionaryId, List<QuestionaryAnswer> answers) throws AccessDeniedException {
         JobSeeker jobSeeker = jobSeekerService.getJobSeeker(userService.getUser().getId());
         Questionary questionary = this.getQuestionaryById(questionaryId);
 
-        Float score = questionary.getMarks(answers);
+        Float score = questionService.getMarks(answers);
 
-        QuestionaryAttempt questionaryAttempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
-        if (questionaryAttempt == null) 
+        QuestionaryAttempt questionaryAttempt;
+        try {
+            questionaryAttempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
+            if (questionaryAttempt.getAttempts() < questionary.getAttemptCount() ) {
+                questionaryAttempt.setScore(score);
+                questionaryAttempt.setAttempts( questionaryAttempt.getAttempts() + 1 );
+                questionaryAttempt.setIsPublic(false);
+            } else 
+                throw new AccessDeniedException("You have no attempts left to take this questionary.");
+        } catch (NotFoundException e) {
             questionaryAttempt = new QuestionaryAttempt(null, questionary, jobSeeker, 1, score, false);
-        else if (questionaryAttempt.getAttempts() < questionary.getAttemptCount() ) {
-            questionaryAttempt.setScore(score);
-            questionaryAttempt.setAttempts( questionaryAttempt.getAttempts() + 1 );
-            questionaryAttempt.setIsPublic(false);
-        } else 
-            throw new AccessDeniedException("You have no attempts left to take this questionary.");
+        }
 
         questionaryAttemptRepository.save(questionaryAttempt);
 
@@ -150,13 +154,22 @@ public class QuestionaryService {
     }
 
     public Integer getRemainingAttempts(Long questionaryId) {
-        return this.getRemainingAttempts(userService.getUser().getId(), questionaryId);
+        try {
+            return this.getRemainingAttempts(userService.getUser().getId(), questionaryId);
+        } catch (NotFoundException e) {
+            Questionary questionary = this.getQuestionaryById(questionaryId);
+            return questionary.getAttemptCount();
+        }
     }
 
-    public Integer getRemainingAttempts(Long jobSeekerId, Long questionaryId) {
+    public Integer getRemainingAttempts(Long jobSeekerId, Long questionaryId) throws NotFoundException {
         Questionary questionary = this.getQuestionaryById(questionaryId);
-        QuestionaryAttempt attempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
-        return questionary.getAttemptCount() - (attempt != null ? attempt.getAttempts() : 0);
+        try {
+            QuestionaryAttempt attempt = this.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionaryId);
+            return questionary.getAttemptCount() - attempt.getAttempts();
+        } catch (NotFoundException e) {
+            return questionary.getAttemptCount();
+        }
     }
 
     @Transactional

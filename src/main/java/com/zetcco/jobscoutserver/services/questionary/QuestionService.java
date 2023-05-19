@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutserver.controllers.support.QuestionaryAnswer;
 import com.zetcco.jobscoutserver.domain.questionary.Question;
 import com.zetcco.jobscoutserver.repositories.questionary.QuestionRepository;
 
@@ -51,5 +52,14 @@ public class QuestionService {
             updatedQuestions.add( questionRepository.save(newQuestion) );
         }
         return updatedQuestions;
+    }
+
+    public Float getMarks(List<QuestionaryAnswer> answers) {
+        int marks = 0;
+        for (int i = 0 ; i < answers.size() ; i++ )  
+            if (questionRepository.checkIfAnswerIsCorrect(answers.get(i).getQuestionId(), answers.get(i).getAnswer()))
+                marks++;
+
+        return ((float)marks/answers.size())*100;
     }
 }
