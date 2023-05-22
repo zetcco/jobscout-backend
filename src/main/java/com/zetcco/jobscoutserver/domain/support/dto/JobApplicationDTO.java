@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JobApplicationDTO {
     
+    private Long id;
     private ApplicationStatus status;
     private ProfileDTO jobSeeker;
     private JobPostDTO jobPostDTO;

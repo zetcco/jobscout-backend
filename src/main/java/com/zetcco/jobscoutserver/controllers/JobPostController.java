@@ -252,10 +252,42 @@ public class JobPostController {
     public ResponseEntity<List<JobApplicationDTO>> getApplications(@PathVariable Long jobPostId) throws AccessDeniedException {
         try {
             return new ResponseEntity<List<JobApplicationDTO>>(jobPostService.getApplications(jobPostId), HttpStatus.OK);
-        } catch (NotFoundException e) {
+        } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    @PatchMapping("/application/{jobApplicationId}/accept")
+    public ResponseEntity<?> acceptApplication(@PathVariable Long jobApplicationId) throws AccessDeniedException {
+        try {
+            jobPostService.acceptJobApplication(jobApplicationId);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    @PatchMapping("/application/{jobApplicationId}/reject")
+    public ResponseEntity<?> rejectApplication(@PathVariable Long jobApplicationId) throws AccessDeniedException {
+        try {
+            jobPostService.rejectJobApplication(jobApplicationId);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -18,7 +18,7 @@ public class JobApplicationMapper {
     private UserMapper userMapper;
 
     public JobApplicationDTO mapToDto(JobApplication application) {
-        return new JobApplicationDTO(application.getStatus(), userMapper.mapToDto(application.getJobSeeker()), jobPostMapper.mapToDto(application.getJobPost()));
+        return new JobApplicationDTO(application.getId(), application.getStatus(), userMapper.mapToDto(application.getJobSeeker()), jobPostMapper.mapToDto(application.getJobPost()));
     }
 
     public List<JobApplicationDTO> mapToDtos(List<JobApplication> applications) {

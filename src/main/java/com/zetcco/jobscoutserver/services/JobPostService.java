@@ -310,4 +310,22 @@ public class JobPostService {
         return jobApplicationMapper.mapToDtos(jobPost.getApplications());
     }
 
+    private JobApplication getJobApplicationById(Long id) throws NotFoundException {
+        JobApplication jobApplication = jobApplicationRepository.findById(id).orElseThrow(() -> new NotFoundException("Job Application not found"));
+        return jobApplication;
+    }
+
+    public void acceptJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException {
+        JobApplication jobApplication = this.getJobApplicationById(jobApplicationId);
+        jobApplication.setStatus(ApplicationStatus.INTERVIEW_SELECTED);
+        this.jobApplicationRepository.save(jobApplication);
+    }
+
+    public void rejectJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException {
+        JobApplication jobApplication = this.getJobApplicationById(jobApplicationId);
+        jobApplication.setStatus(ApplicationStatus.REJECTED);
+        this.jobApplicationRepository.save(jobApplication);
+    }
+
+
 }
