@@ -21,11 +21,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.JobApplication;
 import com.zetcco.jobscoutserver.domain.JobPost;
+import com.zetcco.jobscoutserver.domain.support.ApplicationStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobApplicationDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.ApplicationStatusSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationDegreeSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationInstituteSpecificaiton;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationSkillSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobPostSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.CategorySpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.DescriptionSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.JobCreatorSpecification;
@@ -248,20 +255,6 @@ public class JobPostController {
     }
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
-    @GetMapping("/{jobPostId}/applications")
-    public ResponseEntity<List<JobApplicationDTO>> getApplications(@PathVariable Long jobPostId) throws AccessDeniedException {
-        try {
-            return new ResponseEntity<List<JobApplicationDTO>>(jobPostService.getApplications(jobPostId), HttpStatus.OK);
-        } catch (AccessDeniedException e) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        }
-    }
-
-    @PreAuthorize("hasRole('JOB_CREATOR')")
     @PatchMapping("/application/{jobApplicationId}/accept")
     public ResponseEntity<?> acceptApplication(@PathVariable Long jobApplicationId) throws AccessDeniedException {
         try {
@@ -290,4 +283,24 @@ public class JobPostController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    @GetMapping("/{jobPostId}/applications")
+    public ResponseEntity<List<JobApplicationDTO>> filterJobApplications(
+        @PathVariable Long jobPostId,
+        @RequestParam(value = "status", required = false) ApplicationStatus status,
+        @RequestParam(value = "degrees", required = false) List<Long> degrees,
+        @RequestParam(value = "institutes", required = false) List<Long> institutes,
+        @RequestParam(value = "skills", required = false) List<Long> skills
+    ) {
+            Specification<JobApplication> spec = Specification.allOf(
+                new ApplicationStatusSpecification(status),
+                new JobPostSpecification(jobPostId),
+                new JobApplicationDegreeSpecification(degrees),
+                new JobApplicationSkillSpecification(skills),
+                new JobApplicationInstituteSpecificaiton(institutes)
+            );
+            return ResponseEntity.ok(jobPostService.filterJobApplications(spec));
+    }
+
 }

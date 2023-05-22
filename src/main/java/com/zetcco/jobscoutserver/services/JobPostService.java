@@ -12,10 +12,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.JobApplication;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
+import com.zetcco.jobscoutserver.domain.Notification;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttempt;
@@ -23,6 +25,7 @@ import com.zetcco.jobscoutserver.domain.support.ApplicationStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.Role;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobApplicationDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.repositories.JobApplicationRepository;
@@ -61,6 +64,7 @@ public class JobPostService {
 
     @Autowired JobApplicationRepository jobApplicationRepository;
     @Autowired JobApplicationMapper jobApplicationMapper;
+    @Autowired NotificationService notificationService;
 
     @Transactional
     public JobPostDTO addNewJobPost(JobPostForm jobPostForm) throws NotFoundException{
@@ -315,16 +319,22 @@ public class JobPostService {
         return jobApplication;
     }
 
-    public void acceptJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException {
+    public void acceptJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException, JsonProcessingException {
         JobApplication jobApplication = this.getJobApplicationById(jobApplicationId);
         jobApplication.setStatus(ApplicationStatus.INTERVIEW_SELECTED);
+        notificationService.sendToUser(new Notification(jobApplication.getJobSeeker(), "You got accepted!", "Job Application got accepted", NotificationType.RECOMMENDATION));
         this.jobApplicationRepository.save(jobApplication);
     }
 
-    public void rejectJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException {
+    public void rejectJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException, JsonProcessingException {
         JobApplication jobApplication = this.getJobApplicationById(jobApplicationId);
+        notificationService.sendToUser(new Notification(jobApplication.getJobSeeker(), "Application rejected", "Job Application got rejected", NotificationType.RECOMMENDATION));
         jobApplication.setStatus(ApplicationStatus.REJECTED);
         this.jobApplicationRepository.save(jobApplication);
+    }
+
+    public List<JobApplicationDTO> filterJobApplications(Specification<JobApplication> spec) {
+        return jobApplicationMapper.mapToDtos(jobApplicationRepository.findAll(spec));
     }
 
 
