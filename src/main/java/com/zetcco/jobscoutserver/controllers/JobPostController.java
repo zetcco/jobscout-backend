@@ -2,9 +2,11 @@ package com.zetcco.jobscoutserver.controllers;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -227,7 +229,7 @@ public class JobPostController {
         @RequestParam(value = "description", required = false) String description,
         @RequestParam(value = "jobcreator", required = false) Long jobCreatorId,
         @RequestParam(defaultValue = "0") Integer page,
-        @RequestParam(defaultValue = "1") Integer size
+        @RequestParam(defaultValue = "20") Integer size
     ) {
             Specification<JobPost> spec = Specification.allOf(
                 new TypeSpecification(type),
@@ -237,7 +239,7 @@ public class JobPostController {
                 new DescriptionSpecification(description),
                 new JobCreatorSpecification(jobCreatorId)
             );
-            return ResponseEntity.ok(jobPostService.searchForJobPost(spec, PageRequest.of(page, size)));
+            return ResponseEntity.ok(jobPostService.searchForJobPost(spec, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"))));
     }
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
@@ -259,6 +261,22 @@ public class JobPostController {
     public ResponseEntity<?> acceptApplication(@PathVariable Long jobApplicationId) throws AccessDeniedException {
         try {
             jobPostService.acceptJobApplication(jobApplicationId);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    @PatchMapping("/{jobPostId}/set-status")
+    public ResponseEntity<?> acceptApplication(@RequestBody Map<String, JobPostStatus> body, @PathVariable Long jobPostId) throws AccessDeniedException {
+        try {
+            JobPostStatus status = body.get("status");
+            jobPostService.setJobPostStatus(jobPostId, status);
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (NotFoundException e) {

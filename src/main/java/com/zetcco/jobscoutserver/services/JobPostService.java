@@ -333,6 +333,16 @@ public class JobPostService {
         this.jobApplicationRepository.save(jobApplication);
     }
 
+    public void setJobPostStatus(Long jobPostId, JobPostStatus status) throws NotFoundException, AccessDeniedException {
+        JobPost jobPost = this.findJobPostById(jobPostId);
+        if (jobPost.getJobCreator().getId() == userService.getAuthUser().getId()) {
+            jobPost.setStatus(status);
+            jobPostRepository.save(jobPost);
+        } else {
+            throw new AccessDeniedException("You do not have permission to perform this action.");
+        }
+    }
+
     public List<JobApplicationDTO> filterJobApplications(Specification<JobApplication> spec) {
         return jobApplicationMapper.mapToDtos(jobApplicationRepository.findAll(spec));
     }
