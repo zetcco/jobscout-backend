@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
+import com.zetcco.jobscoutserver.domain.support.dto.JobApplicationDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.CategorySpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.DescriptionSpecification;
@@ -33,7 +34,6 @@ import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.Typ
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.UrgentSpecification;
 import com.zetcco.jobscoutserver.services.JobPostService;
 import com.zetcco.jobscoutserver.services.support.JobPostForm;
-import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
@@ -235,9 +235,9 @@ public class JobPostController {
 
     @PreAuthorize("hasRole('JOB_SEEKER')")
     @PatchMapping("/{jobPostId}/apply")
-    public ResponseEntity<?> applyForJobPost(@PathVariable Long jobPostId) {
+    public ResponseEntity<JobApplicationDTO> applyForJobPost(@PathVariable Long jobPostId) {
         try {
-            jobPostService.applyForJobPost(jobPostId);
+            return new ResponseEntity<JobApplicationDTO>(jobPostService.applyForJobPost(jobPostId), HttpStatus.OK);
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (NotFoundException e) {
@@ -245,14 +245,13 @@ public class JobPostController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
     @GetMapping("/{jobPostId}/applications")
-    public ResponseEntity<List<ProfileDTO>> getApplications(@PathVariable Long jobPostId) throws AccessDeniedException {
+    public ResponseEntity<List<JobApplicationDTO>> getApplications(@PathVariable Long jobPostId) throws AccessDeniedException {
         try {
-            return new ResponseEntity<List<ProfileDTO>>(jobPostService.getApplications(jobPostId), HttpStatus.OK);
+            return new ResponseEntity<List<JobApplicationDTO>>(jobPostService.getApplications(jobPostId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (Exception e) {

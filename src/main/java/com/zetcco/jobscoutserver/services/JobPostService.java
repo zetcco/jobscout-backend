@@ -12,19 +12,23 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.zetcco.jobscoutserver.domain.JobApplication;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobPost;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttempt;
+import com.zetcco.jobscoutserver.domain.support.ApplicationStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
 import com.zetcco.jobscoutserver.domain.support.Role;
+import com.zetcco.jobscoutserver.domain.support.dto.JobApplicationDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.JobPostDTO;
+import com.zetcco.jobscoutserver.repositories.JobApplicationRepository;
 import com.zetcco.jobscoutserver.repositories.JobPostRepository;
+import com.zetcco.jobscoutserver.services.mappers.JobApplicationMapper;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
-import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.questionary.QuestionaryService;
 import com.zetcco.jobscoutserver.services.support.JobPostForm;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
@@ -47,9 +51,6 @@ public class JobPostService {
     private UserService userService;
 
     @Autowired
-    private UserMapper userMapper;
-
-    @Autowired
     private OrganizationService organizationService;
 
     @Autowired
@@ -57,6 +58,9 @@ public class JobPostService {
 
     @Autowired
     private JobSeekerService jobSeekerService;
+
+    @Autowired JobApplicationRepository jobApplicationRepository;
+    @Autowired JobApplicationMapper jobApplicationMapper;
 
     @Transactional
     public JobPostDTO addNewJobPost(JobPostForm jobPostForm) throws NotFoundException{
@@ -89,14 +93,12 @@ public class JobPostService {
         return this.mapper.mapToDto(newJobPost);
     }
 
-
     public JobPostDTO updateJobPost(JobPostDTO jobPostDTO) throws NotFoundException{
         JobPost exsistingjobPost = mapper.mapToEntity(jobPostDTO);
         if(!jobPostRepository.existsById(exsistingjobPost.getId()))
                 throw new NotFoundException("Job Post Not Found! - jobPostId : " + exsistingjobPost.getId());
             return this.mapper.mapToDto(jobPostRepository.save(exsistingjobPost));
     }
-
 
     public List<JobPostDTO> getAllJobPosts(int page, int size) throws NotFoundException{
         Pageable pageable = PageRequest.of(page, size);
@@ -111,7 +113,6 @@ public class JobPostService {
         return jobPostRepository.findById(jobPostId)
         .orElseThrow(()-> new NotFoundException("Such a job post not found! - jobPostId : " + jobPostId));
     }
-
 
     public JobPostDTO getJobPostById(Long jobPostId) throws NotFoundException{
         return this.mapper.mapToDto(this.findJobPostById(jobPostId));
@@ -143,7 +144,6 @@ public class JobPostService {
         return this.mapper.mapToDtos(jobPosts);
     }
 
-
     public List<JobPostDTO> getJobPostsByCategoryId(Long categoryId) throws NotFoundException{
         List<JobPost> jobPosts = new ArrayList<JobPost>();
         for(JobPost jobPost : jobPostRepository.findAll()){
@@ -166,20 +166,17 @@ public class JobPostService {
         return this.mapper.mapToDtos(jobPosts);
     }
 
-
     public List<JobPostDTO> getJobPostByType(JobPostType type) throws NotFoundException{
         List<JobPost> jobPost =  jobPostRepository.findByType(type)
         .orElseThrow(()-> new NotFoundException("Such a job post not found!  - type : " + type));
             return this.mapper.mapToDtos(jobPost);
     }
 
-
     public List<JobPostDTO> getJobPostByStatus(JobPostStatus status) throws NotFoundException{
         List<JobPost> jobPost = jobPostRepository.findByStatus(status)
         .orElseThrow(()-> new NotFoundException("Such a job post not found! - status : " + status));
         return this.mapper.mapToDtos(jobPost);
     }
-
 
     public void deleteJobPostById(Long Id) throws NotFoundException{
         if(!jobPostRepository.existsById(Id))
@@ -213,7 +210,6 @@ public class JobPostService {
         return profiles;    
     }
 
-
     public Long getJobPostCount() throws NotFoundException {
         ProfileDTO user = userService.getUser();
         if (user.getRole() == Role.ROLE_JOB_CREATOR)
@@ -231,7 +227,6 @@ public class JobPostService {
     private Long getJobPostCountByOrganizationId(Long id) {
         return jobPostRepository.countByOrganizationId(id);
     }
-
 
     public Long getActivatedJobPostCount() throws NotFoundException{
         ProfileDTO user = userService.getUser();
@@ -271,47 +266,48 @@ public class JobPostService {
         return jobPostRepository.countByOrganizationIdAndStatus(id, status);
     }
 
-
     public List<JobPostDTO> searchForJobPost(Specification<JobPost> jobPostSpec, Pageable pageable) {
         return mapper.mapToDtos(jobPostRepository.findAll(jobPostSpec, pageable).toList());
     }
 
-
-    public void applyForJobPost(Long jobPostId) throws AccessDeniedException, NotFoundException {
+    public JobApplicationDTO applyForJobPost(Long jobPostId) throws AccessDeniedException, NotFoundException {
         Long jobSeekerId = userService.getAuthUser().getId();
-        this.applyForJobPost(jobPostId, jobSeekerId);
+        return this.applyForJobPost(jobPostId, jobSeekerId);
     }
 
-    public void applyForJobPost(Long jobPostId, Long jobSeekerId) throws AccessDeniedException {
+    public JobApplicationDTO applyForJobPost(Long jobPostId, Long jobSeekerId) throws AccessDeniedException {
         JobPost jobPost = this.findJobPostById(jobPostId);
         JobSeeker jobSeeker = jobSeekerService.getJobSeeker(jobSeekerId);
-        if (jobPost.getApplications().contains(jobSeeker))
+        if (jobPost.getApplications().stream().map(application -> application.getJobSeeker()).toList().contains(jobSeeker))
             throw new AccessDeniedException("Cannot re-submit");
 
-        if (jobPost.getQuestionary() == null) {
-            jobPost.getApplications().add(jobSeeker);
-        } else {
+        JobApplication jobApplication = JobApplication.builder().jobSeeker(jobSeeker).jobPost(jobPost).status(ApplicationStatus.APPLIED).build();
+        if (jobPost.getQuestionary() != null) {
             Questionary questionary = jobPost.getQuestionary();
             QuestionaryAttempt attempt = questionaryService.getAttemptByJobSeekerIdAndQuestionaryId(jobSeekerId, questionary.getId());
             if (Float.compare(attempt.getScore(), 70) < 0) 
                 throw new AccessDeniedException("Insufficient marks. Cannot apply");
-            else
-                jobPost.getApplications().add(jobSeeker);
         }
 
-        this.jobPostRepository.save(jobPost);
+        jobApplication = this.jobApplicationRepository.save(jobApplication);
+        jobPost.getApplications().add(jobApplication);
+
+        jobPostRepository.save(jobPost);
+
+        return jobApplicationMapper.mapToDto(jobApplication);
+        
     }
 
-    public List<ProfileDTO> getApplications(Long jobPostId) throws AccessDeniedException {
+    public List<JobApplicationDTO> getApplications(Long jobPostId) throws AccessDeniedException {
         Long jobCreatorId = userService.getAuthUser().getId();
         return this.getApplications(jobPostId, jobCreatorId);
     }
 
-    public List<ProfileDTO> getApplications(Long jobPostId, Long jobCreatorId) throws AccessDeniedException {
+    public List<JobApplicationDTO> getApplications(Long jobPostId, Long jobCreatorId) throws AccessDeniedException {
         JobPost jobPost = this.findJobPostById(jobPostId);
         if (jobPost.getJobCreator().getId() != jobCreatorId)
             throw new AccessDeniedException("You do not have permission");
-        return userMapper.mapToDtos(jobPost.getApplications());
+        return jobApplicationMapper.mapToDtos(jobPost.getApplications());
     }
 
 }
