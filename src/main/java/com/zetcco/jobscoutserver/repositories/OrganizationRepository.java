@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.repositories;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
 import org.springframework.data.domain.Page;
@@ -9,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.repositories.support.UserBaseRepository;
 
-public interface OrganizationRepository extends UserBaseRepository<Organization> {
+public interface OrganizationRepository extends UserBaseRepository<Organization>, JpaSpecificationExecutor<Organization> {
 
     @Query(value = """
             select *

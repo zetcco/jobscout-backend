@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,10 @@ import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.domain.support.Socials.SocialPlatform;
 import com.zetcco.jobscoutserver.domain.support.Socials.SocialProfile;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
+import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ContactDetails;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.StorageService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final StorageService storageService;
@@ -110,7 +113,7 @@ public class UserService {
         return this.getSocialLinks(user.getId());
     }
 
-    protected User getUser(Long userId) throws NotFoundException {
+    public User getUser(Long userId) throws NotFoundException {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
@@ -118,5 +121,9 @@ public class UserService {
         ProfileDTO profile = modelMapper.map(user, ProfileDTO.class);
         profile.setDisplayPicture(storageService.getResourceURL(user.getDisplayPicture()));
         return profile;
+    }
+
+    public List<ProfileDTO> searchUsers(Specification<User> user_specs) {
+        return userMapper.mapToDtos(userRepository.findAll(user_specs));
     }
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.repositories.SkillsRepository;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 

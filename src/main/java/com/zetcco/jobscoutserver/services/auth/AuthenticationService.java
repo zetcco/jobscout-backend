@@ -11,10 +11,12 @@ import com.zetcco.jobscoutserver.controllers.auth.support.JobCreatorRegistration
 import com.zetcco.jobscoutserver.controllers.auth.support.JobSeekerRegistrationRequest;
 import com.zetcco.jobscoutserver.controllers.auth.support.LoginRequest;
 import com.zetcco.jobscoutserver.controllers.auth.support.OrganizationRegisterRequest;
+import com.zetcco.jobscoutserver.domain.Admin;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.repositories.AdminRepository;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
@@ -30,6 +32,7 @@ public class AuthenticationService {
     private final OrganizationRepository organizationRepository;
     private final JobSeekerRepository jobSeekerRepository;
     private final JobCreatorRepository jobCreatorRepository;
+    private final AdminRepository adminRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -86,6 +89,13 @@ public class AuthenticationService {
         jobCreatorRepository.save(jobCreator);
         String token = jwtService.generateToken(jobCreator);
 
+        return AuthenticationResponse.builder().jwtToken(token).build();
+    }
+
+    public AuthenticationResponse registerAdmin(String email, String password) {
+        Admin admin = new Admin(email, passwordEncoder.encode(password));
+        admin = adminRepository.save(admin);
+        String token = jwtService.generateToken(admin);
         return AuthenticationResponse.builder().jwtToken(token).build();
     }
 

@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,8 +19,8 @@ import com.zetcco.jobscoutserver.repositories.MessageRepository;
 import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
 import com.zetcco.jobscoutserver.services.support.DeleteMessageDTO;
 import com.zetcco.jobscoutserver.services.support.MessageDTO;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.TypingDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
 public class MessageService {
@@ -61,7 +62,7 @@ public class MessageService {
         List<User> participants = conversation.getParticipants();
         User sender = userService.getUser(message.getSenderId());
         if (participants.contains(sender)) {
-            conversation.setSeenUsers(List.of(sender));
+            conversation.setSeenUsers(new ArrayList<>(List.of(sender)));
             conversationRepository.save(conversation);
             Message newMessage = Message.builder()
                                     .content(message.getContent())
@@ -83,7 +84,7 @@ public class MessageService {
         List<User> participants = conversation.getParticipants();
         User sender = userService.getUser(senderId);
         if (participants.contains(sender)) {
-            TypingDTO typingDTO = new TypingDTO(conversationId, sender.getFirstName());
+            TypingDTO typingDTO = new TypingDTO(conversationId, sender.getDisplayName());
             for (User participant : conversation.getParticipants()) 
                 if (participant.getId() != senderId)
                     rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId().toString(), "TYPING", typingDTO);

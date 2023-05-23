@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.domain.Notification;
-import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
-import com.zetcco.jobscoutserver.domain.support.NotificationType;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationStatus;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationType;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
 import com.zetcco.jobscoutserver.services.NotificationService;
 

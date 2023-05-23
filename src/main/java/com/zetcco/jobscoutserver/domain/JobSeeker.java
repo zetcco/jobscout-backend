@@ -18,6 +18,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,12 +50,12 @@ public class JobSeeker extends User {
     private String introVideo;
 
     public JobSeeker(String email, String password, Address address) {
-        super(email, password, Role.ROLE_JOB_SEEKER, address);
+        super(email, password, Role.ROLE_JOB_SEEKER, address, null);
     }
 
     public JobSeeker(String email, String password, Address address, NameTitle title,
             String firstName, String lastName, String contact, Date dob, Gender gender) {
-        super(email, password, Role.ROLE_JOB_SEEKER, address);
+        super(email, password, Role.ROLE_JOB_SEEKER, address, firstName + " " + lastName);
         this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -62,6 +64,9 @@ public class JobSeeker extends User {
         this.gender = gender;
     }
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Category category;
+    
     @Column(columnDefinition = "TEXT")
     private String intro;
 
@@ -73,4 +78,10 @@ public class JobSeeker extends User {
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<PastExperience> pastExperiences;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Recommendation> recommendations;
+
+    @ManyToMany
+    private List<JobApplication> applications;
 }

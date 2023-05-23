@@ -1,6 +1,5 @@
 INSERT INTO institute(name, location) VALUES
 ('University of Colombo', 'Sri Lanka'),
-('University of Colombo', 'Sri Lanka'),
 ('University of Peradeniya', 'Sri Lanka'),
 ('University of Sri Jayewardenepura', 'Sri Lanka'),
 ('University of Kelaniya', 'Sri Lanka'),

@@ -19,7 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.zetcco.jobscoutserver.domain.support.MeetingDTO;
 import com.zetcco.jobscoutserver.domain.support.RTCSignal;
 import com.zetcco.jobscoutserver.services.MeetingService;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.BadRequestException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
 @RequestMapping("meeting")
@@ -32,6 +33,8 @@ public class MeetingController {
     public ResponseEntity<MeetingDTO> hostMeeting(@RequestBody MeetingDTO meetingDTO) {
         try {
             return new ResponseEntity<MeetingDTO>(meetingService.hostMeeting(meetingDTO), HttpStatus.OK);
+        } catch (BadRequestException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());

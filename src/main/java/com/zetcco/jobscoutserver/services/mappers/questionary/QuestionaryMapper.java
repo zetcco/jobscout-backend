@@ -25,7 +25,7 @@ public class QuestionaryMapper {
     // @Autowired
     // private UserMapper userMapper;
 
-    public QuestionaryDTO mapQuestionaryToDto(Questionary questionary) {
+    public QuestionaryDTO mapQuestionaryToDto(Questionary questionary, boolean showAnswer) {
         QuestionaryDTO questionaryDTO = new QuestionaryDTO(
             questionary.getId(),
             questionary.getName(),
@@ -33,9 +33,13 @@ public class QuestionaryMapper {
             questionary.getDescription(),
             questionary.getTimePerQuestion(),
             questionary.getAttemptCount(),
-            questionary.getQuestions() != null ? questionary.getQuestions().stream().map(question -> questionMapper.mapToDto(question)).toList() : null
+            questionary.getQuestions() != null ? questionary.getQuestions().stream().map(question -> questionMapper.mapToDto(question, showAnswer)).toList() : null
         );
         return questionaryDTO;
+    }
+
+    public QuestionaryDTO mapQuestionaryToDto(Questionary questionary) {
+        return this.mapQuestionaryToDto(questionary, false);
     }
 
     public List<QuestionaryDTO> mapQuestionariesToDTOs(List<Questionary> questionaries) {
