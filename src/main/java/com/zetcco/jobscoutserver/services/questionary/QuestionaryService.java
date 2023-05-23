@@ -223,7 +223,7 @@ public class QuestionaryService {
     public List<QuestionaryDTO> search(String q) {
         if (q == null)
             throw new BadRequestException("Missing parameters.");
-        return questionaryMapper.mapQuestionariesToDTOs(questionaryRepository.findByNameContainingIgnoreCase(q));
+        return questionaryMapper.mapQuestionariesToDTOs(questionaryRepository.findByNameContainingIgnoreCaseAndBadgeNotNull(q));
     }
 
 }

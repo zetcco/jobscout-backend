@@ -35,6 +35,7 @@ import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplicat
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationDegreeSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationInstituteSpecificaiton;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationSkillSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobApplicationUrgentSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplication.JobPostSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.CategorySpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.DescriptionSpecification;
@@ -310,14 +311,16 @@ public class JobPostController {
         @RequestParam(value = "status", required = false) ApplicationStatus status,
         @RequestParam(value = "degrees", required = false) List<Long> degrees,
         @RequestParam(value = "institutes", required = false) List<Long> institutes,
-        @RequestParam(value = "skills", required = false) List<Long> skills
+        @RequestParam(value = "skills", required = false) List<Long> skills,
+        @RequestParam(value = "urgent", required = false) Boolean urgent
     ) {
             Specification<JobApplication> spec = Specification.allOf(
                 new ApplicationStatusSpecification(status),
                 new JobPostSpecification(jobPostId),
                 new JobApplicationDegreeSpecification(degrees),
                 new JobApplicationSkillSpecification(skills),
-                new JobApplicationInstituteSpecificaiton(institutes)
+                new JobApplicationInstituteSpecificaiton(institutes),
+                new JobApplicationUrgentSpecification(urgent)
             );
             return ResponseEntity.ok(jobPostService.filterJobApplications(spec));
     }

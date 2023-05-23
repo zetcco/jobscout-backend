@@ -9,9 +9,9 @@ import com.zetcco.jobscoutserver.domain.questionary.Questionary;
 
 public interface QuestionaryRepository extends JpaRepository<Questionary, Long> {
 
-    @Query("SELECT new Questionary(q.id, q.name, q.badge, q.description, q.timePerQuestion, q.attemptCount) FROM Questionary q")
+    @Query("SELECT new Questionary(q.id, q.name, q.badge, q.description, q.timePerQuestion, q.attemptCount) FROM Questionary q WHERE q.badge IS NOT NULL")
     List<Questionary> getAll();
 
-    List<Questionary> findByNameContainingIgnoreCase(String q);
+    List<Questionary> findByNameContainingIgnoreCaseAndBadgeNotNull(String q);
     
 }
