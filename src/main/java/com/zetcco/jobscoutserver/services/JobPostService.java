@@ -3,6 +3,7 @@ package com.zetcco.jobscoutserver.services;
 import java.util.List;
 import java.util.Date;
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -24,6 +25,7 @@ import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttempt;
 import com.zetcco.jobscoutserver.domain.support.ApplicationStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.JobPostType;
+import com.zetcco.jobscoutserver.domain.support.MeetingDTO;
 import com.zetcco.jobscoutserver.domain.support.Role;
 import com.zetcco.jobscoutserver.domain.support.Notification.NotificationType;
 import com.zetcco.jobscoutserver.domain.support.dto.JobApplicationDTO;
@@ -33,7 +35,9 @@ import com.zetcco.jobscoutserver.repositories.JobPostRepository;
 import com.zetcco.jobscoutserver.services.mappers.JobApplicationMapper;
 import com.zetcco.jobscoutserver.services.mappers.JobPostMapper;
 import com.zetcco.jobscoutserver.services.questionary.QuestionaryService;
+import com.zetcco.jobscoutserver.services.support.ConversationDTO;
 import com.zetcco.jobscoutserver.services.support.JobPostForm;
+import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
@@ -56,15 +60,14 @@ public class JobPostService {
     @Autowired
     private OrganizationService organizationService;
 
-    @Autowired
-    private QuestionaryService questionaryService;
-
-    @Autowired
-    private JobSeekerService jobSeekerService;
-
-    @Autowired JobApplicationRepository jobApplicationRepository;
-    @Autowired JobApplicationMapper jobApplicationMapper;
-    @Autowired NotificationService notificationService;
+    @Autowired private QuestionaryService questionaryService;
+    @Autowired private JobSeekerService jobSeekerService;
+    @Autowired private JobApplicationRepository jobApplicationRepository;
+    @Autowired private JobApplicationMapper jobApplicationMapper;
+    @Autowired private NotificationService notificationService;
+    @Autowired private MeetingService meetingService;
+    @Autowired private ConversationService conversationService;
+    @Autowired private MessageService messageService;
 
     @Transactional
     public JobPostDTO addNewJobPost(JobPostForm jobPostForm) throws NotFoundException{
@@ -321,7 +324,7 @@ public class JobPostService {
 
     public void acceptJobApplication(Long jobApplicationId) throws NotFoundException, AccessDeniedException, JsonProcessingException {
         JobApplication jobApplication = this.getJobApplicationById(jobApplicationId);
-        jobApplication.setStatus(ApplicationStatus.INTERVIEW_SELECTED);
+        jobApplication.setStatus(ApplicationStatus.ACCEPTED);
         notificationService.sendToUser(new Notification(jobApplication.getJobSeeker(), "You got accepted!", "Job Application got accepted", NotificationType.RECOMMENDATION));
         this.jobApplicationRepository.save(jobApplication);
     }
@@ -345,6 +348,31 @@ public class JobPostService {
 
     public List<JobApplicationDTO> filterJobApplications(Specification<JobApplication> spec) {
         return jobApplicationMapper.mapToDtos(jobApplicationRepository.findAll(spec));
+    }
+
+    public List<JobApplication> getAllJobApplications(Long jobSeekerId) {
+        return jobApplicationRepository.findByJobSeekerId(jobSeekerId);
+    }
+
+    public List<JobApplicationDTO> getAllJobApplications() {
+        return jobApplicationMapper.mapToDtos(this.getAllJobApplications(userService.getAuthUser().getId()));
+    }
+
+    public void scheduleInterview(Long jobApplicationId, LocalDate timestamp) throws JsonProcessingException, NotFoundException {
+        JobApplication application = this.getJobApplicationById(jobApplicationId);
+        application.setStatus(ApplicationStatus.INTERVIEW_SELECTED);
+        MeetingDTO meetingDTO = meetingService.hostMeeting(new MeetingDTO(null, null, timestamp, null));
+        Long jobCreatorId = userService.getAuthUser().getId();
+        List<Long> participants = List.of(application.getJobSeeker().getId());
+        ConversationDTO conversationDTO = conversationService.createConversation(new ArrayList<>(participants));
+        String message = "You have been called for interview for the Application you submitted to,\n\n" + application.getJobPost().getTitle() + "\n\n Please attend to the Interview held on " + timestamp.toString() + ". Please use the link below to attend to the interview.\n\n. http://localhost:3000/meet/" + meetingDTO.getLink() + "\n\nThank you!";
+        MessageDTO messageDTO = new MessageDTO(
+            null, 
+            jobCreatorId,
+            null, 
+            message, conversationDTO.getId(), null);
+        messageService.sendMessage(conversationDTO.getId(), messageDTO);
+        notificationService.sendToUser(new Notification(application.getJobSeeker(), "Calling for Interview", "You have been called for an Interview", NotificationType.RECOMMENDATION));
     }
 
 

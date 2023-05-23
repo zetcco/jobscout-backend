@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.controllers;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -319,6 +320,27 @@ public class JobPostController {
                 new JobApplicationInstituteSpecificaiton(institutes)
             );
             return ResponseEntity.ok(jobPostService.filterJobApplications(spec));
+    }
+
+    @PreAuthorize("hasRole('JOB_SEEKER')")
+    @GetMapping("/applications/me")
+    public ResponseEntity<List<JobApplicationDTO>> getJobApplications() {
+        try {
+            return new ResponseEntity<List<JobApplicationDTO>>(jobPostService.getAllJobApplications(), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
+    @PatchMapping("/interview/{jobApplicationId}")
+    public ResponseEntity<?> scheduleInterview(@PathVariable Long jobApplicationId, @RequestBody Map<String, LocalDate> body) {
+        try {
+            jobPostService.scheduleInterview(jobApplicationId, body.get("timestamp"));
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

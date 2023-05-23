@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.zetcco.jobscoutserver.domain.support.User;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +35,7 @@ public class Message {
 
     private Date timestamp;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
 }
