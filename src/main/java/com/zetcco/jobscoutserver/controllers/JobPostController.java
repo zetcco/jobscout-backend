@@ -343,4 +343,13 @@ public class JobPostController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @GetMapping("/check-application")
+    public ResponseEntity<Boolean> checkIfApplied( @RequestParam Long jobPostId ) {
+        try {
+            return new ResponseEntity<Boolean>(jobPostService.checkIfApplied(jobPostId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
 }

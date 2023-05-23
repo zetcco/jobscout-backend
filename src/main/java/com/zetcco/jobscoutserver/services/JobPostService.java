@@ -375,5 +375,13 @@ public class JobPostService {
         notificationService.sendToUser(new Notification(application.getJobSeeker(), "Calling for Interview", "You have been called for an Interview", NotificationType.RECOMMENDATION));
     }
 
+    public Boolean checkIfApplied(Long jobPostId) {
+        JobApplication jobApplication = jobApplicationRepository.findByJobSeekerIdAndJobPostId(userService.getAuthUser().getId(), jobPostId);
+        if (jobApplication == null)
+            return false;
+        else
+            return true;
+    }
+
 
 }
