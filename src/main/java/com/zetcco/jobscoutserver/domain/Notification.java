@@ -2,11 +2,12 @@ package com.zetcco.jobscoutserver.domain;
 
 import java.util.Date;
 
-import com.zetcco.jobscoutserver.domain.support.NotificationStatus;
-import com.zetcco.jobscoutserver.domain.support.NotificationType;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationStatus;
+import com.zetcco.jobscoutserver.domain.support.Notification.NotificationType;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +29,7 @@ public class Notification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -38,5 +39,14 @@ public class Notification {
     private String content;
     
     private Date timestamp;
+
+    public Notification(User user, String header, String content, NotificationType type) {
+        this.user = user;
+        this.type = type;
+        this.status = NotificationStatus.UNREAD;
+        this.header = header;
+        this.content = content;
+        this.timestamp = new Date();
+    }
 
 }

@@ -13,8 +13,9 @@ import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,6 +32,8 @@ public class JobCreatorService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired UserMapper userMapper;
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
     public ProfileDTO requestForOrganization(Long organizationId) throws NotFoundException, DataIntegrityViolationException {
@@ -60,5 +63,25 @@ public class JobCreatorService {
 
     protected JobCreator save(JobCreator jobCreator) {
         return jobCreatorRepository.save(jobCreator);
+    }
+
+    public void deleteOrganizationRequest(Long organizationId) {
+        Organization organization = organizationService.getOrganizationById(organizationId);
+
+        JobCreator jobCreator = this.getJobCreatorById(userService.getUser().getId());
+        List<JobCreator> jobCreators = organization.getJobCreatorRequests();
+        jobCreators.remove(jobCreator);
+
+        organization.setJobCreatorRequests(jobCreators);
+
+        organizationService.save(organization);
+    }
+
+    public ProfileDTO getOrganization(Long jobCreatorId) {
+        JobCreator jobCreator = this.getJobCreatorById(jobCreatorId);
+        if (jobCreator.getOrganization() == null)
+            return null;
+        else 
+            return userMapper.mapToDto(jobCreator.getOrganization());
     }
 }

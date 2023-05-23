@@ -1,22 +1,37 @@
 package com.zetcco.jobscoutserver.controllers;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.domain.support.Role;
+import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.domain.support.Socials.SocialProfile;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.JobSeeker.DegreeSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.CategorySpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.InstituteSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.NameSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.RoleSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.users.User.SkillSpecification;
 import com.zetcco.jobscoutserver.services.UserService;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.ContactDetails;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
 import com.zetcco.jobscoutserver.services.support.StorageService;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
 @RequestMapping("/user")
@@ -41,6 +56,11 @@ public class UserController {
         // TODO: Change this to use UserMapper
         return new ResponseEntity<ProfileDTO>(userService.getUserProfileDTO(profileId), HttpStatus.OK);
     }
+
+    @GetMapping("/{profileId}/contacts")
+    public ResponseEntity<ContactDetails> getContacts(@PathVariable Long profileId) {
+        return new ResponseEntity<ContactDetails>(userService.getContacts(profileId), HttpStatus.OK);
+    }
     
     // TODO: Set proper HttpStatus codes for exceptions
     @PutMapping("/display-picture")
@@ -60,5 +80,45 @@ public class UserController {
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
+    }
+
+    @PutMapping("/socials")
+    public ResponseEntity<List<SocialProfile>> setSocials(@RequestBody Map<String, List<String>> body) {
+        try {
+            List<String> links = body.get("links");
+            return new ResponseEntity<List<SocialProfile>>(userService.setSocialLinks(links), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("{userId}/socials")
+    public ResponseEntity<List<SocialProfile>> getSocials(@PathVariable Long userId) {
+        try {
+            return new ResponseEntity<List<SocialProfile>>(userService.getSocialLinks(userId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<ProfileDTO>> searchUsers(
+        @RequestParam(value = "name", required = false) String name,
+        @RequestParam(value = "role", required = false) Role role,
+        @RequestParam(value = "degrees", required = false) List<Long> degrees,
+        @RequestParam(value = "institutes", required = false) List<Long> institutes,
+        @RequestParam(value = "categories", required = false) List<Long> categories,
+        @RequestParam(value = "skills", required = false) List<Long> skills
+    ) {
+        Specification<User> user_specs = Specification.allOf(
+            new NameSpecification(name),
+            new RoleSpecification(role),
+            new DegreeSpecification(degrees),
+            new InstituteSpecification(institutes),
+            new CategorySpecification(categories),
+            new SkillSpecification(skills)
+        );
+
+        return new ResponseEntity<List<ProfileDTO>>(userService.searchUsers(user_specs), HttpStatus.OK);
     }
 }

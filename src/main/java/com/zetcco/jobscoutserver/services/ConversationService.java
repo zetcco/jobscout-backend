@@ -1,20 +1,28 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zetcco.jobscoutserver.domain.messaging.Conversation;
+import com.zetcco.jobscoutserver.domain.messaging.Message;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.ConversationRepository;
+import com.zetcco.jobscoutserver.repositories.MessageRepository;
 import com.zetcco.jobscoutserver.services.mappers.ConversationMapper;
+import com.zetcco.jobscoutserver.services.mappers.MessageMapper;
 import com.zetcco.jobscoutserver.services.support.ConversationDTO;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.MessageDTO;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
 public class ConversationService {
@@ -31,6 +39,12 @@ public class ConversationService {
     @Autowired
     private RTCService rtcService;
 
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Autowired
+    private MessageMapper messageMapper;
+
     // TODO: Remove duplicates
     public ConversationDTO createConversation(List<Long> participantIds) throws NotFoundException, JsonProcessingException {
         User start_user = userService.getAuthUser();
@@ -45,8 +59,9 @@ public class ConversationService {
         
         conversation = conversationRepository.save(conversation);
         ConversationDTO newConversationDTO = conversationMapper.mapToDto(conversation);
+        newConversationDTO.setRead(false);
         for (Long userId : participantIds) 
-            rtcService.sendToUser(userId, "/messaging/private", "CONVERSATION", newConversationDTO);
+            rtcService.sendToDestination(userId, "/messaging/private/" + userId, "CONVERSATION", newConversationDTO);
             // simpMessagingTemplate.convertAndSend("/messaging/private/" + userId, newConversationDTO);
 
 
@@ -60,7 +75,18 @@ public class ConversationService {
     public List<ConversationDTO> getConversations() {
         User user = userService.getAuthUser();
         List<Conversation> conversations = conversationRepository.findByParticipantsId(user.getId());
-        return conversationMapper.mapToDtos(conversations);
+        List<ConversationDTO> conversationDTOs = new ArrayList<>();
+        for (Conversation conversation : conversations) {
+            Boolean read = conversation.getSeenUsers().contains(user);
+            ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
+            conversationDTO.setRead(read);
+            PageRequest page = PageRequest.of(0, 1);
+            List<Message> messages = messageRepository.findByConversationId(conversation.getId(), page, Sort.by(Direction.DESC, "timestamp")).getContent();
+            List<MessageDTO> messageDTOs = messageMapper.mapToDtos(messages);
+            conversationDTO.setMessages(messageDTOs);
+            conversationDTOs.add(conversationDTO);
+        }
+        return conversationDTOs;
     }
 
 
@@ -72,8 +98,21 @@ public class ConversationService {
             conversation.setPicture(fileName);
             conversation = conversationRepository.save(conversation);
             ConversationDTO conversationDTO = conversationMapper.mapToDto(conversation);
-            for (ProfileDTO participantId : conversationDTO.getParticipants()) 
-                rtcService.sendToUser(participantId.getId(), "/messaging/private", "CONVERSATION_UPDATE", conversationDTO);
+            for (ProfileDTO participant : conversationDTO.getParticipants()) 
+                rtcService.sendToDestination(participant.getId(), "/messaging/private/" + participant.getId(), "CONVERSATION_UPDATE", conversationDTO);
+        } else {
+            throw new AccessDeniedException("You do not have permission to do this action");
+        }
+    }
+
+    public void markAsRead(Long conversationId) throws AccessDeniedException {
+        User user = userService.getAuthUser();
+        Conversation conversation = this.getConversation(conversationId);
+        if (conversation.getParticipants().contains(user)) {
+            List<User> seenUsers = conversation.getSeenUsers();
+            seenUsers.add(user);
+            conversation.setSeenUsers(seenUsers);
+            conversationRepository.save(conversation);
         } else {
             throw new AccessDeniedException("You do not have permission to do this action");
         }

@@ -1,6 +1,6 @@
 package com.zetcco.jobscoutserver.domain.support;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
@@ -19,7 +19,7 @@ public class MeetingDTO {
     private String link;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING)
-    private Date timestamp;  
+    private LocalDate timestamp;  
 
     private ProfileDTO hoster;
 }

@@ -10,7 +10,7 @@ import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.services.mappers.CategoryMapper;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Service
 public class CategoryService {
@@ -52,6 +52,11 @@ public class CategoryService {
             return this.mapper.mapToDtos(categoryRepository.findByNameContainingIgnoreCase(name));
     }
 
+    public Category getCategoryEntityById(Long Id) throws NotFoundException {
+            Category category = categoryRepository.findById(Id).orElseThrow(() -> new NotFoundException("Category Not Found!"));        
+            return category;
+    }
+
     public CategoryDTO getCategoryById(Long Id) throws NotFoundException {
             Category category = categoryRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Category Not Found!"));        
@@ -62,5 +67,9 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Category Not Found"));
         return category.getSkills();
+    }
+
+    public Category updateCategory(Category category) {
+        return categoryRepository.save(category);
     }
 }

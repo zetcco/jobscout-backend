@@ -1,12 +1,8 @@
 package com.zetcco.jobscoutserver.services;
 
-import static org.mockito.Mockito.description;
-
 import java.util.List;
 
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.execution.NamespaceAwareStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -15,6 +11,8 @@ import com.zetcco.jobscoutserver.domain.Skill;
 import com.zetcco.jobscoutserver.domain.support.dto.CategoryDTO;
 import com.zetcco.jobscoutserver.repositories.CategoryRepository;
 import com.zetcco.jobscoutserver.repositories.SkillsRepository;
+
+import jakarta.transaction.Transactional;
 
 @SpringBootTest
 public class CategoryServiceTest {
@@ -93,8 +91,10 @@ public class CategoryServiceTest {
     }
 
     @Test
+    @Transactional
     void testGetById() {
-        System.out.print(categoryService.getCategoryById(2L).getName());
+        Category category = categoryService.getCategoryEntityById(9L);
+        System.out.println(category);
     }
 
     @Test

@@ -22,14 +22,19 @@ public class UserMapper {
 
     public ProfileDTO mapToDto(User user) {
         ProfileDTO profile = modelMapper.map(user, ProfileDTO.class);
-        final String PROFILE_RESOURCE_URL = environment.getProperty("server.url") + "/media/file/";
-        if (PROFILE_RESOURCE_URL != null && profile.getDisplayPicture() != null)
-            profile.setDisplayPicture(PROFILE_RESOURCE_URL.concat(profile.getDisplayPicture()));
+        profile.setDisplayPicture(getProfilePictureLink(user));
         return profile;
     }
 
-    public List<ProfileDTO> mapToDtos(List<User> users) {
+    public List<ProfileDTO> mapToDtos(List<? extends User> users) {
         return users.stream().map( user -> this.mapToDto(user)).collect(Collectors.toList());
+    }
+
+    public String getProfilePictureLink(User user) {
+        final String PROFILE_RESOURCE_URL = environment.getProperty("server.url") + "/media/file/";
+        if (PROFILE_RESOURCE_URL != null && user.getDisplayPicture() != null)
+            return PROFILE_RESOURCE_URL.concat(user.getDisplayPicture());
+        return null;
     }
     
 }
