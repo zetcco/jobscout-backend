@@ -10,5 +10,6 @@ import com.zetcco.jobscoutserver.domain.JobApplication;
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Long>, JpaSpecificationExecutor<JobApplication> {
     
     List<JobApplication> findByJobSeekerId(Long id);
+    JobApplication findByJobSeekerIdAndJobPostId(Long jobSeekerId, Long jobPostId);
     
 }
