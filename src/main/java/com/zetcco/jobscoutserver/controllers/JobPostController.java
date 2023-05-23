@@ -39,6 +39,7 @@ import com.zetcco.jobscoutserver.repositories.support.specifications.JobApplicat
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.CategorySpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.DescriptionSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.JobCreatorSpecification;
+import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.OrganizationSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.StatusSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.TypeSpecification;
 import com.zetcco.jobscoutserver.repositories.support.specifications.JobPost.UrgentSpecification;
@@ -229,6 +230,7 @@ public class JobPostController {
         @RequestParam(value = "category", required = false) List<String> categories,
         @RequestParam(value = "description", required = false) String description,
         @RequestParam(value = "jobcreator", required = false) Long jobCreatorId,
+        @RequestParam(value = "organization", required = false) Long organizationId,
         @RequestParam(defaultValue = "0") Integer page,
         @RequestParam(defaultValue = "20") Integer size
     ) {
@@ -238,7 +240,8 @@ public class JobPostController {
                 new StatusSpecification(status),
                 new CategorySpecification(categories),
                 new DescriptionSpecification(description),
-                new JobCreatorSpecification(jobCreatorId)
+                new JobCreatorSpecification(jobCreatorId),
+                new OrganizationSpecification(organizationId)
             );
             return ResponseEntity.ok(jobPostService.searchForJobPost(spec, PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"))));
     }

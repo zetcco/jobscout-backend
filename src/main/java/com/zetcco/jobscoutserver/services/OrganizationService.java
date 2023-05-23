@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
+import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
@@ -35,6 +36,9 @@ public class OrganizationService {
     private OrganizationRepository organizationRepository;
 
     @Autowired
+    private JobCreatorRepository jobCreatorRepository;
+
+    @Autowired
     private ModelMapper modelMapper;
 
     // TODO: Fix CircularDependency without using setter injection
@@ -51,6 +55,9 @@ public class OrganizationService {
         Pageable page = PageRequest.of(pageCount, pageSize);
         List<Organization> organizations = organizationRepository.findByCompanyNameContainingIgnoreCase(name, page)
                 .getContent();
+        List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
+        for (Organization organization : organizations)
+            profiles.add(userService.getUserProfileDTO(organization.getId()));
         return userMapper.mapToDtos(organizations);
     }
 
@@ -104,11 +111,50 @@ public class OrganizationService {
     public List<ProfileDTO> fetchJobCreatorsRequest() {
         Long organizationId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
-        List<JobCreator> jRequest = organization.getJobCreatorRequests();
-        List<ProfileDTO> profiles = new LinkedList<ProfileDTO>();
-        for (JobCreator jobCreator : jRequest)
-            profiles.add(modelMapper.map(jobCreator, ProfileDTO.class));
-        return profiles;
+        List<JobCreator> requests = organization.getJobCreatorRequests();
+        return requests.stream().map(el -> userMapper.mapToDto(el)).toList();
+    }
+
+    public void acceptJobCreatorRequest(Long jobCreatorId) throws NotFoundException {
+        Long organizationId = userService.getAuthUser().getId();
+        this.acceptJobCreatorRequest(organizationId, jobCreatorId);
+    }
+
+    @Transactional
+    public void acceptJobCreatorRequest(Long organizationId, Long jobCreatorId) throws NotFoundException {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+        List<JobCreator> jobCreators = organization.getJobCreators();
+        List<JobCreator> requList = organization.getJobCreatorRequests();
+        JobCreator requestee = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
+
+        if (requList.contains(requestee)) {
+            jobCreators.add(requestee);
+            requList.remove(requestee);
+            requestee.setOrganization(organization);
+            
+            jobCreatorRepository.save(requestee);
+            organizationRepository.save(organization);
+        } else {
+            throw new NotFoundException("Request not found");
+        }
+    }
+
+    public void rejectJobCreatorRequest(Long jobCreatorId) throws NotFoundException {
+        this.rejectJobCreatorRequest(userService.getAuthUser().getId(), jobCreatorId);
+    }
+
+    public void rejectJobCreatorRequest(long organizationId, long jobCreatorId) throws NotFoundException {
+        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
+        List<JobCreator> requests = organization.getJobCreatorRequests();
+        JobCreator requester = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
+
+        if (requests.contains(requester)) {
+            requests.remove(requester);
+            organizationRepository.save(organization);
+        } else {
+            throw new NotFoundException("Request not found");
+        }
+
     }
 
     Organization save(Organization organization) {

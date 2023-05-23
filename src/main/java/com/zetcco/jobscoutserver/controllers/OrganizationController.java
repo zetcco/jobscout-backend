@@ -8,7 +8,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -67,4 +69,35 @@ public class OrganizationController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @PostMapping("/accept-request")
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public ResponseEntity<List<ProfileDTO>> acceptJobCreatorRequest(@RequestParam Long requester) {
+        try {
+            organizationService.acceptJobCreatorRequest(requester);
+            return new ResponseEntity<List<ProfileDTO>>(HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @DeleteMapping("/reject-request")
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public ResponseEntity<List<ProfileDTO>> rejectJobCreatorRequest(@RequestParam Long requester) {
+        try {
+            organizationService.rejectJobCreatorRequest(requester);
+            return new ResponseEntity<List<ProfileDTO>>(HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+
+    }
+
 }
