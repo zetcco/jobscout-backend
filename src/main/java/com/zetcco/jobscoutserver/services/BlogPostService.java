@@ -49,9 +49,6 @@ public class BlogPostService {
 
     public BlogPostDTO getBlogPost(Long id) {
         BlogPost blogPost = blogPostRepository.findById(id).orElseThrow();
-        System.out.println("\n\n--------------------------------------------------------------\n\n");
-        System.out.println(blogPost);
-        System.out.println("\n\n--------------------------------------------------------------\n\n");
         return this.mapToDto(blogPost);
     }
 
@@ -65,6 +62,7 @@ public class BlogPostService {
         blogPost.setContent(blogPostDTO.getContent());
         blogPost.setTimeStamp(new Date());
         blogPost.setUser(user);
+        blogPost.setUpvotedUsers(new ArrayList<>());
 
         blogPost = blogPostRepository.save(blogPost);
         return this.mapToDto(blogPost);
@@ -83,8 +81,8 @@ public class BlogPostService {
     }
 
     @Transactional
-    public BlogPostDTO deleteBlogPost(BlogPostDTO blogPostDTO) throws AccessDeniedException , NotFoundException {
-        BlogPost blogPost = blogPostRepository.findById(blogPostDTO.getId())
+    public BlogPostDTO deleteBlogPost(Long blogPostId) throws AccessDeniedException , NotFoundException {
+        BlogPost blogPost = blogPostRepository.findById(blogPostId)
                 .orElseThrow(() -> new NotFoundException("Blog post not found"));
         if (userService.getAuthUser().getId() != blogPost.getUser().getId())
             throw new AccessDeniedException("You do not have permission to perform this action");
@@ -94,26 +92,36 @@ public class BlogPostService {
     }
 
     private BlogPostDTO mapToDto(BlogPost blogPost) {
+        List<User> upvotedUsers = blogPost.getUpvotedUsers();
+        Boolean isUpvoted = upvotedUsers.contains(userService.getAuthUser());
         BlogPostDTO blogPostDTO = new BlogPostDTO(
                 blogPost.getId(),
-                userMapper.mapToDto(blogPost.getUser()), blogPost.getTimeStamp(), blogPost.getContent());
+                userMapper.mapToDto(blogPost.getUser()),
+                blogPost.getTimeStamp(),
+                blogPost.getContent(),
+                upvotedUsers.size(),
+                isUpvoted
+            );
         return blogPostDTO;
     }
-
-    // private BlogPostDTO mapToDto(BlogPost blogPost) {
-    // BlogPostDTO blogPostDTO = new BlogPostDTO(
-    // blogPost.getId(),
-    // userMapper.mapToDto(blogPost.getUser()), blogPost.getTimeStamp(),
-    // blogPost.getContent());
-    // return blogPostDTO;
-    // }
-
+    
     private List<BlogPostDTO> mapToDTOList(List<BlogPost> blogPosts) {
         List<BlogPostDTO> blogPostDTOs = new ArrayList<>();
         for (BlogPost blogPost : blogPosts) {
             blogPostDTOs.add(mapToDto(blogPost));
         }
         return blogPostDTOs;
+    }
+
+    public void toggleUpvote(Long blogPostId) throws NotFoundException {
+        BlogPost blogPost = blogPostRepository.findById(blogPostId).orElseThrow(() -> new NotFoundException("Blog post not found"));
+        List<User> upvotedUsers = blogPost.getUpvotedUsers();
+        User user = userService.getAuthUser();
+        if (upvotedUsers.contains(user))
+            upvotedUsers.remove(user);
+        else
+            upvotedUsers.add(user);
+        blogPostRepository.save(blogPost);
     }
 
 }

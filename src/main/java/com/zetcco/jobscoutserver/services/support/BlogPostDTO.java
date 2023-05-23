@@ -18,5 +18,7 @@ public class BlogPostDTO {
     private ProfileDTO user;
     private Date timeStamp;
     private String content;
+    private Integer upvoteCount;
+    private Boolean isUpvoted;
 
 }

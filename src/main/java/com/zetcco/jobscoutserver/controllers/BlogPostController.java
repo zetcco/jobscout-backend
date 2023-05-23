@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -66,11 +67,11 @@ public class BlogPostController {
         }
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<BlogPostDTO> deleteBlogPost(@RequestBody BlogPostDTO deleteBlogPostDTO)
+    @DeleteMapping("/{blogPostId}")
+    public ResponseEntity<BlogPostDTO> deleteBlogPost(@PathVariable Long blogPostId)
     {
         try {
-            return new ResponseEntity<>(blogPostService.deleteBlogPost(deleteBlogPostDTO), HttpStatus.OK);
+            return new ResponseEntity<>(blogPostService.deleteBlogPost(blogPostId), HttpStatus.OK);
         } catch (NotFoundException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
         } catch (Exception e) {
@@ -87,6 +88,15 @@ public class BlogPostController {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
+    }
 
+    @PatchMapping("/upvote/{blogPostId}")
+    public ResponseEntity<?> toggleUpvote(@PathVariable Long blogPostId) {
+        try {
+            blogPostService.toggleUpvote(blogPostId);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
