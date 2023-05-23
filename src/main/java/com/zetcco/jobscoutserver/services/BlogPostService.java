@@ -17,7 +17,7 @@ import com.zetcco.jobscoutserver.repositories.BlogPostRepository;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.BlogPostDTO;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 import jakarta.transaction.Transactional;
 

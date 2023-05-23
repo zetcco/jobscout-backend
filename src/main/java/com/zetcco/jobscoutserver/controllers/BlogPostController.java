@@ -20,7 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.zetcco.jobscoutserver.services.BlogPostService;
 import com.zetcco.jobscoutserver.services.support.BlogPostDTO;
-import com.zetcco.jobscoutserver.services.support.NotFoundException;
+import com.zetcco.jobscoutserver.services.support.exceptions.NotFoundException;
 
 @Controller
 @RequestMapping("/posts")
