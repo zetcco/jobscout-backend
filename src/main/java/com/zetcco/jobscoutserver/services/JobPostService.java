@@ -358,14 +358,14 @@ public class JobPostService {
         return jobApplicationMapper.mapToDtos(this.getAllJobApplications(userService.getAuthUser().getId()));
     }
 
-    public void scheduleInterview(Long jobApplicationId, LocalDate timestamp) throws JsonProcessingException, NotFoundException {
+    public void scheduleInterview(Long jobApplicationId, LocalDate timestamp, String time) throws JsonProcessingException, NotFoundException {
         JobApplication application = this.getJobApplicationById(jobApplicationId);
         application.setStatus(ApplicationStatus.INTERVIEW_SELECTED);
         MeetingDTO meetingDTO = meetingService.hostMeeting(new MeetingDTO(null, null, timestamp, null));
         Long jobCreatorId = userService.getAuthUser().getId();
         List<Long> participants = List.of(application.getJobSeeker().getId());
         ConversationDTO conversationDTO = conversationService.createConversation(new ArrayList<>(participants));
-        String message = "You have been called for interview for the Application you submitted to,\n\n" + application.getJobPost().getTitle() + "\n\n Please attend to the Interview held on " + timestamp.toString() + ". Please use the link below to attend to the interview.\n\n. http://localhost:3000/meet/" + meetingDTO.getLink() + "\n\nThank you!";
+        String message = "You have been called for interview for the Application you submitted to,\n\n" + application.getJobPost().getTitle() + "\n\n Please attend to the Interview held on " + timestamp.toString() + " at " + time + ". Please use the link below to attend to the interview.\n\nhttp://localhost:3000/meet/" + meetingDTO.getLink() + "\n\nThank you!";
         MessageDTO messageDTO = new MessageDTO(
             null, 
             jobCreatorId,

@@ -334,9 +334,9 @@ public class JobPostController {
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
     @PatchMapping("/interview/{jobApplicationId}")
-    public ResponseEntity<?> scheduleInterview(@PathVariable Long jobApplicationId, @RequestBody Map<String, LocalDate> body) {
+    public ResponseEntity<?> scheduleInterview(@PathVariable Long jobApplicationId, @RequestBody Map<String, LocalDate> body, @RequestParam String time) {
         try {
-            jobPostService.scheduleInterview(jobApplicationId, body.get("timestamp"));
+            jobPostService.scheduleInterview(jobApplicationId, body.get("timestamp"), time);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
