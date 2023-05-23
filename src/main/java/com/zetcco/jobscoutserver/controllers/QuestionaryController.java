@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.zetcco.jobscoutserver.controllers.support.QuestionaryAnswer;
 import com.zetcco.jobscoutserver.controllers.support.QuestionaryForm;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryAttemptDTO;
 import com.zetcco.jobscoutserver.domain.questionary.QuestionaryDTO;
@@ -75,9 +76,9 @@ public class QuestionaryController {
     }
 
     @PostMapping("/{questionaryId}/check")
-    public ResponseEntity<Float> checkMarks(@PathVariable Long questionaryId, @RequestBody Map<String, List<Integer>> data) {
+    public ResponseEntity<Float> checkMarks(@PathVariable Long questionaryId, @RequestBody Map<String, List<QuestionaryAnswer>> data) {
         try {
-            List<Integer> answers = data.get("answers");
+            List<QuestionaryAnswer> answers = data.get("answers");
             return new ResponseEntity<Float>(questionaryService.submitAnswers(questionaryId, answers), HttpStatus.OK);
         } catch (AccessDeniedException e) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());

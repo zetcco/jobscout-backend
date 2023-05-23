@@ -18,6 +18,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -62,6 +64,9 @@ public class JobSeeker extends User {
         this.gender = gender;
     }
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Category category;
+    
     @Column(columnDefinition = "TEXT")
     private String intro;
 
@@ -76,4 +81,7 @@ public class JobSeeker extends User {
 
     @OneToMany(fetch = FetchType.LAZY)
     private List<Recommendation> recommendations;
+
+    @ManyToMany
+    private List<JobApplication> applications;
 }

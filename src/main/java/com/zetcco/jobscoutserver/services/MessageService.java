@@ -1,5 +1,6 @@
 package com.zetcco.jobscoutserver.services;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class MessageService {
         List<User> participants = conversation.getParticipants();
         User sender = userService.getUser(message.getSenderId());
         if (participants.contains(sender)) {
-            conversation.setSeenUsers(List.of(sender));
+            conversation.setSeenUsers(new ArrayList<>(List.of(sender)));
             conversationRepository.save(conversation);
             Message newMessage = Message.builder()
                                     .content(message.getContent())

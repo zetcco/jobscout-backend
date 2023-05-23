@@ -39,6 +39,9 @@ public class Organization extends User {
     @JoinTable(inverseJoinColumns = @JoinColumn(name = "job_creator_id"))
     private List<JobCreator> jobCreatorRequests;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<JobPost> jobPost;
+
     public Organization(String email, String password, Address address) {
         super(email, password, Role.ROLE_ORGANIZATION, address, null);
     }
