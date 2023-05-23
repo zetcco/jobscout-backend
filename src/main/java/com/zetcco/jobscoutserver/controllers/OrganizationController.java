@@ -8,18 +8,25 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.sym.Name;
+import com.zetcco.jobscoutserver.domain.Organization;
+import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.services.OrganizationService;
 import com.zetcco.jobscoutserver.services.support.NotFoundException;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
+
+import io.micrometer.core.instrument.Meter.Id;
 
 @Controller
 @RequestMapping("/organization")
@@ -70,21 +77,35 @@ public class OrganizationController {
     }
 
     @PostMapping("/accept-request")
-    public ResponseEntity<List<ProfileDTO>> acceptJobCreatorRequest() {
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public ResponseEntity<List<ProfileDTO>> acceptJobCreatorRequest(@PathVariable Map<String, Long> request) {
         try {
-            return new ResponseEntity<List<ProfileDTO>>(organizationService.acceptJobCreatorRequest(4L, 13L),
-                    HttpStatus.OK);
+            Long jobCreatorId = request.get("jobCreatorId");
+            organizationService.acceptJobCreatorRequest(jobCreatorId);
+            return new ResponseEntity<List<ProfileDTO>>(HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, e.getMessage());
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Already registered on an Organization. Remove it to request again for joining to an Organization");
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
     @DeleteMapping("/rejecet-request")
-    public ResponseEntity<List<ProfileDTO>> rejectJobCreatorRequest() {
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public ResponseEntity<List<ProfileDTO>> rejectJobCreatorRequest(@RequestBody Map<String, Long> requeest) {
         try {
-            return new ResponseEntity<List<ProfileDTO>>(organizationService.rejectJobCreatorRequest(5L, 3L),
-                    HttpStatus.OK);
+            Long jobCreatorId = requeest.get("jobCreatorId");
+            organizationService.acceptJobCreatorRequest(jobCreatorId);
+            return new ResponseEntity<List<ProfileDTO>>(HttpStatus.OK);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 

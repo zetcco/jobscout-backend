@@ -3,6 +3,7 @@ package com.zetcco.jobscoutserver.services;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -13,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.sym.Name;
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
 import com.zetcco.jobscoutserver.domain.support.User;
@@ -115,42 +117,37 @@ public class OrganizationService {
         return profiles;
     }
 
-    public List<ProfileDTO> fetchOrganizationRequest(Long organizationId, Long jobCreatorId) {
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public void acceptJobCreatorRequest(Long jobCreatorId) throws NotFoundException {
+        Long organizationId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        // return this.acceptJobCreatorRequest(organizationId, jobCreatorId);
+    }
+
+    @Transactional
+    public void acceptJobCreatorRequest(Long organizationId, Long jobCreatorId) {
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
-        List<JobCreator> requestList = organization.getJobCreatorRequests();
         List<JobCreator> jobCreators = organization.getJobCreators();
+        List<JobCreator> requList = organization.getJobCreatorRequests();
         JobCreator requestee = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
 
-        if (requestList.contains(requestee)) {
+        if (requList.contains(requestee)) {
             jobCreators.add(requestee);
-            requestee.setOrganization(organization);
-            organization.setJobCreatorRequests(jobCreators);
-            organization.setJobCreators(jobCreators);
-            organizationRepository.save(organization);
-            jobCreatorRepository.save(requestee);
-            return null;
+            requList.remove(jobCreators);
 
-        } else {
-            throw new EntityExistsException();
+            organization.setJobCreatorRequests(requList);
+            organization.setJobCreators(jobCreators);
+            requestee.setOrganization(organization);
+
         }
     }
 
-    public List<ProfileDTO> acceptJobCreatorRequest(long organizationId, long jobCreatorId) {
-        Organization organization = organizationRepository.findById(organizationId).orElseThrow();
-        List<JobCreator> requests = organization.getJobCreatorRequests();
-        List<JobCreator> jobcreator = organization.getJobCreators();
-        JobCreator jobeCreatorReq = jobCreatorRepository.findById(jobCreatorId).orElseThrow();
-
-        if (requests.contains(jobeCreatorReq))
-            // throw new DataIntegrityViolationException("request alredy exit");
-            requests.add(jobcreator);
-        organization.setJobCreatorRequests(jobcreator);
-        organizationRepository.save(organization);
-        return null;
-
+    @PreAuthorize("hasRole('ORGANIZATION')")
+    public void rejectJobCreatorRequest(Long jobCreatorId) throws NotFoundException {
+        Long organizationId = ((User) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        // return this.acceptJobCreatorRequest(organizationId, jobCreatorId);
     }
 
-    public List<ProfileDTO> rejectJobCreatorRequest(long organizationId, long jobCreatorId) {
+    public void rejectJobCreatorRequest(long organizationId, long jobCreatorId) {
         Organization organization = organizationRepository.findById(organizationId).orElseThrow();
         List<JobCreator> request = organization.getJobCreatorRequests();
         List<JobCreator> jbcreator = organization.getJobCreators();
@@ -158,11 +155,10 @@ public class OrganizationService {
 
         if (request.contains(jobCreatorsReq)) {
             request.remove(jobCreatorsReq);
+
             organization.setJobCreatorRequests(jbcreator);
             organizationRepository.save(organization);
-            return null;
-        } else {
-            throw new DataIntegrityViolationException("request alredy exit");
+
         }
 
     }
