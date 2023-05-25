@@ -59,11 +59,11 @@ public interface JobPostRepository extends JpaRepository<JobPost, Long>, JpaSpec
 
     public Long countByJobCreatorId(Long id);
 
-    public Long countByOrganizationId(Long id);
+    public Integer countByOrganizationId(Long id);
 
     public Long countByJobCreatorIdAndStatus(Long id , JobPostStatus status);
 
-    public Long countByOrganizationIdAndStatus(Long id , JobPostStatus status);
+    public Integer countByOrganizationIdAndStatus(Long id , JobPostStatus status);
 
     List<JobPost> findByJobCreatorId(Long jobCreatorId);
 

@@ -7,4 +7,6 @@ import com.zetcco.jobscoutserver.repositories.support.UserBaseRepository;
 
 public interface JobCreatorRepository extends UserBaseRepository<JobCreator>, JpaSpecificationExecutor<JobCreator> {
     
+    Integer countByOrganizationId(Long orgId);
+    
 }
