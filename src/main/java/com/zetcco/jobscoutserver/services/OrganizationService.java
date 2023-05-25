@@ -15,8 +15,10 @@ import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.JobCreator;
 import com.zetcco.jobscoutserver.domain.Organization;
+import com.zetcco.jobscoutserver.domain.support.JobPostStatus;
 import com.zetcco.jobscoutserver.domain.support.User;
 import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
+import com.zetcco.jobscoutserver.repositories.JobPostRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 import com.zetcco.jobscoutserver.services.mappers.UserMapper;
 import com.zetcco.jobscoutserver.services.support.ProfileDTO;
@@ -48,6 +50,8 @@ public class OrganizationService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired JobPostRepository jobPostRepository;
 
     public List<ProfileDTO> searchOrganizationsByName(String name, int pageCount, int pageSize) {
         if (name.equals(""))
@@ -159,6 +163,19 @@ public class OrganizationService {
 
     Organization save(Organization organization) {
         return organizationRepository.save(organization);
+    }
+
+    public List<Integer> getStats(Long organizationId) {
+        Integer jobPosts = jobPostRepository.countByOrganizationId(organizationId);
+        Integer activeJobPosts = jobPostRepository.countByOrganizationIdAndStatus(organizationId, JobPostStatus.STATUS_ACTIVE);
+        Integer jobCreatorCount = jobCreatorRepository.countByOrganizationId(organizationId);
+        Integer requestCount = this.getOrganizationById(organizationId).getJobCreatorRequests().size();
+        return List.of(jobPosts, activeJobPosts, jobCreatorCount, requestCount);
+    }
+
+    public List<ProfileDTO> getEmployees(Long organizationId) {
+        List<JobCreator> creators = this.getOrganizationById(organizationId).getJobCreators();
+        return userMapper.mapToDtos(creators);
     }
 
 }

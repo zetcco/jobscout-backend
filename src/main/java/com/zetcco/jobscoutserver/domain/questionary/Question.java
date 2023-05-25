@@ -3,6 +3,7 @@ package com.zetcco.jobscoutserver.domain.questionary;
 import java.util.Arrays;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,8 +22,12 @@ public class Question {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(columnDefinition = "TEXT")
     private String question;
+
+    @Column(columnDefinition = "TEXT")
     private String answers;
+
     private int correctAnswer;
 
     public Question(String question, List<String> answers, int correctAnswer) {

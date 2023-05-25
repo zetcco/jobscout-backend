@@ -12,11 +12,13 @@ import com.zetcco.jobscoutserver.domain.Category;
 import com.zetcco.jobscoutserver.domain.JobSeeker;
 import com.zetcco.jobscoutserver.domain.Recommendation;
 import com.zetcco.jobscoutserver.domain.Skill;
+import com.zetcco.jobscoutserver.domain.support.ApplicationStatus;
 import com.zetcco.jobscoutserver.domain.support.CategorySkillSet;
 import com.zetcco.jobscoutserver.domain.support.EducationalQualification.Qualification;
 import com.zetcco.jobscoutserver.domain.support.PastExperience.PastExperience;
 import com.zetcco.jobscoutserver.domain.support.dto.CategorySkillSetDTO;
 import com.zetcco.jobscoutserver.domain.support.dto.PastExperienceDTO;
+import com.zetcco.jobscoutserver.repositories.JobApplicationRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.support.CategorySkillSetRepository;
 import com.zetcco.jobscoutserver.repositories.support.PastExperience.JobTitleRepository;
@@ -74,6 +76,9 @@ public class JobSeekerService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private JobApplicationRepository jobApplicationRepository;
 
     @Transactional
     public List<CategorySkillSetDTO> updateCategorySkillSet(List<CategorySkillSet> categorySkillSets) {
@@ -182,5 +187,14 @@ public class JobSeekerService {
 
     public List<ProfileDTO> searchForJobSeekers(Specification<JobSeeker> specs) {
         return userMapper.mapToDtos(jobSeekerRepository.findAll(specs));
+    }
+
+    public List<Integer> getJobSeekerStatus(Long jobSeekerId) {
+        Integer applied = jobApplicationRepository.countByJobSeekerIdAndStatus(jobSeekerId, ApplicationStatus.APPLIED);
+        Integer rejected = jobApplicationRepository.countByJobSeekerIdAndStatus(jobSeekerId, ApplicationStatus.REJECTED);
+        Integer accepted = jobApplicationRepository.countByJobSeekerIdAndStatus(jobSeekerId, ApplicationStatus.ACCEPTED);
+        Integer interview = jobApplicationRepository.countByJobSeekerIdAndStatus(jobSeekerId, ApplicationStatus.INTERVIEW_SELECTED);
+
+        return List.of(applied, rejected, accepted, interview);
     }
 }

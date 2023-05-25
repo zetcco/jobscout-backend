@@ -95,8 +95,6 @@ public class JobPostService {
         jobCreator.setJobPost(jobPosts);
         jobCreatorService.save(jobCreator);
 
-        System.out.println(newJobPost);
-        System.out.println(this.mapper.mapToDto(newJobPost));
         return this.mapper.mapToDto(newJobPost);
     }
 

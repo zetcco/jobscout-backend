@@ -12,6 +12,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,6 +99,24 @@ public class OrganizationController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
 
+    }
+
+    @GetMapping("/{organizationId}/stats")
+    public ResponseEntity<List<Integer>> getStatus( @PathVariable Long organizationId) {
+        try {
+            return new ResponseEntity<List<Integer>>(organizationService.getStats(organizationId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    @GetMapping("/{organizationId}/employees")
+    public ResponseEntity<List<ProfileDTO>> getEmployees( @PathVariable Long organizationId) {
+        try {
+            return new ResponseEntity<List<ProfileDTO>>(organizationService.getEmployees(organizationId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
     }
 
 }

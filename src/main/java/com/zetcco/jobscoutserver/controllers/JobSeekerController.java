@@ -166,4 +166,13 @@ public class JobSeekerController {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
+
+    @GetMapping("/{jobSeekerId}/stats")
+    public ResponseEntity<List<Integer>> getStatus( @PathVariable Long jobSeekerId) {
+        try {
+            return new ResponseEntity<List<Integer>>(jobSeekerService.getJobSeekerStatus(jobSeekerId), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }
