@@ -298,7 +298,7 @@ public class JobPostService {
 
     public void setJobPostStatus(Long jobPostId, JobPostStatus status) throws NotFoundException, AccessDeniedException {
         JobPost jobPost = this.findJobPostById(jobPostId);
-        if (jobPost.getJobCreator().getId() == userService.getAuthUser().getId()) {
+        if (jobPost.getJobCreator().getId().equals(userService.getAuthUser().getId())) {
             jobPost.setStatus(status);
             jobPostRepository.save(jobPost);
         } else {
