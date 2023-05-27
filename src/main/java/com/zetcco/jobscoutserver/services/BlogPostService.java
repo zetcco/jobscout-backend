@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.zetcco.jobscoutserver.domain.BlogPost;
@@ -36,12 +34,19 @@ public class BlogPostService {
     @Autowired
     private UserMapper userMapper;
 
-    public List<BlogPostDTO> getBlogPosts(int pageNo, int pageSize) {
+    public List<BlogPostDTO> getBlogPosts(String trend) {
         try {
-            Pageable page = PageRequest.of(pageNo, pageSize);
-            Page<BlogPost> blogPostPage = blogPostRepository.findAll(page);
-            List<BlogPost> blogPost = blogPostPage.getContent();
-            return this.mapToDTOList(blogPost);
+            DateTime startDate;
+            DateTime endDate = new DateTime();
+            if (trend.equals("day")) 
+                startDate = endDate.minusDays(1);
+            else if (trend.equals("week"))
+                startDate = endDate.minusWeeks(1);
+            else
+                startDate = endDate.minusMonths(1);
+
+            List<BlogPost> blogPosts = blogPostRepository.findByTimeStampBetweenAndOrderByUpvotedUsers(startDate.toDate(), endDate.toDate());
+            return this.mapToDTOList(blogPosts);
         } catch (Exception ex) {
             throw new RuntimeException("Failed to retrieve blog posts", ex);
         }

@@ -31,10 +31,11 @@ public class BlogPostController {
     private BlogPostService blogPostService;
 
     @GetMapping
-    public ResponseEntity<List<BlogPostDTO>> getBlogPosts(@RequestParam("pageno") int page,
-            @RequestParam("size") int size) {
+    public ResponseEntity<List<BlogPostDTO>> getBlogPosts(
+            @RequestParam(value = "trend", defaultValue = "day") String trend
+        ) {
         try {
-            return new ResponseEntity<List<BlogPostDTO>>(blogPostService.getBlogPosts(page, size), HttpStatus.OK);
+            return new ResponseEntity<List<BlogPostDTO>>(blogPostService.getBlogPosts(trend), HttpStatus.OK);
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
