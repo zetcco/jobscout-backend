@@ -343,5 +343,11 @@ public class JobPostService {
             return true;
     }
 
+    public void completeApplication(Long jobApplicationId) {
+        JobApplication jobApplication = this.getJobApplicationById(jobApplicationId);
+        jobApplication.setStatus(ApplicationStatus.COMPLETED);
+        this.jobApplicationRepository.save(jobApplication);
+    }
+
 
 }
