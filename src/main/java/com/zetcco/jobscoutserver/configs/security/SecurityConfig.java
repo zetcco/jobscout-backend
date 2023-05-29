@@ -30,6 +30,7 @@ public class SecurityConfig {
             "/ws/**", // This is authenticated seperately using WebSocketAuthenticationService
             "/address/**",
             "/media/**",
+            "/verify/**",
             "/organization/search/**",
             "/cv/templates/**",
             "/test/notification/**" // TODO: Remove this on deploy

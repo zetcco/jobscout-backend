@@ -21,6 +21,8 @@ import com.zetcco.jobscoutserver.repositories.JobCreatorRepository;
 import com.zetcco.jobscoutserver.repositories.JobSeekerRepository;
 import com.zetcco.jobscoutserver.repositories.OrganizationRepository;
 import com.zetcco.jobscoutserver.repositories.UserRepository;
+import com.zetcco.jobscoutserver.services.UserService;
+import com.zetcco.jobscoutserver.services.support.VerificationService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -36,6 +38,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final VerificationService verificationService;
 
     public AuthenticationResponse login(LoginRequest request) throws Exception {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -51,14 +55,14 @@ public class AuthenticationService {
                     request.getAddress(),
                     request.getCompanyName(),
                     request.getBrFileName());
-        organizationRepository.save(organization);
-
+        organization = organizationRepository.save(organization);
+        verificationService.sendConfirmationLink(organization);
         String token = jwtService.generateToken(organization);
 
         return AuthenticationResponse.builder().jwtToken(token).build();
     }
 
-    public AuthenticationResponse registerJobSeeker(JobSeekerRegistrationRequest request) {
+    public AuthenticationResponse registerJobSeeker(JobSeekerRegistrationRequest request) throws Exception {
         JobSeeker jobSeeker = new JobSeeker(
                                             request.getEmail(),
                                             passwordEncoder.encode(request.getPassword()),
@@ -69,10 +73,11 @@ public class AuthenticationService {
                                             request.getContact(),
                                             request.getDob(),
                                             request.getGender());
-        jobSeekerRepository.save(jobSeeker);
+        jobSeeker = jobSeekerRepository.save(jobSeeker);
+        verificationService.sendConfirmationLink(jobSeeker);
         String token = jwtService.generateToken(jobSeeker);
-
         return AuthenticationResponse.builder().jwtToken(token).build();
+
     }
 
     public AuthenticationResponse registerJobCreator(JobCreatorRegistrationRequest request) {
@@ -86,7 +91,8 @@ public class AuthenticationService {
                                             request.getContact(),
                                             request.getDob(),
                                             request.getGender());
-        jobCreatorRepository.save(jobCreator);
+        jobCreator = jobCreatorRepository.save(jobCreator);
+        verificationService.sendConfirmationLink(jobCreator);
         String token = jwtService.generateToken(jobCreator);
 
         return AuthenticationResponse.builder().jwtToken(token).build();
@@ -102,4 +108,11 @@ public class AuthenticationService {
     public Long getCurrentLoggedInUserId() {
         return ((User)SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
     }
+
+    public void setComplete(Long userId) {
+        User user = userService.getUser(userId);
+        user.setComplete(true);
+        userRepository.save(user);
+    }
+
 }

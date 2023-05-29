@@ -50,6 +50,7 @@ public class JwtService {
                             .claim("id", user.getId())
                             .claim("role", user.getRole())
                             .claim("email", user.getEmail())
+                            .claim("complete", user.isComplete())
                             .setIssuedAt(new Date(System.currentTimeMillis()))
                             .setExpiration(new Date(System.currentTimeMillis() + 1000*60*60*24*7))
                             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
