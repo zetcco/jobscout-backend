@@ -126,4 +126,15 @@ public class UserService {
     public List<ProfileDTO> searchUsers(Specification<User> user_specs) {
         return userMapper.mapToDtos(userRepository.findAll(user_specs));
     }
+
+    public void setComplete() {
+        User user = this.getAuthUser();
+        user.setComplete(true);
+        userRepository.save(user);
+    }
+
+    public void verifyAccount(User user) {
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 }

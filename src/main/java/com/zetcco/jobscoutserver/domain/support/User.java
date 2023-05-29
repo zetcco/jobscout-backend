@@ -64,6 +64,12 @@ public class User implements UserDetails {
 
     private String displayName;
 
+    @Column(nullable=false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean enabled;
+
+    @Column(nullable=false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean complete;
+
     protected User(String email, String password, Role role, Address address, String displayName) {
         this.email = email;
         this.password = password;
@@ -94,7 +100,7 @@ public class User implements UserDetails {
     }
     @Override
     public boolean isEnabled() {
-        return true;
+        return this.enabled;
     }
 
     public void setSocialLinks(List<String> links) {

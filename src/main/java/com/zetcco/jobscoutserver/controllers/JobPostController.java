@@ -310,6 +310,19 @@ public class JobPostController {
     }
 
     @PreAuthorize("hasRole('JOB_CREATOR')")
+    @PatchMapping("/application/{jobApplicationId}/complete")
+    public ResponseEntity<?> completeApplication(@PathVariable Long jobApplicationId) throws AccessDeniedException {
+        try {
+            jobPostService.completeApplication(jobApplicationId);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('JOB_CREATOR')")
     @GetMapping("/{jobPostId}/applications")
     public ResponseEntity<List<JobApplicationDTO>> filterJobApplications(
         @PathVariable Long jobPostId,

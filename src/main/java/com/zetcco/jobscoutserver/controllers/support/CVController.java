@@ -7,6 +7,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,8 @@ public class CVController {
             responseHeaders.set("Content-Disposition", String.format("cv-%d-%d.pdf", requesterId, templateId));
             responseHeaders.set("Content-Type", "application/pdf");
             return ResponseEntity.ok().headers(responseHeaders).body(cvPdf);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, e.getMessage());
         } catch (RestClientException | URISyntaxException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -48,6 +51,8 @@ public class CVController {
     public ResponseEntity<Object> getCvTemplates() {
         try {
             return new ResponseEntity<Object>(cvService.getCVTemplates(), HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, e.getMessage());
         } catch (URISyntaxException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
@@ -64,6 +69,8 @@ public class CVController {
             HttpHeaders responseHeaders = new HttpHeaders();
             responseHeaders.set("Content-Type", "image/jpeg");
             return ResponseEntity.ok().headers(responseHeaders).body(previewImage);
+        } catch (AccessDeniedException e) {
+            throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, e.getMessage());
         } catch (RestClientException | URISyntaxException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR);
