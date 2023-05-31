@@ -1,6 +1,7 @@
 package com.zetcco.jobscoutserver.services;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -196,5 +197,17 @@ public class RecommendationService {
     public void deleteRecommendationRequestByResponderId(Long responder) {
         Long requester = userService.getAuthUser().getId();
         this.deleteRecommendationRequest(responder, requester);
+    }
+
+    public List<ProfileDTO> getSentRequests() {
+        JobSeeker requester = (JobSeeker) userService.getAuthUser();
+        List<JobCreator> jobCreators = jobCreatorRepository.findAll();
+        List<JobCreator> list = new ArrayList<>();
+        for (JobCreator creator : jobCreators) {
+            List<JobSeeker> seekers = creator.getRecommendationRequests();
+            if (seekers.contains(requester))
+                list.add(creator);
+        }
+        return userMapper.mapToDtos(list);
     }
 }

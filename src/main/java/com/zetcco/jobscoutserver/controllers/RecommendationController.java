@@ -148,4 +148,14 @@ public class RecommendationController {
         }
     }
 
+    @GetMapping("/sent-requests")
+    @PreAuthorize("hasRole('JOB_SEEKER')")
+    public ResponseEntity<List<ProfileDTO>> getSentRequests() {
+        try {
+            return new ResponseEntity<List<ProfileDTO>>(recommendationService.getSentRequests(), HttpStatus.OK);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
 }
