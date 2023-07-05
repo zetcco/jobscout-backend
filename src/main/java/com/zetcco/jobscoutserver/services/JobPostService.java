@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -58,6 +59,8 @@ public class JobPostService {
     @Autowired private MeetingService meetingService;
     @Autowired private ConversationService conversationService;
     @Autowired private MessageService messageService;
+
+    @Value("${server.frontend_url}") private String SERVER_URL;
 
     @Transactional
     public JobPostDTO addNewJobPost(JobPostForm jobPostForm) throws NotFoundException{
@@ -325,7 +328,8 @@ public class JobPostService {
         Long jobCreatorId = userService.getAuthUser().getId();
         List<Long> participants = List.of(application.getJobSeeker().getId());
         ConversationDTO conversationDTO = conversationService.createConversation(new ArrayList<>(participants));
-        String message = "You have been called for interview for the Application you submitted to,\n\n" + application.getJobPost().getTitle() + "\n\n Please attend to the Interview held on " + timestamp.toString() + " at " + time + ". Please use the link below to attend to the interview.\n\nhttp://localhost:3000/meet/" + meetingDTO.getLink() + "\n\nThank you!";
+        String interview_url = String.format("%s/meet/%s", SERVER_URL, meetingDTO.getLink());
+        String message = "You have been called for interview for the Application you submitted to,\n\n" + application.getJobPost().getTitle() + "\n\n Please attend to the Interview held on " + timestamp.toString() + " at " + time + ". Please use the link below to attend to the interview.\n\n" + interview_url + "\n\nThank you!";
         MessageDTO messageDTO = new MessageDTO(
             null, 
             jobCreatorId,

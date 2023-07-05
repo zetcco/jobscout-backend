@@ -17,7 +17,7 @@ import com.zetcco.jobscoutserver.services.UserService;
 public class VerificationService {
     
     @Value("${spring.mail.username}") private String SERVER_EMAIL;
-    @Value("${server.backend_url}") private String SERVER_URL;
+    @Value("${server.frontend_url}") private String SERVER_URL;
 
     @Autowired private VerificationKeyRepository verificationKeyRepository;
     @Autowired private JavaMailSender emailSender;
@@ -36,6 +36,10 @@ public class VerificationService {
         message.setText(body);
         emailSender.send(message);
     }
+
+    public void sendHtmlConfirmationLink(User user) {
+        
+    } 
 
     private UUID getVerificationKey(User user) {
         UUID verificationKey = UUID.randomUUID();
